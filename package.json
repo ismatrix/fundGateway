@@ -1,0 +1,35 @@
+{
+  "name": "fund-gateway",
+  "version": "1.0.0",
+  "description": "Provide access to fund informations",
+  "main": "build/app",
+  "scripts": {
+    "start": "node prod/app",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "babel src --out-dir build --copy-files"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@code.invesmart.net:8800/smartwin/fundGateway.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-eslint": "^7.0.0",
+    "babel-plugin-transform-async-to-generator": "^6.16.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.14.0",
+    "eslint": "^3.5.0",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-babel": "^3.3.0",
+    "eslint-plugin-import": "^2.0.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.4.1"
+  },
+  "dependencies": {
+    "babel-register": "^6.16.3",
+    "debug": "^2.2.0",
+    "grpc": "^1.0.1-pre1",
+    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.3"
+  }
+}

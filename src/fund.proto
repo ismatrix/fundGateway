@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package fund;
+
+service Fund {
+  rpc GetAccount(Empty) returns (Accounts) {}
+}
+
+message Account {
+  // 交易日 ctp.TradingDay
+  string tradingday = 1;
+  // 账户标识 ctp.AccountID/st.cell_id
+  string fundid = 2;
+  // 父基金帐号 默认0
+  string parentid = 3;
+  // 昨日余额 ctp.PreBalance/st.dthis_bal
+  double prebalance = 4;
+  // 上次占用的保证金 ctp.PreMargin/st.null
+  double premargin = 5;
+  // 接口请求标识
+  string requestid = 6;
+  // 期货结算准备金 ctp.Balance/st.deposite
+  double balance = 7;
+  // 可用资金 ctp.Available/st.available
+  double available = 8;
+  // 当前保证金总额 ctp.CurrMargin/st.margin
+  double margin = 9;
+  // 入金金额 ctp.Deposit/st.incap
+  double incap = 10;
+  // 出金金额 ctp.Withdraw/st.outcap
+  double outcap = 11;
+  // 开仓手续费
+  double commission = 12;
+  // 盯日平仓盈亏合计
+  double closeprofit = 13;
+  // 盯日持仓盈亏合计
+  double positionprofit = 14;
+  // 信息更新日期
+  string updatedate = 15;
+}
+
+message Empty {
+
+}
+
+message Accounts {
+  repeated Account account = 1;
+}

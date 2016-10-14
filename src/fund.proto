@@ -8,7 +8,7 @@ service FundService {
   rpc GetAccounts(GetAccounts) returns (Accounts) {}
   rpc GetPositions(GetPositions) returns (Positions) {}
 
-  rpc Order(NewOrder) returns (Empty) {}
+  rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
 
   rpc SubscribeOrder(SubscribeOrder) returns (stream Order) {}
@@ -68,7 +68,7 @@ message Positions {
   repeated Position positions = 1;
 }
 
-message NewOrder {
+message PlaceOrder {
   // 基金帐号
   string fundid = 1;
   // 交易所代码  ["SHFE", "上海期货交易所" ], [ "CZCE", "郑州商品交易所" ], [ "DCE", "大连商品交易所" ], [ "CFFEX", "中国金融期货交易所"]

@@ -1,6 +1,7 @@
 import debugModule from 'debug';
-import createIceBroker from 'sw-broker-ice';
+import fs from 'fs';
 import grpc from 'grpc';
+import createIceBroker from 'sw-broker-ice';
 
 const debug = debugModule('app');
 
@@ -59,16 +60,16 @@ async function getPositions(call, callback) {
   }
 }
 
-async function order(call, callback) {
+async function placeOrder(call, callback) {
   try {
     const iceBroker = createIceBroker(call.request.fundid);
     debug('iceBroker %o', iceBroker);
 
-    await iceBroker.order(call.request.order);
+    await iceBroker.order(call.request);
 
     callback(null, {});
   } catch (error) {
-    debug('Error order(): %o', error);
+    debug('Error placeOrder(): %o', error);
     callback(error);
   }
 }
@@ -153,13 +154,32 @@ async function subscribePositions(stream) {
 async function main() {
   try {
     debug('app.js main');
+    // const sslCaCrtPath = '/home/victor/Documents/smartwin/fundGateway/crt/ca.crt';
+    // const sslServerCrtPath = '/home/victor/Documents/smartwin/fundGateway/crt/server.crt';
+    // const sslServerKeyPath = '/home/victor/Documents/smartwin/fundGateway/crt/server.crt';
+    // const sslCaCrt = fs.readFileSync(sslCaCrtPath);
+    // const sslServerCrt = fs.readFileSync(sslServerCrtPath);
+    // const sslServerKey = fs.readFileSync(sslServerKeyPath);
+
+    const sslServerCrtPath = '/home/victor/Documents/smartwin/fundGateway/crt/device.crt';
+    const sslServerKeyPath = '/home/victor/Documents/smartwin/fundGateway/crt/device.key';
+    const sslServerCrt = fs.readFileSync(sslServerCrtPath);
+    const sslServerKey = fs.readFileSync(sslServerKeyPath);
+
+    // const sslCreds = grpc.credentials.createSsl(sslCaCrt, sslServerCrt, sslServerKey);
+    const sslCreds = grpc.ServerCredentials.createSsl(
+      null,
+      [{ private_key: sslServerKey, cert_chain: sslServerCrt }],
+      true
+    );
+
     const server = new grpc.Server();
     server.addProtoService(fundProto.fundPackage.FundService.service, {
       getOrders,
       getTrades,
       getAccounts,
       getPositions,
-      order,
+      placeOrder,
       cancelOrder,
       subscribeOrder,
       subscribeTrade,
@@ -167,7 +187,7 @@ async function main() {
       subscribePositions,
     });
 
-    server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
+    server.bind('0.0.0.0:50051', sslCreds);
     server.start();
   } catch (error) {
     debug('Error main(): %o', error);

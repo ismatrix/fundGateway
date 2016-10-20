@@ -9,7 +9,7 @@ npm install
 ## Dev
 ```
 DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --name fundGateway
-pm2 logs fundGateway --raw
+pm2 logs fundGateway
 ```
 
 ## Prod
@@ -17,3 +17,18 @@ pm2 logs fundGateway --raw
 npm run compile
 DEBUG=*,-babel DEBUG_COLORS=true pm2 start build/app.js --name fundGateway
 ```
+
+## gRPC SSL credentials
+the device can be a server or a client.
+```
+openssl genrsa -out rootCA.key 2048
+openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.pem
+openssl genrsa -out device.key 2048
+openssl req -new -key device.key -out device.csr
+openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 500 -sha256
+```
+
+## Auth examples
+  * http://www.grpc.io/docs/guides/auth.html
+  * client: https://github.com/grpc/grpc/blob/5098508d2d41a116113f7e333c516cd9ef34a943/src/node/performance/benchmark_client.js
+  * server: https://github.com/grpc/grpc/blob/5098508d2d41a116113f7e333c516cd9ef34a943/src/node/performance/benchmark_server.js

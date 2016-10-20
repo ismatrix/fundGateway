@@ -5,8 +5,11 @@ package fundPackage;
 service FundService {
   rpc GetOrders(GetOrders) returns (Orders) {}
   rpc GetTrades(GetTrades) returns (Trades) {}
-  rpc GetAccounts(GetAccounts) returns (Accounts) {}
+  rpc GetAccount(GetAccount) returns (Account) {}
   rpc GetPositions(GetPositions) returns (Positions) {}
+
+  rpc GetLiveAccount(GetAccount) returns (Account) {}
+  rpc GetLivePositions(GetPositions) returns (Positions) {}
 
   rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
@@ -28,7 +31,7 @@ message GetTrades {
   string fundid = 1;
 }
 
-message GetAccounts {
+message GetAccount {
   string fundid = 1;
 }
 
@@ -58,10 +61,6 @@ message Orders {
 
 message Trades {
   repeated Trade trades = 1;
-}
-
-message Accounts {
-  repeated Account accounts = 1;
 }
 
 message Positions {

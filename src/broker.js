@@ -1,4 +1,4 @@
-import debugModule from 'debug';
+import createDebug from 'debug';
 import createIceBroker from 'sw-broker-ice';
 
 export default function createBroker(config) {
@@ -8,7 +8,7 @@ export default function createBroker(config) {
     server,
   } = config;
 
-  const debug = debugModule(`${fundid}@${brokerName}@${server.ip}:${server.port}@broker`);
+  const debug = createDebug(`${fundid}@${brokerName}@${server.ip}:${server.port}@broker`);
 
   try {
     let broker;

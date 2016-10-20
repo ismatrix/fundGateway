@@ -34,6 +34,8 @@
     "grpc": "^1.0.1-pre1",
     "jsonwebtoken": "^7.1.9",
     "mongodb": "^2.2.10",
-    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.5"
+    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.5",
+    "sw-datafeed-icelive": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icelive.git#v1.0.4",
+    "through2": "^2.0.1"
   }
 }

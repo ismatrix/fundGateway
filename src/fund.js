@@ -1,11 +1,11 @@
-import debugModule from 'debug';
+import createDebug from 'debug';
 import createBroker from './broker';
 
 export default function createFund(config) {
   const {
     fundid,
   } = config;
-  const debug = debugModule(`${fundid}@fund`);
+  const debug = createDebug(`${fundid}@fund`);
   debug('config %o', config);
 
   try {

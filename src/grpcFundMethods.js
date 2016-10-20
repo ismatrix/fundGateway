@@ -1,9 +1,8 @@
-import debugModule from 'debug';
-import createIceBroker from 'sw-broker-ice';
+import createDebug from 'debug';
 import grpcCan from './acl';
 import funds from './funds';
 
-const debug = debugModule('grpcFundMethods');
+const debug = createDebug('grpcFundMethods');
 
 async function getOrders(call, callback) {
   try {

@@ -1,7 +1,7 @@
-import debugModule from 'debug';
+import createDebug from 'debug';
 import createFund from './fund';
 
-const debug = debugModule('funds');
+const debug = createDebug('funds');
 
 const fundsArr = [];
 
@@ -11,7 +11,7 @@ async function addFund(config) {
       fundid,
     } = config;
 
-    if (fundsArr.map(fundObj => fundObj.fundid).includes(fundid)) return;
+    if (fundsArr.map(elem => elem.fundid).includes(fundid)) return;
 
     const newFund = createFund(config);
     fundsArr.push(newFund);

@@ -1,4 +1,4 @@
-import debugModule from 'debug';
+import createDebug from 'debug';
 import fs from 'fs';
 import path from 'path';
 import grpc from 'grpc';
@@ -7,7 +7,7 @@ import mongodb from './mongodb';
 import { mongodbUrl, funds as fundsDB } from './config';
 import funds from './funds';
 
-const debug = debugModule('app');
+const debug = createDebug('app');
 
 async function init() {
   try {

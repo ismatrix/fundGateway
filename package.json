@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node prod/app",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "babel src --out-dir build --copy-files"
+    "compile": "rm -rf ./dist && babel src --out-dir build --copy-files"
   },
   "repository": {
     "type": "git",

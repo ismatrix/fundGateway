@@ -1,5 +1,6 @@
 import createDebug from 'debug';
 import createFund from './fund';
+import marketData from './marketData';
 
 const debug = createDebug('funds');
 
@@ -42,19 +43,57 @@ function getFunds() {
 function getFundsPositions() {
   try {
     const allFunds = getFunds();
-    const allPositions = allFunds.map(elem => a);
-    // const
-    // for (const fund of funds) {};
-    // return fundsArr;
+    const allPositions = allFunds
+      .map(elem => elem.getPositions())
+      .reduce((acc, cur) => acc.concat(cur), []);
+    return allPositions;
   } catch (error) {
     debug('Error get(): %o', error);
   }
 }
 
+function allPositionsToMdSubscriptions() {
+  try {
+    const allFundsPositions = getFundsPositions();
+    debug('allFundsPositions %o', allFundsPositions);
+
+    const allUniqueSymbols = allFundsPositions
+      .map(elem => elem.instrumentid)
+      .filter((symbol, index, arr) => arr.indexOf(symbol) === index)
+      ;
+    debug('allUniqueSymbols %o', allUniqueSymbols);
+
+    const needUnsubscribeSymbols = allUniqueSymbols
+      .filter(symbol =>
+        !allFundsPositions
+          .filter(fund => fund.instrumentid === symbol)
+          .reduce((acc, cur) => acc + cur.position, 0)
+      )
+      ;
+    debug('needUnsubscribeSymbols: %o', needUnsubscribeSymbols);
+    needUnsubscribeSymbols.map(symbol => marketData.unsubscribe({
+      symbol,
+      resolution: 'tick',
+    }));
+
+    const needSubscribeSymbols = allUniqueSymbols
+      .filter(symbol => !needUnsubscribeSymbols.includes(symbol))
+      ;
+    debug('needSubscribeSymbols: %o', needSubscribeSymbols);
+    needSubscribeSymbols.map(symbol => marketData.subscribe({
+      symbol,
+      resolution: 'tick',
+    }));
+  } catch (error) {
+    debug('Error allPositionsToMdSubscriptions(): %o', error);
+  }
+}
+
 const funds = {
-  addFund,
   getFund,
   getFunds,
+  addFund,
+  allPositionsToMdSubscriptions,
 };
 
 export default funds;

@@ -3,13 +3,13 @@ syntax = "proto3";
 package fundPackage;
 
 service FundService {
-  rpc GetOrders(GetOrders) returns (Orders) {}
-  rpc GetTrades(GetTrades) returns (Trades) {}
+  rpc GetOrders(GetOrders) returns (OrdersResponse) {}
+  rpc GetTrades(GetTrades) returns (TradesResponse) {}
   rpc GetAccount(GetAccount) returns (Account) {}
-  rpc GetPositions(GetPositions) returns (Positions) {}
+  rpc GetPositions(GetPositions) returns (PositionsResponse) {}
 
   rpc GetLiveAccount(GetAccount) returns (Account) {}
-  rpc GetLivePositions(GetPositions) returns (Positions) {}
+  rpc GetLivePositions(GetPositions) returns (PositionsResponse) {}
 
   rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
@@ -17,7 +17,7 @@ service FundService {
   rpc SubscribeOrder(SubscribeOrder) returns (stream Order) {}
   rpc SubscribeTrade(SubscribeTrade) returns (stream Trade) {}
   rpc SubscribeAccount(SubscribeAccount) returns (stream Account) {}
-  rpc SubscribePositions(SubscribePositions) returns (stream Positions) {}
+  rpc SubscribePositions(SubscribePositions) returns (stream PositionsResponse) {}
 }
 
 message Empty {
@@ -55,15 +55,15 @@ message SubscribePositions {
   string fundid = 1;
 }
 
-message Orders {
+message OrdersResponse {
   repeated Order orders = 1;
 }
 
-message Trades {
+message TradesResponse {
   repeated Trade trades = 1;
 }
 
-message Positions {
+message PositionsResponse {
   repeated Position positions = 1;
 }
 
@@ -156,14 +156,22 @@ message Order {
   string oerrmsg = 22;
   // 最后修改时间
   string updatetime = 23;
+  //
+  string donetype = 24;
+  //
+  string pricetype = 25;
+  //
+  string canceltime = 26;
+  //
+  int32 seq = 27;
   // 父基金帐号
-  string parentid = 24;
+  string parentid = 28;
   // 策略标识
-  string strategyid = 25;
+  string strategyid = 29;
   // 操作人员标识
-  string userid = 26;
+  string userid = 30;
   // "signal.name", 信号名称
-  string signalname = 27;
+  string signalname = 31;
 }
 
 message Trade {
@@ -199,14 +207,16 @@ message Trade {
     string tradetime = 15;
     // 纪录最新更新时间 time(NULL)
     string updatedate = 16;
+    //
+    int32	seq = 17;
     // 父基金帐号
-    string parentid = 17;
+    string parentid = 18;
     // 策略标识
-    string strategyid = 18;
+    string strategyid = 19;
     // 操作人员标识
-    string userid = 19;
+    string userid = 20;
     // "signal.name" 信号名称 参加codemap.signal.nam
-    string signalname = 20;
+    string signalname = 21;
 }
 
 message Account {
@@ -216,30 +226,32 @@ message Account {
   string fundid = 2;
   // 父基金帐号 默认0
   string parentid = 3;
+  // 资金（不含当日持仓盈亏）ctp.balance-ctp.positionprofit / st.deposite*/
+  double capital = 4;
   // 昨日余额 ctp.PreBalance/st.dthis_bal
-  double prebalance = 4;
+  double prebalance = 5;
   // 上次占用的保证金 ctp.PreMargin/st.null
-  double premargin = 5;
+  double premargin = 6;
   // 接口请求标识
-  string requestid = 6;
+  string requestid = 7;
   // 期货结算准备金 ctp.Balance/st.deposite
-  double balance = 7;
+  double balance = 8;
   // 可用资金 ctp.Available/st.available
-  double available = 8;
+  double available = 9;
   // 当前保证金总额 ctp.CurrMargin/st.margin
-  double margin = 9;
+  double margin = 10;
   // 入金金额 ctp.Deposit/st.incap
-  double incap = 10;
+  double incap = 11;
   // 出金金额 ctp.Withdraw/st.outcap
-  double outcap = 11;
+  double outcap = 12;
   // 开仓手续费
-  double commission = 12;
+  double commission = 13;
   // 盯日平仓盈亏合计
-  double closeprofit = 13;
+  double closeprofit = 14;
   // 盯日持仓盈亏合计
-  double positionprofit = 14;
+  double positionprofit = 15;
   // 信息更新日期
-  string updatedate = 15;
+  string updatedate = 16;
 }
 
 message Position {

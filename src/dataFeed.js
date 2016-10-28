@@ -3,17 +3,17 @@ import createIceLiveDataFeed from 'sw-datafeed-icelive';
 
 export default function (config) {
   const {
-    provider,
+    name,
     server,
-  } = config;
-  const debug = createDebug(`dataFeed ${provider}@${server.ip}:${server.port}@`);
+  } = config.datafeed;
+
+  const debug = createDebug(`dataFeed ${name}@${server.ip}:${server.port}@`);
   try {
     let dataFeed;
 
-    switch (provider) {
+    switch (name) {
       case 'iceLive':
-        dataFeed = createIceLiveDataFeed({ server });
-        dataFeed.provider = 'iceLive';
+        dataFeed = createIceLiveDataFeed(config);
         break;
       default:
         throw new Error('Missing dataFeed provider paramater');

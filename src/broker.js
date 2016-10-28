@@ -4,15 +4,17 @@ import createIceBroker from 'sw-broker-ice';
 export default function createBroker(config) {
   const {
     fundid,
-    brokerName,
-    server,
   } = config;
+  const {
+    name,
+    server,
+  } = config.broker;
 
-  const debug = createDebug(`${fundid}@${brokerName}@${server.ip}:${server.port}@broker`);
+  const debug = createDebug(`${fundid}@${name}@${server.ip}:${server.port}@broker`);
 
   try {
     let broker;
-    switch (brokerName) {
+    switch (name) {
       case 'ice':
         broker = createIceBroker(config);
         break;

@@ -8,13 +8,12 @@ const fundsArr = [];
 
 async function addFund(config) {
   try {
-    const {
-      fundid,
-    } = config;
-
-    if (fundsArr.map(elem => elem.fundid).includes(fundid)) return;
+    if (fundsArr.map(elem => elem.config.fundid).includes(config.fundid)) return;
 
     const newFund = createFund(config);
+    newFund.config = config;
+    await newFund.connect();
+
     fundsArr.push(newFund);
   } catch (error) {
     debug('Error addFund(): %o', error);

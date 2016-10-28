@@ -2,16 +2,26 @@ import createDebug from 'debug';
 import fs from 'fs';
 import path from 'path';
 import grpc from 'grpc';
-import fundMethods from './grpcFundMethods';
+import fundMethods from './fund.grpc';
 import mongodb from './mongodb';
-import { mongodbUrl, funds as fundsDB } from './config';
+import {
+  mongodbUrl,
+  funds as fundsDB,
+  marketData as marketDataDB,
+  fundGatewayConfig as config,
+} from './config';
 import funds from './funds';
+import marketData from './marketData';
 
 const debug = createDebug('app');
 
 async function init() {
   try {
-    mongodb.connect(mongodbUrl);
+    await Promise.all([
+      mongodb.connect(mongodbUrl),
+      funds.addFund(fundsDB[0]),
+      marketData.addDataFeed(marketDataDB[0]),
+    ]);
   } catch (error) {
     debug('Error init(): %o', error);
   }
@@ -20,8 +30,9 @@ async function init() {
 async function main() {
   try {
     debug('app.js main');
+    debug('marketDataDB[0] %o', marketDataDB[0]);
     await init();
-    await funds.addFund(fundsDB[0]);
+
     const fundProto = grpc.load(__dirname.concat('/fund.proto'));
 
     const sslServerCrtPath = path.join(__dirname, '../crt/server.crt');
@@ -38,7 +49,7 @@ async function main() {
     const server = new grpc.Server();
     server.addProtoService(fundProto.fundPackage.FundService.service, fundMethods);
 
-    server.bind('0.0.0.0:50051', sslCreds);
+    server.bind(`${config.ip}:${config.port}`, sslCreds);
     server.start();
   } catch (error) {
     debug('Error main(): %o', error);

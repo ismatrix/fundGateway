@@ -15,7 +15,7 @@ pm2 logs fundGateway
 ## Prod
 ```
 npm run compile
-DEBUG=*,-babel DEBUG_COLORS=true pm2 start build/app.js --name fundGateway
+DEBUG=*,-babel DEBUG_COLORS=true pm2 start dist/app.js --name fundGateway
 ```
 
 ## gRPC SSL credentials

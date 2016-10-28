@@ -4,19 +4,19 @@ import createDataFeed from './dataFeed';
 
 const debug = createDebug('marketData');
 
-const dataFeeds = [];
+const dataFeedsStore = [];
 const marketDataStore = [];
-const subscriptions = [];
+const subscriptionsStore = [];
 
-function getMarketDataStore() {
+function getMarketData() {
   return marketDataStore;
 }
 
 function getSubscriptions() {
-  return subscriptions;
+  return subscriptionsStore;
 }
 
-const feedStore = () => through.obj((data, enc, callback) => {
+const feedStore = through.obj((data, enc, callback) => {
   try {
     const index = marketDataStore.findIndex(elem =>
       (elem.symbol === data.symbol && elem.resolution === data.resolution)
@@ -36,15 +36,22 @@ const feedStore = () => through.obj((data, enc, callback) => {
 async function addDataFeed(config) {
   try {
     const {
-      provider,
+      datafeed,
     } = config;
 
-    if (dataFeeds.map(elem => elem.provider).includes(provider)) return;
+    if (dataFeedsStore.map(elem => elem.config.datafeed.name).includes(datafeed.name)) return;
 
     const newDataFeed = createDataFeed(config);
+    newDataFeed.config = config;
+
     await newDataFeed.connect();
-    newDataFeed.getDataFeed().pipe(feedStore);
-    dataFeeds.push(newDataFeed);
+    newDataFeed.getDataFeed()
+      .pipe(feedStore)
+      .on('error', (error) => {
+        debug('Error newDataFeed.getDataFeed().pipe(feedStore): %o', error);
+        throw error;
+      });
+    dataFeedsStore.push(newDataFeed);
   } catch (error) {
     debug('Error addDataFeed(): %o', error);
   }
@@ -53,21 +60,21 @@ async function addDataFeed(config) {
 async function subscribe(newSub) {
   try {
     const {
-      provider = 'iceLive',
+      datafeed = 'iceLive',
       symbol,
       resolution,
     } = newSub;
 
-    const similarSubs = subscriptions
+    const similarSubs = subscriptionsStore
       .filter(sub => (sub.symbol === symbol && sub.resolution === resolution))
       ;
 
     if (similarSubs.length === 0) {
-      const theDataFeed = dataFeeds.find(elem => elem.provider === provider);
-      if (theDataFeed === undefined) throw new Error('no dataFeed provider');
+      const theDataFeed = dataFeedsStore.find(elem => elem.datafeed === datafeed);
+      if (theDataFeed === undefined) throw new Error('no existing dataFeed');
 
       await theDataFeed.subscribe(symbol, resolution);
-      subscriptions.push(newSub);
+      subscriptionsStore.push(newSub);
     }
   } catch (error) {
     debug('Error subscribe(): %o', error);
@@ -77,21 +84,21 @@ async function subscribe(newSub) {
 async function unsubscribe(newSub) {
   try {
     const {
-      provider = 'iceLive',
+      datafeed = 'iceLive',
       symbol,
       resolution,
     } = newSub;
 
-    const similarSubIndex = subscriptions
+    const similarSubIndex = subscriptionsStore
       .findIndex(sub => (sub.symbol === symbol && sub.resolution === resolution))
       ;
 
     if (similarSubIndex !== -1) {
-      const theDataFeed = dataFeeds.find(elem => elem.provider === provider);
-      if (theDataFeed === undefined) throw new Error('no dataFeed provider');
+      const theDataFeed = dataFeedsStore.find(elem => elem.datafeed === datafeed);
+      if (theDataFeed === undefined) throw new Error('no dataFeed datafeed');
 
       await theDataFeed.unsubscribe(symbol, resolution);
-      subscriptions.splice(similarSubIndex, similarSubIndex + 1);
+      subscriptionsStore.splice(similarSubIndex, similarSubIndex + 1);
     }
   } catch (error) {
     debug('Error unsubscribe(): %o', error);
@@ -102,7 +109,7 @@ const marketData = {
   addDataFeed,
   subscribe,
   unsubscribe,
-  getMarketDataStore,
+  getMarketData,
   getSubscriptions,
 };
 

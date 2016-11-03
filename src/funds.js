@@ -1,6 +1,5 @@
 import createDebug from 'debug';
 import createFund from './fund';
-import marketData from './marketData';
 
 const debug = createDebug('funds');
 

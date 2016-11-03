@@ -7,20 +7,6 @@ export const fundGatewayConfig = {
   port: '50051',
 };
 
-export const marketData = [
-  {
-    market: 'futures',
-    type: 'quotes',
-    datafeed: {
-      name: 'iceLive',
-      server: {
-        ip: '120.76.98.94',
-        port: '4502',
-      },
-    },
-  },
-];
-
 export const funds = [
   {
     fundid: '068074',
@@ -30,6 +16,15 @@ export const funds = [
         ip: '120.76.98.94',
         port: '20029',
       },
+    },
+    marketData: {
+      name: 'smartwinFutures',
+      server: {
+        ip: 'localhost',
+        port: '50052',
+      },
+      jwtoken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0',
+      sslCaCrtPath: '../crt/rootCA.pem',
     },
   },
   {

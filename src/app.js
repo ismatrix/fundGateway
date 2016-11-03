@@ -7,20 +7,23 @@ import mongodb from './mongodb';
 import {
   mongodbUrl,
   funds as fundsDB,
-  marketData as marketDataDB,
   fundGatewayConfig as config,
 } from './config';
 import funds from './funds';
-import marketData from './marketData';
+import marketDatas from './marketDatas';
 
 const debug = createDebug('app');
 
 async function init() {
   try {
+    await Promise.all([].concat(
+      mongodb.connect(mongodbUrl),
+      fundsDB.map(fund => funds.addFund(fund)),
+      fundsDB.map(fund => marketDatas.addMarketData(fund.marketData)),
+    ));
     await Promise.all([
       mongodb.connect(mongodbUrl),
       funds.addFund(fundsDB[0]),
-      marketData.addDataFeed(marketDataDB[0]),
     ]);
   } catch (error) {
     debug('Error init(): %o', error);
@@ -30,7 +33,6 @@ async function init() {
 async function main() {
   try {
     debug('app.js main');
-    debug('marketDataDB[0] %o', marketDataDB[0]);
     await init();
 
     const fundProto = grpc.load(__dirname.concat('/fund.proto'));

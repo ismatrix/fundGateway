@@ -110,7 +110,7 @@ async function cancelOrder(call, callback) {
   }
 }
 
-async function subscribeOrder(stream) {
+async function streamOrder(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
 
@@ -118,11 +118,11 @@ async function subscribeOrder(stream) {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error subscribeOrder(): %o', error);
+    debug('Error streamOrder(): %o', error);
   }
 }
 
-async function subscribeTrade(stream) {
+async function streamTrade(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
 
@@ -130,11 +130,11 @@ async function subscribeTrade(stream) {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error subscribeTrade(): %o', error);
+    debug('Error streamTrade(): %o', error);
   }
 }
 
-async function subscribeAccount(stream) {
+async function streamAccount(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
 
@@ -142,20 +142,20 @@ async function subscribeAccount(stream) {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error subscribeAccount(): %o', error);
+    debug('Error streamAccount(): %o', error);
   }
 }
 
-async function subscribePositions(stream) {
+async function streamPositions(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
-    debug('subscribePositions fund: %o', fund);
+    debug('streamPositions fund: %o', fund);
 
     fund.on('positions', (eventData) => {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error subscribePositions(): %o', error);
+    debug('Error streamPositions(): %o', error);
   }
 }
 
@@ -168,10 +168,10 @@ const fundMethods = {
   getLivePositions,
   placeOrder,
   cancelOrder,
-  subscribeOrder,
-  subscribeTrade,
-  subscribeAccount,
-  subscribePositions,
+  streamOrder,
+  streamTrade,
+  streamAccount,
+  streamPositions,
 };
 
 export default fundMethods;

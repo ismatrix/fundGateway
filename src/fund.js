@@ -1,7 +1,6 @@
 import createDebug from 'debug';
 import createBroker from './broker';
 import funds from './funds';
-import marketData from './marketData';
 
 export default function createFund(config) {
   const {

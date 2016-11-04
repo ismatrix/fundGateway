@@ -50,48 +50,11 @@ function getFundsPositions() {
   }
 }
 
-function allPositionsToMdSubscriptions() {
-  try {
-    const allFundsPositions = getFundsPositions();
-    debug('allFundsPositions %o', allFundsPositions);
-
-    const allUniqueSymbols = allFundsPositions
-      .map(elem => elem.instrumentid)
-      .filter((symbol, index, arr) => arr.indexOf(symbol) === index)
-      ;
-    debug('allUniqueSymbols %o', allUniqueSymbols);
-
-    const needUnsubscribeSymbols = allUniqueSymbols
-      .filter(symbol =>
-        !allFundsPositions
-          .filter(fund => fund.instrumentid === symbol)
-          .reduce((acc, cur) => acc + cur.position, 0)
-      )
-      ;
-    debug('needUnsubscribeSymbols: %o', needUnsubscribeSymbols);
-    needUnsubscribeSymbols.map(symbol => marketData.unsubscribe({
-      symbol,
-      resolution: 'tick',
-    }));
-
-    const needSubscribeSymbols = allUniqueSymbols
-      .filter(symbol => !needUnsubscribeSymbols.includes(symbol))
-      ;
-    debug('needSubscribeSymbols: %o', needSubscribeSymbols);
-    needSubscribeSymbols.map(symbol => marketData.subscribe({
-      symbol,
-      resolution: 'tick',
-    }));
-  } catch (error) {
-    debug('Error allPositionsToMdSubscriptions(): %o', error);
-  }
-}
-
 const funds = {
+  addFund,
   getFund,
   getFunds,
-  addFund,
-  allPositionsToMdSubscriptions,
+  getFundsPositions,
 };
 
 export default funds;

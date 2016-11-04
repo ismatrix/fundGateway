@@ -6,25 +6,24 @@ import fundMethods from './fund.grpc';
 import mongodb from './mongodb';
 import {
   mongodbUrl,
-  funds as fundsDB,
-  fundGatewayConfig as config,
+  fundConfigs,
+  grpcConfig,
 } from './config';
 import funds from './funds';
 import marketDatas from './marketDatas';
 
-const debug = createDebug('app');
+const grpcUrl = `${grpcConfig.ip}:${grpcConfig.port}`;
+const debug = createDebug(`app ${grpcUrl}`);
 
 async function init() {
   try {
     await Promise.all([].concat(
-      mongodb.connect(mongodbUrl),
-      fundsDB.map(fund => funds.addFund(fund)),
-      fundsDB.map(fund => marketDatas.addMarketData(fund.marketData)),
+      fundConfigs.map(config => marketDatas.addMarketData(config.marketData)),
     ));
-    await Promise.all([
+    await Promise.all([].concat(
       mongodb.connect(mongodbUrl),
-      funds.addFund(fundsDB[0]),
-    ]);
+      fundConfigs.map(config => funds.addFund(config)),
+    ));
   } catch (error) {
     debug('Error init(): %o', error);
   }
@@ -51,7 +50,7 @@ async function main() {
     const server = new grpc.Server();
     server.addProtoService(fundProto.fundPackage.FundService.service, fundMethods);
 
-    server.bind(`${config.ip}:${config.port}`, sslCreds);
+    server.bind(`${grpcUrl}`, sslCreds);
     server.start();
   } catch (error) {
     debug('Error main(): %o', error);

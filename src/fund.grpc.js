@@ -2,7 +2,7 @@ import createDebug from 'debug';
 import grpcCan from './acl';
 import funds from './funds';
 
-const debug = createDebug('grpcFundMethods');
+const debug = createDebug('fund.grpc');
 
 async function getOrders(call, callback) {
   try {
@@ -59,8 +59,8 @@ async function getPositions(call, callback) {
 async function getLiveAccount(call, callback) {
   try {
     const fund = funds.getFund(call.request.fundid);
-    const liveAccount = fund.getLiveAccount();
-    debug('getLiveAccount %o', liveAccount);
+    const liveAccount = await fund.getLiveAccount();
+    debug('liveAccount %o', liveAccount);
     callback(null, liveAccount);
   } catch (error) {
     debug('Error getLiveAccount(): %o', error);
@@ -71,8 +71,8 @@ async function getLiveAccount(call, callback) {
 async function getLivePositions(call, callback) {
   try {
     const fund = funds.getFund(call.request.fundid);
-    const livePositions = fund.getlivePositions();
-    debug('getLiveAccount %o', livePositions);
+    const livePositions = await fund.getLivePositions();
+    debug('livePositions %o', livePositions);
     callback(null, livePositions);
   } catch (error) {
     debug('Error getLivePositions(): %o', error);
@@ -110,7 +110,7 @@ async function cancelOrder(call, callback) {
   }
 }
 
-async function streamOrder(stream) {
+async function getOrderStream(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
 
@@ -118,11 +118,11 @@ async function streamOrder(stream) {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error streamOrder(): %o', error);
+    debug('Error getOrderStream(): %o', error);
   }
 }
 
-async function streamTrade(stream) {
+async function getTradeStream(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
 
@@ -130,11 +130,11 @@ async function streamTrade(stream) {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error streamTrade(): %o', error);
+    debug('Error getTradeStream(): %o', error);
   }
 }
 
-async function streamAccount(stream) {
+async function getAccountStream(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
 
@@ -142,20 +142,20 @@ async function streamAccount(stream) {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error streamAccount(): %o', error);
+    debug('Error getAccountStream(): %o', error);
   }
 }
 
-async function streamPositions(stream) {
+async function getPositionsStream(stream) {
   try {
     const fund = funds.getFund(stream.request.fundid);
-    debug('streamPositions fund: %o', fund);
+    debug('getPositionsStream fund: %o', fund);
 
     fund.on('positions', (eventData) => {
       stream.write(eventData);
     });
   } catch (error) {
-    debug('Error streamPositions(): %o', error);
+    debug('Error getPositionsStream(): %o', error);
   }
 }
 
@@ -164,14 +164,17 @@ const fundMethods = {
   getTrades,
   getAccount,
   getPositions,
+
   getLiveAccount,
   getLivePositions,
+
   placeOrder,
   cancelOrder,
-  streamOrder,
-  streamTrade,
-  streamAccount,
-  streamPositions,
+
+  getOrderStream,
+  getTradeStream,
+  getAccountStream,
+  getPositionsStream,
 };
 
 export default fundMethods;

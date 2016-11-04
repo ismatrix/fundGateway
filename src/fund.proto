@@ -14,10 +14,10 @@ service FundService {
   rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
 
-  rpc StreamOrder(SubscribeOrder) returns (stream Order) {}
-  rpc StreamTrade(SubscribeTrade) returns (stream Trade) {}
-  rpc StreamAccount(SubscribeAccount) returns (stream Account) {}
-  rpc StreamPositions(SubscribePositions) returns (stream PositionsResponse) {}
+  rpc GetOrderStream(SubscribeOrder) returns (stream Order) {}
+  rpc GetTradeStream(SubscribeTrade) returns (stream Trade) {}
+  rpc GetAccountStream(SubscribeAccount) returns (stream Account) {}
+  rpc GetPositionsStream(SubscribePositions) returns (stream PositionsResponse) {}
 }
 
 message Empty {

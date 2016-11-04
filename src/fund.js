@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import createBroker from './broker';
 import funds from './funds';
+import marketDatas from './marketDatas';
 
 export default function createFund(config) {
   const {
@@ -8,6 +9,8 @@ export default function createFund(config) {
   } = config;
   const debug = createDebug(`${fundid}@fund`);
   debug('config %o', config);
+
+  const marketData = marketDatas.getMarketData(config.marketData);
 
   try {
     const ordersStore = [];
@@ -22,41 +25,75 @@ export default function createFund(config) {
       .on('accountStore', (data) => { accountStore = data; })
       .on('positions', (data) => {
         positionsStore = data;
-        funds.allPositionsToMdSubscriptions();
       });
 
     const getOrders = () => {
-      const orders = ordersStore.map(elem => Object.assign({}, elem));
-      return orders;
+      try {
+        const orders = ordersStore.map(elem => Object.assign({}, elem));
+        return orders;
+      } catch (error) {
+        debug('Error getOrders() %o', error);
+      }
     };
 
     const getTrades = () => {
-      const trades = tradesStore.map(elem => Object.assign({}, elem));
-      return trades;
+      try {
+        const trades = tradesStore.map(elem => Object.assign({}, elem));
+        return trades;
+      } catch (error) {
+        debug('Error getTrades() %o', error);
+      }
     };
 
     const getAccount = () => {
-      const account = Object.assign({}, accountStore);
-      return account;
+      try {
+        const account = Object.assign({}, accountStore);
+        return account;
+      } catch (error) {
+        debug('Error getAccount() %o', error);
+      }
     };
 
     const getPositions = () => {
-      const positions = positionsStore.map(elem => Object.assign({}, elem));
-      return positions;
+      try {
+        const positions = positionsStore.map(elem => Object.assign({}, elem));
+        return positions;
+      } catch (error) {
+        debug('Error getPositions() %o', error);
+      }
     };
 
-    const getLivePositions = () => {
-      const mdStore = marketData.getMarketData();
-      const instrumentSpecs = marketData.getInstrumentSpecs();
-      const positions = getPositions();
+    const getLivePositions = async function getLivePositions() {
+      try {
+        const positions = getPositions();
+        debug('positions %o', positions);
+        const subs = positions.map(position => ({
+          symbol: position.instrumentid,
+          resolution: 'snapshot',
+          dataType: 'ticker',
+        }));
+        debug('subs %o', subs);
+        const mdStore = await marketData.getLastTickersAsync(subs);
+        debug('mdStore %o', mdStore);
+        const symbols = positions.map(position => position.instrumentid);
 
-      const livePositions = this.calcLivePositions({ positions, mdStore, instrumentSpecs });
+        const instrumentSpecs = await marketData.getInstrumentsAsync(symbols);
 
-      return livePositions;
+        const livePositions = this.calcLivePositions({
+          positions,
+          mdStore: mdStore.tickers,
+          instrumentSpecs: instrumentSpecs.instruments,
+        });
+        debug('livePositions %o', livePositions);
+        return livePositions;
+      } catch (error) {
+        debug('Error getLivePositions() %o', error);
+      }
     };
 
-    const getLiveAccount = () => {
-      const livePositionsProfit = getLivePositions()
+    const getLiveAccount = async () => {
+      const livePositions = await getLivePositions();
+      const livePositionsProfit = livePositions
         .reduce((acc, cur) => acc + cur.positionprofit, 0);
       const liveAccount = getLiveAccount();
       if (livePositionsProfit !== 0) liveAccount.positionsProfit = livePositionsProfit;

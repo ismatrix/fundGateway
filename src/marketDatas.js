@@ -1,10 +1,12 @@
 import createDebug from 'debug';
-import fs from 'fs';
+import fsCb from 'fs';
 import path from 'path';
+import Promise from 'bluebird';
 import createMarketDataGateway from 'sw-datafeed-market-data-gateway';
 import { isEqual } from 'lodash';
 
 const debug = createDebug('marketDatas');
+const fs = Promise.promisifyAll(fsCb);
 
 const marketDataClients = [];
 
@@ -20,13 +22,14 @@ async function addMarketData(config) {
     if (existingClient) return;
 
     const sslCaCrtAbsolutePath = path.join(__dirname, sslCaCrtPath);
-    const sslCaCrt = fs.readFileSync(sslCaCrtAbsolutePath);
+    const sslCaCrt = await fs.readFileAsync(sslCaCrtAbsolutePath);
     const newMDGatewayClient = createMarketDataGateway({
       name,
       server,
       sslCaCrt,
       jwtoken,
     });
+    newMDGatewayClient.config = config;
     marketDataClients.push(newMDGatewayClient);
   } catch (error) {
     debug('Error addMarketData(): %o', error);

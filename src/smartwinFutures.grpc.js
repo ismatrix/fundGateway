@@ -2,14 +2,18 @@ import createDebug from 'debug';
 import grpcCan from './acl';
 import funds from './funds';
 
-const debug = createDebug('fund.grpc');
+const debug = createDebug('smartwinFutures.grpc');
+
+const serviceName = 'smartwinFutures';
 
 async function getOrders(call, callback) {
   try {
     debug('call.metadata %o', call.metadata.get('Authorization'));
     await grpcCan(call, 'read', 'getOrders');
 
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
     const orders = fund.getOrders();
     debug('orders %o', orders);
     callback(null, orders);
@@ -21,7 +25,9 @@ async function getOrders(call, callback) {
 
 async function getTrades(call, callback) {
   try {
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
     const trades = fund.getTrades();
     debug('trades %o', trades);
     callback(null, trades);
@@ -33,7 +39,9 @@ async function getTrades(call, callback) {
 
 async function getAccount(call, callback) {
   try {
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
     const account = fund.getAccount();
     debug('account %o', account);
     callback(null, account);
@@ -45,7 +53,9 @@ async function getAccount(call, callback) {
 
 async function getPositions(call, callback) {
   try {
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
     const positions = fund.getPositions();
     debug('positions %o', positions);
     callback(null, positions);
@@ -58,7 +68,8 @@ async function getPositions(call, callback) {
 
 async function getLiveAccount(call, callback) {
   try {
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
     const liveAccount = await fund.getLiveAccount();
     debug('liveAccount %o', liveAccount);
     callback(null, liveAccount);
@@ -70,9 +81,10 @@ async function getLiveAccount(call, callback) {
 
 async function getLivePositions(call, callback) {
   try {
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
     const livePositions = await fund.getLivePositions();
-    debug('livePositions %o', livePositions);
+    debug('livePositions %o', livePositions.map(({ instrumentid, positionprofit }) => ({ instrumentid, positionprofit })));
     callback(null, livePositions);
   } catch (error) {
     debug('Error getLivePositions(): %o', error);
@@ -82,7 +94,8 @@ async function getLivePositions(call, callback) {
 
 async function placeOrder(call, callback) {
   try {
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
 
     await fund.order(call.request);
 
@@ -95,7 +108,8 @@ async function placeOrder(call, callback) {
 
 async function cancelOrder(call, callback) {
   try {
-    const fund = funds.getFund(call.request.fundid);
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
 
     const instrumentid = call.request.instrumentid;
     const privateno = call.request.privateno;
@@ -112,7 +126,8 @@ async function cancelOrder(call, callback) {
 
 async function getOrderStream(stream) {
   try {
-    const fund = funds.getFund(stream.request.fundid);
+    const fundid = stream.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
 
     fund.on('order', (eventData) => {
       stream.write(eventData);
@@ -124,7 +139,8 @@ async function getOrderStream(stream) {
 
 async function getTradeStream(stream) {
   try {
-    const fund = funds.getFund(stream.request.fundid);
+    const fundid = stream.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
 
     fund.on('trade', (eventData) => {
       stream.write(eventData);
@@ -136,7 +152,8 @@ async function getTradeStream(stream) {
 
 async function getAccountStream(stream) {
   try {
-    const fund = funds.getFund(stream.request.fundid);
+    const fundid = stream.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
 
     fund.on('account', (eventData) => {
       stream.write(eventData);
@@ -148,8 +165,8 @@ async function getAccountStream(stream) {
 
 async function getPositionsStream(stream) {
   try {
-    const fund = funds.getFund(stream.request.fundid);
-    debug('getPositionsStream fund: %o', fund);
+    const fundid = stream.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
 
     fund.on('positions', (eventData) => {
       stream.write(eventData);

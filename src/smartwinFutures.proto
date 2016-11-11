@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package fundPackage;
+package smartwinFutures;
 
-service FundService {
+service SmartwinFutures {
   rpc GetOrders(GetOrders) returns (OrdersResponse) {}
   rpc GetTrades(GetTrades) returns (TradesResponse) {}
   rpc GetAccount(GetAccount) returns (Account) {}

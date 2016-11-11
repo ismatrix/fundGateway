@@ -35,7 +35,7 @@
     "jsonwebtoken": "^7.1.9",
     "lodash": "^4.16.6",
     "mongodb": "^2.2.10",
-    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.6",
+    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.8",
     "sw-datafeed-market-data-gateway": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-market-data-gateway.git#v1.0.0",
     "through2": "^2.0.1"
   }

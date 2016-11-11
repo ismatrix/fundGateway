@@ -5,24 +5,31 @@ const debug = createDebug('funds');
 
 const fundsArr = [];
 
-async function addFund(config) {
+const matchFund = newConfig => elem => (
+  elem.config.serviceName === newConfig.serviceName &&
+  elem.config.fundid === newConfig.fundid
+);
+
+async function addAndGetFund(config) {
   try {
-    if (fundsArr.map(elem => elem.config.fundid).includes(config.fundid)) return;
+    const existingFund = fundsArr.find(matchFund(config));
+    if (existingFund !== undefined) return existingFund;
 
     const newFund = createFund(config);
     newFund.config = config;
     await newFund.connect();
 
     fundsArr.push(newFund);
+    return newFund;
   } catch (error) {
     debug('Error addFund(): %o', error);
   }
 }
 
-function getFund(fundid) {
+function getFund(config) {
   try {
-    const theFund = fundsArr.find(elem => elem.fundid === fundid);
-    if (theFund !== undefined) return theFund;
+    const existingFund = fundsArr.find(matchFund(config));
+    if (existingFund !== undefined) return existingFund;
 
     throw new Error('fund not found');
   } catch (error) {
@@ -51,7 +58,7 @@ function getFundsPositions() {
 }
 
 const funds = {
-  addFund,
+  addAndGetFund,
   getFund,
   getFunds,
   getFundsPositions,

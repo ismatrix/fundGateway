@@ -1,6 +1,5 @@
 import createDebug from 'debug';
 import createBroker from './broker';
-import funds from './funds';
 import marketDatas from './marketDatas';
 
 export default function createFund(config) {
@@ -66,25 +65,26 @@ export default function createFund(config) {
     const getLivePositions = async function getLivePositions() {
       try {
         const positions = getPositions();
-        debug('positions %o', positions);
+
         const subs = positions.map(position => ({
           symbol: position.instrumentid,
           resolution: 'snapshot',
-          dataType: 'ticker',
+          dataType: 'dayBar',
         }));
-        debug('subs %o', subs);
-        const mdStore = await marketData.getLastTickersAsync(subs);
-        debug('mdStore %o', mdStore);
-        const symbols = positions.map(position => position.instrumentid);
+        debug('subs from positions %o', subs);
+        const mdStore = await marketData.getLastDayBarsAsync(subs);
+        debug('mdStore %o', mdStore.dayBars.map(({ symbol, price }) => ({ symbol, price })));
 
-        const instrumentSpecs = await marketData.getInstrumentsAsync(symbols);
+        const symbols = positions.map(position => position.instrumentid);
+        const instrumentsRes = await marketData.getInstrumentsAsync(symbols);
+        debug('instruments %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
 
         const livePositions = this.calcLivePositions({
           positions,
-          mdStore: mdStore.tickers,
-          instrumentSpecs: instrumentSpecs.instruments,
+          marketDatas: mdStore.dayBars,
+          instruments: instrumentsRes.instruments,
         });
-        debug('livePositions %o', livePositions);
+
         return livePositions;
       } catch (error) {
         debug('Error getLivePositions() %o', error);

@@ -12,7 +12,7 @@ const marketDataClients = [];
 
 async function addMarketData(config) {
   const {
-    name,
+    serviceName,
     server,
     jwtoken,
     sslCaCrtPath,
@@ -24,12 +24,12 @@ async function addMarketData(config) {
     const sslCaCrtAbsolutePath = path.join(__dirname, sslCaCrtPath);
     const sslCaCrt = await fs.readFileAsync(sslCaCrtAbsolutePath);
     const newMDGatewayClient = createMarketDataGateway({
-      name,
+      serviceName,
       server,
       sslCaCrt,
       jwtoken,
     });
-    newMDGatewayClient.config = config;
+
     marketDataClients.push(newMDGatewayClient);
   } catch (error) {
     debug('Error addMarketData(): %o', error);

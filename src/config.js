@@ -8,7 +8,7 @@ export const grpcConfig = {
 };
 
 const marketData = {
-  name: 'smartwinFutures',
+  serviceName: 'smartwinFutures',
   server: {
     ip: 'localhost',
     port: '50052',
@@ -20,6 +20,7 @@ const marketData = {
 export const fundConfigs = [
   {
     fundid: '068074',
+    serviceName: 'smartwinFutures',
     broker: {
       name: 'ice',
       server: {

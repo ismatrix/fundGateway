@@ -11,16 +11,12 @@ import {
   grpcConfig,
 } from './config';
 import funds from './funds';
-import marketDatas from './marketDatas';
 
 const grpcUrl = `${grpcConfig.ip}:${grpcConfig.port}`;
 const debug = createDebug(`app ${grpcUrl}`);
 
 async function init() {
   try {
-    await Promise.all([].concat(
-      fundConfigs.map(config => marketDatas.addMarketData(config.marketData)),
-    ));
     await Promise.all([].concat(
       mongodb.connect(mongodbUrl),
       fundConfigs.map(config => funds.addAndGetFund(config)),
@@ -49,11 +45,12 @@ async function main() {
     );
 
     const server = new grpc.Server();
+
     for (const config of fundConfigs) {
       debug('config %o', config);
       server.addProtoService(
         fundProto[config.serviceName][upperFirst(config.serviceName)].service,
-        fundGatewayGrpc[config.serviceName],
+        fundGatewayGrpc[config.serviceName](config),
       );
     }
 

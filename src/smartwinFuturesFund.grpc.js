@@ -4,7 +4,7 @@ import funds from './funds';
 
 const debug = createDebug('smartwinFutures.grpc');
 
-const serviceName = 'smartwinFutures';
+let serviceName;
 
 async function getOrders(call, callback) {
   try {
@@ -124,6 +124,19 @@ async function cancelOrder(call, callback) {
   }
 }
 
+async function getTradingday(call, callback) {
+  try {
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+    const tradingday = await fund.getTradingday();
+
+    callback(null, { tradingday });
+  } catch (error) {
+    debug('Error getTradingday(): %o', error);
+    callback(error);
+  }
+}
+
 async function getOrderStream(stream) {
   try {
     const fundid = stream.request.fundid;
@@ -176,7 +189,20 @@ async function getPositionsStream(stream) {
   }
 }
 
-const fundMethods = {
+async function getTradingdayStream(stream) {
+  try {
+    const fundid = stream.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
+    fund.on('tradingday', (tradingday) => {
+      stream.write({ tradingday });
+    });
+  } catch (error) {
+    debug('Error getTradingdayStream(): %o', error);
+  }
+}
+
+const fundGrpcInterface = {
   getOrders,
   getTrades,
   getAccount,
@@ -188,10 +214,20 @@ const fundMethods = {
   placeOrder,
   cancelOrder,
 
+  getTradingday,
+
   getOrderStream,
   getTradeStream,
   getAccountStream,
   getPositionsStream,
+  getTradingdayStream,
 };
 
-export default fundMethods;
+export default function createGrpcInterface(config) {
+  try {
+    serviceName = config.serviceName;
+    return fundGrpcInterface;
+  } catch (error) {
+    debug('Error createGrpcInterface %o', error);
+  }
+}

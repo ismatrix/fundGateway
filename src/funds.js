@@ -1,5 +1,7 @@
 import createDebug from 'debug';
-import createFund from './fund';
+import createBroker from './broker';
+import marketDatas from './marketDatas';
+import createSmartwinFuturesFund from './smartwinFutures.fund';
 
 const debug = createDebug('funds');
 
@@ -15,9 +17,20 @@ async function addAndGetFund(config) {
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 
-    const newFund = createFund(config);
-    newFund.config = config;
-    await newFund.connect();
+    const marketData = await marketDatas.addAndGetMarketData(config.marketData);
+    const broker = createBroker(config);
+
+    let newFund;
+
+    switch (config.serviceName) {
+      case 'smartwinFuturesFund':
+        newFund = createSmartwinFuturesFund(config, broker, marketData);
+        break;
+      default:
+        throw new Error('No fund interface for this serviceName');
+    }
+
+    await newFund.init();
 
     fundsArr.push(newFund);
     return newFund;
@@ -28,12 +41,15 @@ async function addAndGetFund(config) {
 
 function getFund(config) {
   try {
+    // fundsArr.map(elem => debug(elem.config));
+    debug('1 test');
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 
     throw new Error('fund not found');
   } catch (error) {
     debug('Error getFund(): %o', error);
+    throw error;
   }
 }
 

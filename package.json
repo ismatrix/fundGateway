@@ -1,6 +1,6 @@
 {
   "name": "fund-gateway",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Provide access to fund informations",
   "main": "dist/app",
   "scripts": {
@@ -35,8 +35,8 @@
     "jsonwebtoken": "^7.1.9",
     "lodash": "^4.16.6",
     "mongodb": "^2.2.10",
-    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.8",
-    "sw-datafeed-market-data-gateway": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-market-data-gateway.git#v1.0.0",
+    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.9",
+    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.1",
     "through2": "^2.0.1"
   }
 }

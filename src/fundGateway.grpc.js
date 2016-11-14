@@ -1,7 +1,7 @@
-import smartwinFutures from './smartwinFutures.grpc';
+import smartwinFuturesFund from './smartwinFuturesFund.grpc';
 
 const fundGatewayServices = {
-  smartwinFutures,
+  smartwinFuturesFund,
 };
 
 export default fundGatewayServices;

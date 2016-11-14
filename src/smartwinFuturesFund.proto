@@ -1,58 +1,37 @@
 syntax = "proto3";
 
-package smartwinFutures;
+package smartwinFuturesFund;
 
-service SmartwinFutures {
-  rpc GetOrders(GetOrders) returns (OrdersResponse) {}
-  rpc GetTrades(GetTrades) returns (TradesResponse) {}
-  rpc GetAccount(GetAccount) returns (Account) {}
-  rpc GetPositions(GetPositions) returns (PositionsResponse) {}
+service SmartwinFuturesFund {
+  rpc GetOrders(Fund) returns (OrdersResponse) {}
+  rpc GetTrades(Fund) returns (TradesResponse) {}
+  rpc GetAccount(Fund) returns (Account) {}
+  rpc GetPositions(Fund) returns (PositionsResponse) {}
 
-  rpc GetLiveAccount(GetAccount) returns (Account) {}
-  rpc GetLivePositions(GetPositions) returns (PositionsResponse) {}
+  rpc GetLiveAccount(Fund) returns (Account) {}
+  rpc GetLivePositions(Fund) returns (PositionsResponse) {}
 
   rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
 
-  rpc GetOrderStream(SubscribeOrder) returns (stream Order) {}
-  rpc GetTradeStream(SubscribeTrade) returns (stream Trade) {}
-  rpc GetAccountStream(SubscribeAccount) returns (stream Account) {}
-  rpc GetPositionsStream(SubscribePositions) returns (stream PositionsResponse) {}
+  rpc GetTradingday(Fund) returns (TradingdayResponse) {}
+
+  rpc GetOrderStream(Fund) returns (stream Order) {}
+  rpc GetTradeStream(Fund) returns (stream Trade) {}
+  rpc GetAccountStream(Fund) returns (stream Account) {}
+  rpc GetPositionsStream(Fund) returns (stream PositionsResponse) {}
+  rpc GetTradingdayStream(Fund) returns (stream TradingdayResponse) {}
 }
 
 message Empty {
 }
 
-message GetOrders {
+message Fund {
   string fundid = 1;
 }
 
-message GetTrades {
-  string fundid = 1;
-}
-
-message GetAccount {
-  string fundid = 1;
-}
-
-message GetPositions {
-  string fundid = 1;
-}
-
-message SubscribeOrder {
-  string fundid = 1;
-}
-
-message SubscribeTrade {
-  string fundid = 1;
-}
-
-message SubscribeAccount {
-  string fundid = 1;
-}
-
-message SubscribePositions {
-  string fundid = 1;
+message TradingdayResponse {
+  string tradingday = 1;
 }
 
 message OrdersResponse {

@@ -1,15 +1,12 @@
 import createDebug from 'debug';
-import createBroker from './broker';
-import marketDatas from './marketDatas';
 
-export default function createFund(config) {
+export default function createSmartwinFuturesFund(config, broker, marketData) {
   const {
     fundid,
+    serviceName,
   } = config;
-  const debug = createDebug(`${fundid}@fund`);
+  const debug = createDebug(`${fundid}@${serviceName}.fund`);
   debug('config %o', config);
-
-  const marketData = marketDatas.getMarketData(config.marketData);
 
   try {
     const ordersStore = [];
@@ -17,7 +14,6 @@ export default function createFund(config) {
     let accountStore = {};
     let positionsStore = [];
 
-    const broker = createBroker(config);
     broker
       .on('order', (data) => { ordersStore.push(data); })
       .on('trade', (data) => { tradesStore.push(data); })
@@ -25,6 +21,14 @@ export default function createFund(config) {
       .on('positions', (data) => {
         positionsStore = data;
       });
+
+    const init = async () => {
+      try {
+        broker.connect();
+      } catch (error) {
+        debug('Error init() %o', error);
+      }
+    };
 
     const getOrders = () => {
       try {
@@ -69,19 +73,23 @@ export default function createFund(config) {
         const subs = positions.map(position => ({
           symbol: position.instrumentid,
           resolution: 'snapshot',
-          dataType: 'dayBar',
+          dataType: 'marketDepth',
         }));
         debug('subs from positions %o', subs);
-        const mdStore = await marketData.getLastDayBarsAsync(subs);
-        debug('mdStore %o', mdStore.dayBars.map(({ symbol, price }) => ({ symbol, price })));
+        const mdStore = await marketData.getLastMarketDepths(subs);
+        debug('mdStore %o', mdStore);
+
+        if ('marketDepths' in mdStore) {
+          debug('mdStore %o', mdStore.marketDepths.map(({ symbol, price }) => ({ symbol, price })));
+        }
 
         const symbols = positions.map(position => position.instrumentid);
-        const instrumentsRes = await marketData.getInstrumentsAsync(symbols);
+        const instrumentsRes = await marketData.getInstruments(symbols);
         debug('instruments %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
 
         const livePositions = this.calcLivePositions({
           positions,
-          marketDatas: mdStore.dayBars,
+          marketDatas: mdStore.marketDepths,
           instruments: instrumentsRes.instruments,
         });
 
@@ -101,7 +109,9 @@ export default function createFund(config) {
     };
 
     const fundBase = {
+      config,
       fundid,
+      init,
       getOrders,
       getTrades,
       getAccount,
@@ -112,6 +122,6 @@ export default function createFund(config) {
     const fund = Object.assign(Object.create(broker), fundBase);
     return fund;
   } catch (error) {
-    debug('Error createFund(): %o', error);
+    debug('Error createSmartwinFuturesFund(): %o', error);
   }
 }

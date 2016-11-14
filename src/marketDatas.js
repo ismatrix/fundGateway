@@ -2,15 +2,18 @@ import createDebug from 'debug';
 import fsCb from 'fs';
 import path from 'path';
 import Promise from 'bluebird';
-import createMarketDataGateway from 'sw-datafeed-market-data-gateway';
-import { isEqual } from 'lodash';
+import createGrpcClient from 'sw-grpc-client';
 
 const debug = createDebug('marketDatas');
 const fs = Promise.promisifyAll(fsCb);
 
 const marketDataClients = [];
 
-async function addMarketData(config) {
+const matchMarketDataClient = newConfig => elem => (
+  elem.config.serviceName === newConfig.serviceName
+);
+
+async function addAndGetMarketData(config) {
   const {
     serviceName,
     server,
@@ -18,12 +21,12 @@ async function addMarketData(config) {
     sslCaCrtPath,
   } = config;
   try {
-    const existingClient = marketDataClients.find(mdClient => isEqual(mdClient.config, config));
-    if (existingClient) return;
+    const existingClient = marketDataClients.find(matchMarketDataClient(config));
+    if (existingClient !== undefined) return existingClient;
 
     const sslCaCrtAbsolutePath = path.join(__dirname, sslCaCrtPath);
     const sslCaCrt = await fs.readFileAsync(sslCaCrtAbsolutePath);
-    const newMDGatewayClient = createMarketDataGateway({
+    const newMDGatewayClient = createGrpcClient({
       serviceName,
       server,
       sslCaCrt,
@@ -31,6 +34,7 @@ async function addMarketData(config) {
     });
 
     marketDataClients.push(newMDGatewayClient);
+    return newMDGatewayClient;
   } catch (error) {
     debug('Error addMarketData(): %o', error);
   }
@@ -38,8 +42,8 @@ async function addMarketData(config) {
 
 function getMarketData(config) {
   try {
-    const existingClient = marketDataClients.find(mdClient => isEqual(mdClient.config, config));
-    if (existingClient) return existingClient;
+    const existingClient = marketDataClients.find(matchMarketDataClient(config));
+    if (existingClient !== undefined) return existingClient;
 
     throw new Error('marketDataClient not found');
   } catch (error) {
@@ -48,7 +52,7 @@ function getMarketData(config) {
 }
 
 const marketDatas = {
-  addMarketData,
+  addAndGetMarketData,
   getMarketData,
 };
 

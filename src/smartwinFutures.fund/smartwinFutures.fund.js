@@ -1,4 +1,5 @@
 import createDebug from 'debug';
+import calculations from 'sw-fund-smartwin-futures-calculations';
 
 export default function createSmartwinFuturesFund(config, broker, marketData) {
   const {
@@ -87,10 +88,19 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const instrumentsRes = await marketData.getInstruments(symbols);
         debug('instruments %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
 
-        const livePositions = this.calcLivePositions({
-          positions,
-          marketDatas: mdStore.marketDepths,
-          instruments: instrumentsRes.instruments,
+        const livePositions = positions.map((position) => {
+          const marketDepth = mdStore.marketDepths.find(
+            elem => elem.symbol === position.instrumentid);
+          // debug('marketData %o', marketData);
+          const instrument = instrumentsRes.instruments.find(
+            elem => elem.instrumentid === position.instrumentid);
+          // debug('instrument %o', instrument);
+          if (marketData && instrument) {
+            position.positionprofit = calculations.calcPositionProfit(
+              position, marketDepth, instrument);
+          }
+
+          return position;
         });
 
         return livePositions;
@@ -103,6 +113,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       const livePositions = await getLivePositions();
       const livePositionsProfit = livePositions
         .reduce((acc, cur) => acc + cur.positionprofit, 0);
+
       const liveAccount = getLiveAccount();
       if (livePositionsProfit !== 0) liveAccount.positionsProfit = livePositionsProfit;
       return liveAccount;

@@ -8,14 +8,14 @@ npm install
 
 ## Dev
 ```
-DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --name fundGateway
+DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --name fundGateway -- --credentials-name invesmart.win
 pm2 logs fundGateway
 ```
 
 ## Prod
 ```
 npm run compile
-DEBUG=*,-babel DEBUG_COLORS=true pm2 start dist/app.js --name fundGateway
+DEBUG=*,-babel DEBUG_COLORS=true pm2 start dist/app.js --name fundGateway -- --credentials-name invesmart.win
 ```
 
 ## gRPC SSL credentials

@@ -1,10 +1,10 @@
 import createDebug from 'debug';
 import grpcCan from './acl';
-import funds from './funds';
 
 const debug = createDebug('smartwinFutures.grpc');
 
 let serviceName;
+let funds;
 
 async function getOrders(call, callback) {
   try {
@@ -223,9 +223,10 @@ const fundGrpcInterface = {
   getTradingdayStream,
 };
 
-export default function createGrpcInterface(config) {
+export default function createGrpcInterface(config, fundsModule) {
   try {
     serviceName = config.serviceName;
+    funds = fundsModule;
     return fundGrpcInterface;
   } catch (error) {
     debug('Error createGrpcInterface %o', error);

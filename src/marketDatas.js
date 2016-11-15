@@ -24,8 +24,11 @@ async function addAndGetMarketData(config) {
     const existingClient = marketDataClients.find(matchMarketDataClient(config));
     if (existingClient !== undefined) return existingClient;
 
-    const sslCaCrtAbsolutePath = path.join(__dirname, sslCaCrtPath);
-    const sslCaCrt = await fs.readFileAsync(sslCaCrtAbsolutePath);
+    let sslCaCrt;
+    if (typeof sslCaCrtPath === 'string') {
+      const sslCaCrtAbsolutePath = path.join(__dirname, sslCaCrtPath);
+      sslCaCrt = await fs.readFileAsync(sslCaCrtAbsolutePath);
+    }
     const newMDGatewayClient = createGrpcClient({
       serviceName,
       server,

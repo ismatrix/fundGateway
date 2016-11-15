@@ -57,7 +57,7 @@ async function main() {
       debug('config %o', config);
       server.addProtoService(
         fundProto[config.serviceName][upperFirst(config.serviceName)].service,
-        fundGatewayGrpc[config.serviceName](config),
+        fundGatewayGrpc[config.serviceName](config, funds),
       );
     }
 

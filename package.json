@@ -37,7 +37,7 @@
     "lodash": "^4.16.6",
     "mongodb": "^2.2.10",
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.9",
-    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.1",
+    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.4",
     "through2": "^2.0.1"
   }
 }

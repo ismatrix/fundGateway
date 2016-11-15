@@ -3,13 +3,13 @@ import grpc from 'grpc';
 import NodeAclCb from 'acl';
 import jwtCb from 'jsonwebtoken';
 import Promise from 'bluebird';
-import { jwtSecret } from './config';
 
 const debug = createDebug('acl');
 const NodeAcl = Promise.promisifyAll(NodeAclCb);
 const jwt = Promise.promisifyAll(jwtCb);
 const acl = new NodeAcl(new NodeAcl.memoryBackend());
 
+const jwtSecret = 'Ci23fWtahDYE3dfirAHrJhzrUEoslIxqwcDN9VNhRJCWf8Tyc1F1mqYrjGYF';
 // Departments permissions
 acl.allow([
   {

@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import createBroker from './broker';
 import marketDatas from './marketDatas';
-import createSmartwinFuturesFund from './smartwinFutures.fund';
+import createSmartwinFuturesFund from './smartwinFutures.fund/smartwinFutures.fund';
 
 const debug = createDebug('funds');
 
@@ -41,8 +41,11 @@ async function addAndGetFund(config) {
 
 function getFund(config) {
   try {
-    // fundsArr.map(elem => debug(elem.config));
-    debug('1 test');
+    const {
+      serviceName,
+      fundid,
+    } = config;
+    debug('getFund(%o)', { serviceName, fundid });
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 

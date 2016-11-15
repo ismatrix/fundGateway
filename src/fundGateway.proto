@@ -1,1 +1,1 @@
-import "smartwinFuturesFund.proto";
+import "smartwinFutures.fund/smartwinFutures.fund.proto";

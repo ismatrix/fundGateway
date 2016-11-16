@@ -29,59 +29,81 @@ export const fundConfigs = [
     },
     marketData,
   },
-  // {
-  //   fundid: '1248',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '120.76.98.94',
-  //       port: '20001',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '3000380',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20001',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '50202303',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20025',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '1339',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20007',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '222959',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20018',
-  //     },
-  //   },
-  //   marketData,
-  // },
+  {
+    fundid: '1248',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '120.76.98.94',
+        port: '20001',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '3000380',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20005',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '0292',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20027',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '1160020',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20024',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '222959',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20023',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '1285',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20018',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '1448',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20020',
+      },
+    },
+    marketData,
+  },
 ];

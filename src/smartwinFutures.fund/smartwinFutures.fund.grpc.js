@@ -1,5 +1,4 @@
 import createDebug from 'debug';
-import grpc from 'grpc';
 import grpcCan from './acl';
 
 const debug = createDebug('smartwinFutures.grpc');

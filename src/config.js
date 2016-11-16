@@ -84,17 +84,17 @@ export const fundConfigs = [
     },
     marketData,
   },
-  {
-    fundid: '1285',
-    broker: {
-      name: 'ice',
-      server: {
-        ip: '127.0.0.1',
-        port: '20018',
-      },
-    },
-    marketData,
-  },
+  // {
+  //   fundid: '1285',
+  //   broker: {
+  //     name: 'ice',
+  //     server: {
+  //       ip: '127.0.0.1',
+  //       port: '20018',
+  //     },
+  //   },
+  //   marketData,
+  // },
   {
     fundid: '1448',
     broker: {

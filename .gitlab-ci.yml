@@ -26,9 +26,10 @@ deploy:
     - cd /home/ops/production/fundGateway
     - git checkout master
     - git reset --hard HEAD
-    - rm -Rf dist
+    - git clean -f -d
     - git pull
     - npm --registry=https://registry.npm.taobao.org install
+    - rm -Rf dist
     - npm run compile
     - pm2 restart fundGateway
   only:

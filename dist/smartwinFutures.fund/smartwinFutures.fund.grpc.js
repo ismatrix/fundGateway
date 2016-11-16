@@ -10,7 +10,9 @@ let getOrders = (() => {
       debug('call.metadata %o', call.metadata.get('Authorization'));
       yield (0, _acl2.default)(call, 'read', 'getOrders');
 
-      const fund = _funds2.default.getFund(call.request.fundid);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+
       const orders = fund.getOrders();
       debug('orders %o', orders);
       callback(null, orders);
@@ -28,7 +30,9 @@ let getOrders = (() => {
 let getTrades = (() => {
   var _ref2 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(call.request.fundid);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+
       const trades = fund.getTrades();
       debug('trades %o', trades);
       callback(null, trades);
@@ -46,7 +50,9 @@ let getTrades = (() => {
 let getAccount = (() => {
   var _ref3 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(call.request.fundid);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+
       const account = fund.getAccount();
       debug('account %o', account);
       callback(null, account);
@@ -64,7 +70,9 @@ let getAccount = (() => {
 let getPositions = (() => {
   var _ref4 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(call.request.fundid);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+
       const positions = fund.getPositions();
       debug('positions %o', positions);
       callback(null, positions);
@@ -82,9 +90,10 @@ let getPositions = (() => {
 let getLiveAccount = (() => {
   var _ref5 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(call.request.fundid);
-      const liveAccount = fund.getLiveAccount();
-      debug('getLiveAccount %o', liveAccount);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+      const liveAccount = yield fund.getLiveAccount();
+      debug('liveAccount %o', liveAccount);
       callback(null, liveAccount);
     } catch (error) {
       debug('Error getLiveAccount(): %o', error);
@@ -100,9 +109,12 @@ let getLiveAccount = (() => {
 let getLivePositions = (() => {
   var _ref6 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(call.request.fundid);
-      const livePositions = fund.getlivePositions();
-      debug('getLiveAccount %o', livePositions);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+      const livePositions = yield fund.getLivePositions();
+      debug('livePositions %o', livePositions.map(function ({ instrumentid, positionprofit }) {
+        return { instrumentid, positionprofit };
+      }));
       callback(null, livePositions);
     } catch (error) {
       debug('Error getLivePositions(): %o', error);
@@ -118,7 +130,8 @@ let getLivePositions = (() => {
 let placeOrder = (() => {
   var _ref7 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(call.request.fundid);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
 
       yield fund.order(call.request);
 
@@ -137,13 +150,15 @@ let placeOrder = (() => {
 let cancelOrder = (() => {
   var _ref8 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(call.request.fundid);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
 
+      const sessionid = call.request.sessionid;
       const instrumentid = call.request.instrumentid;
       const privateno = call.request.privateno;
-      const orderid = call.request.orderid;
+      const orderno = call.request.orderno;
 
-      yield fund.cancelOrder(instrumentid, privateno, orderid);
+      yield fund.cancelOrder(sessionid, instrumentid, privateno, orderno);
 
       callback(null, {});
     } catch (error) {
@@ -157,78 +172,121 @@ let cancelOrder = (() => {
   };
 })();
 
-let subscribeOrder = (() => {
-  var _ref9 = _asyncToGenerator(function* (stream) {
+let getTradingday = (() => {
+  var _ref9 = _asyncToGenerator(function* (call, callback) {
     try {
-      const fund = _funds2.default.getFund(stream.request.fundid);
+      const fundid = call.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+      const tradingday = yield fund.getTradingday();
+
+      callback(null, { tradingday });
+    } catch (error) {
+      debug('Error getTradingday(): %o', error);
+      callback(error);
+    }
+  });
+
+  return function getTradingday(_x17, _x18) {
+    return _ref9.apply(this, arguments);
+  };
+})();
+
+let getOrderStream = (() => {
+  var _ref10 = _asyncToGenerator(function* (stream) {
+    try {
+      const fundid = stream.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
 
       fund.on('order', function (eventData) {
         stream.write(eventData);
       });
     } catch (error) {
-      debug('Error subscribeOrder(): %o', error);
+      debug('Error getOrderStream(): %o', error);
     }
   });
 
-  return function subscribeOrder(_x17) {
-    return _ref9.apply(this, arguments);
+  return function getOrderStream(_x19) {
+    return _ref10.apply(this, arguments);
   };
 })();
 
-let subscribeTrade = (() => {
-  var _ref10 = _asyncToGenerator(function* (stream) {
+let getTradeStream = (() => {
+  var _ref11 = _asyncToGenerator(function* (stream) {
     try {
-      const fund = _funds2.default.getFund(stream.request.fundid);
+      const fundid = stream.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
 
       fund.on('trade', function (eventData) {
         stream.write(eventData);
       });
     } catch (error) {
-      debug('Error subscribeTrade(): %o', error);
+      debug('Error getTradeStream(): %o', error);
     }
   });
 
-  return function subscribeTrade(_x18) {
-    return _ref10.apply(this, arguments);
+  return function getTradeStream(_x20) {
+    return _ref11.apply(this, arguments);
   };
 })();
 
-let subscribeAccount = (() => {
-  var _ref11 = _asyncToGenerator(function* (stream) {
+let getAccountStream = (() => {
+  var _ref12 = _asyncToGenerator(function* (stream) {
     try {
-      const fund = _funds2.default.getFund(stream.request.fundid);
+      const fundid = stream.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
 
       fund.on('account', function (eventData) {
         stream.write(eventData);
       });
     } catch (error) {
-      debug('Error subscribeAccount(): %o', error);
+      debug('Error getAccountStream(): %o', error);
     }
   });
 
-  return function subscribeAccount(_x19) {
-    return _ref11.apply(this, arguments);
+  return function getAccountStream(_x21) {
+    return _ref12.apply(this, arguments);
   };
 })();
 
-let subscribePositions = (() => {
-  var _ref12 = _asyncToGenerator(function* (stream) {
+let getPositionsStream = (() => {
+  var _ref13 = _asyncToGenerator(function* (stream) {
     try {
-      const fund = _funds2.default.getFund(stream.request.fundid);
-      debug('subscribePositions fund: %o', fund);
+      const fundid = stream.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
 
       fund.on('positions', function (eventData) {
         stream.write(eventData);
       });
     } catch (error) {
-      debug('Error subscribePositions(): %o', error);
+      debug('Error getPositionsStream(): %o', error);
     }
   });
 
-  return function subscribePositions(_x20) {
-    return _ref12.apply(this, arguments);
+  return function getPositionsStream(_x22) {
+    return _ref13.apply(this, arguments);
   };
 })();
+
+let getTradingdayStream = (() => {
+  var _ref14 = _asyncToGenerator(function* (stream) {
+    try {
+      const fundid = stream.request.fundid;
+      const fund = funds.getFund({ serviceName, fundid });
+
+      fund.on('tradingday', function (tradingday) {
+        stream.write({ tradingday });
+      });
+    } catch (error) {
+      debug('Error getTradingdayStream(): %o', error);
+    }
+  });
+
+  return function getTradingdayStream(_x23) {
+    return _ref14.apply(this, arguments);
+  };
+})();
+
+exports.default = createGrpcInterface;
 
 var _debug = require('debug');
 
@@ -238,29 +296,42 @@ var _acl = require('./acl');
 
 var _acl2 = _interopRequireDefault(_acl);
 
-var _funds = require('./funds');
-
-var _funds2 = _interopRequireDefault(_funds);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const debug = (0, _debug2.default)('grpcFundMethods');
+const debug = (0, _debug2.default)('smartwinFutures.grpc');
 
-const fundMethods = {
+let serviceName;
+let funds;
+
+const fundGrpcInterface = {
   getOrders,
   getTrades,
   getAccount,
   getPositions,
+
   getLiveAccount,
   getLivePositions,
+
   placeOrder,
   cancelOrder,
-  subscribeOrder,
-  subscribeTrade,
-  subscribeAccount,
-  subscribePositions
+
+  getTradingday,
+
+  getOrderStream,
+  getTradeStream,
+  getAccountStream,
+  getPositionsStream,
+  getTradingdayStream
 };
 
-exports.default = fundMethods;
+function createGrpcInterface(config, fundsModule) {
+  try {
+    serviceName = config.serviceName;
+    funds = fundsModule;
+    return fundGrpcInterface;
+  } catch (error) {
+    debug('Error createGrpcInterface %o', error);
+  }
+}

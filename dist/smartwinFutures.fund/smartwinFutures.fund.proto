@@ -58,13 +58,12 @@ message PlaceOrder {
   double price = 9; // 委托价格
   int32 volume = 10; // 委托数量
   string donetype = 11; // 成交类型		[ "0", "GFD当日有效" ], [ "1", "FOK限价全成或全撤" ], [ "2", "FAK限价立即成交剩余撤销" ], [ "3", "IOC立即成交剩余自动撤销" ]  0 2 3有效。 2=3
-  int32 seq = 12;
-  string parentid	= 13; // 父基金帐号    */
-  string strategyid = 14; // 策略标识      */
-  string userid	= 15; // 操作人员标识  */
-  string signalname	= 16; // "signal.name",*/
-  string tradingday = 17;
-  string requestid = 18;
+  string parentid		 = 12; // 父基金帐号    */
+  string strategyid	 = 13; // 策略标识      */
+  string userid		 = 14; // 操作人员标识  */
+  string signalname	 = 15; // "signal.name",*/
+  string tradingday = 16;
+  string requestid = 17;
 }
 
 message CancelOrder {
@@ -72,7 +71,7 @@ message CancelOrder {
   string sessionid = 2;
   string instrumentid = 3;
   string privateno = 4;
-  string orderid = 5;
+  string orderno = 5;
 }
 
 message Order {

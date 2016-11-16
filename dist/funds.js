@@ -4,27 +4,35 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-let addFund = (() => {
+let addAndGetFund = (() => {
   var _ref = _asyncToGenerator(function* (config) {
     try {
-      const {
-        fundid
-      } = config;
+      const existingFund = fundsArr.find(matchFund(config));
+      if (existingFund !== undefined) return existingFund;
 
-      if (fundsArr.map(function (elem) {
-        return elem.fundid;
-      }).includes(fundid)) return;
+      const marketData = yield _marketDatas2.default.addAndGetMarketData(config.marketData);
+      const broker = (0, _broker2.default)(config);
 
-      const newFund = (0, _fund2.default)(config);
-      newFund.config = config;
+      let newFund;
+
+      switch (config.serviceName) {
+        case 'smartwinFuturesFund':
+          newFund = (0, _smartwinFutures2.default)(config, broker, marketData);
+          break;
+        default:
+          throw new Error('No fund interface for this serviceName');
+      }
+
+      yield newFund.init();
 
       fundsArr.push(newFund);
+      return newFund;
     } catch (error) {
       debug('Error addFund(): %o', error);
     }
   });
 
-  return function addFund(_x) {
+  return function addAndGetFund(_x) {
     return _ref.apply(this, arguments);
   };
 })();
@@ -33,13 +41,17 @@ var _debug = require('debug');
 
 var _debug2 = _interopRequireDefault(_debug);
 
-var _fund = require('./fund');
+var _broker = require('./broker');
 
-var _fund2 = _interopRequireDefault(_fund);
+var _broker2 = _interopRequireDefault(_broker);
 
-var _marketData = require('./marketData');
+var _marketDatas = require('./marketDatas');
 
-var _marketData2 = _interopRequireDefault(_marketData);
+var _marketDatas2 = _interopRequireDefault(_marketDatas);
+
+var _smartwinFutures = require('./smartwinFutures.fund/smartwinFutures.fund');
+
+var _smartwinFutures2 = _interopRequireDefault(_smartwinFutures);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -49,14 +61,22 @@ const debug = (0, _debug2.default)('funds');
 
 const fundsArr = [];
 
-function getFund(fundid) {
+const matchFund = newConfig => elem => elem.config.serviceName === newConfig.serviceName && elem.config.fundid === newConfig.fundid;
+
+function getFund(config) {
   try {
-    const theFund = fundsArr.find(elem => elem.fundid === fundid);
-    if (theFund !== undefined) return theFund;
+    const {
+      serviceName,
+      fundid
+    } = config;
+    debug('getFund(%o)', { serviceName, fundid });
+    const existingFund = fundsArr.find(matchFund(config));
+    if (existingFund !== undefined) return existingFund;
 
     throw new Error('fund not found');
   } catch (error) {
     debug('Error getFund(): %o', error);
+    throw error;
   }
 }
 
@@ -78,37 +98,11 @@ function getFundsPositions() {
   }
 }
 
-function allPositionsToMdSubscriptions() {
-  try {
-    const allFundsPositions = getFundsPositions();
-    debug('allFundsPositions %o', allFundsPositions);
-
-    const allUniqueSymbols = allFundsPositions.map(elem => elem.instrumentid).filter((symbol, index, arr) => arr.indexOf(symbol) === index);
-    debug('allUniqueSymbols %o', allUniqueSymbols);
-
-    const needUnsubscribeSymbols = allUniqueSymbols.filter(symbol => !allFundsPositions.filter(fund => fund.instrumentid === symbol).reduce((acc, cur) => acc + cur.position, 0));
-    debug('needUnsubscribeSymbols: %o', needUnsubscribeSymbols);
-    needUnsubscribeSymbols.map(symbol => _marketData2.default.unsubscribe({
-      symbol,
-      resolution: 'tick'
-    }));
-
-    const needSubscribeSymbols = allUniqueSymbols.filter(symbol => !needUnsubscribeSymbols.includes(symbol));
-    debug('needSubscribeSymbols: %o', needSubscribeSymbols);
-    needSubscribeSymbols.map(symbol => _marketData2.default.subscribe({
-      symbol,
-      resolution: 'tick'
-    }));
-  } catch (error) {
-    debug('Error allPositionsToMdSubscriptions(): %o', error);
-  }
-}
-
 const funds = {
+  addAndGetFund,
   getFund,
   getFunds,
-  addFund,
-  allPositionsToMdSubscriptions
+  getFundsPositions
 };
 
 exports.default = funds;

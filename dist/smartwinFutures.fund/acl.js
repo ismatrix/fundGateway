@@ -26,7 +26,7 @@ let can = (() => {
 let grpcCan = (() => {
   var _ref2 = _asyncToGenerator(function* (ctx, permissions, resource) {
     try {
-      const user = yield jwt.verifyAsync(ctx.metadata.get('Authorization')[0], _config.jwtSecret);
+      const user = yield jwt.verifyAsync(ctx.metadata.get('Authorization')[0], jwtSecret);
 
       const roles = user.dpt ? user.dpt.concat(user.userid) : [].concat(user.userid);
       debug(roles);
@@ -71,8 +71,6 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var _config = require('./config');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -82,6 +80,7 @@ const NodeAcl = _bluebird2.default.promisifyAll(_acl2.default);
 const jwt = _bluebird2.default.promisifyAll(_jsonwebtoken2.default);
 const acl = new NodeAcl(new NodeAcl.memoryBackend());
 
+const jwtSecret = 'Ci23fWtahDYE3dfirAHrJhzrUEoslIxqwcDN9VNhRJCWf8Tyc1F1mqYrjGYF';
 // Departments permissions
 acl.allow([{
   roles: ['系统部'],

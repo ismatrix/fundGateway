@@ -1,4 +1,5 @@
 import createDebug from 'debug';
+import grpc from 'grpc';
 import grpcCan from './acl';
 
 const debug = createDebug('smartwinFutures.grpc');
@@ -97,6 +98,7 @@ async function placeOrder(call, callback) {
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
+    delete call.request.fundid;
     await fund.order(call.request);
 
     callback(null, {});
@@ -111,11 +113,12 @@ async function cancelOrder(call, callback) {
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
+    const sessionid = call.request.sessionid;
     const instrumentid = call.request.instrumentid;
     const privateno = call.request.privateno;
     const orderid = call.request.orderid;
 
-    await fund.cancelOrder(instrumentid, privateno, orderid);
+    await fund.cancelOrder(sessionid, instrumentid, privateno, orderid);
 
     callback(null, {});
   } catch (error) {
@@ -147,6 +150,7 @@ async function getOrderStream(stream) {
     });
   } catch (error) {
     debug('Error getOrderStream(): %o', error);
+    stream.emit('error', error);
   }
 }
 
@@ -160,6 +164,7 @@ async function getTradeStream(stream) {
     });
   } catch (error) {
     debug('Error getTradeStream(): %o', error);
+    stream.emit('error', error);
   }
 }
 
@@ -173,6 +178,7 @@ async function getAccountStream(stream) {
     });
   } catch (error) {
     debug('Error getAccountStream(): %o', error);
+    stream.emit('error', error);
   }
 }
 
@@ -186,6 +192,7 @@ async function getPositionsStream(stream) {
     });
   } catch (error) {
     debug('Error getPositionsStream(): %o', error);
+    stream.emit('error', error);
   }
 }
 
@@ -199,6 +206,7 @@ async function getTradingdayStream(stream) {
     });
   } catch (error) {
     debug('Error getTradingdayStream(): %o', error);
+    stream.emit('error', error);
   }
 }
 

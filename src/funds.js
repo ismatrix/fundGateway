@@ -35,7 +35,7 @@ async function addAndGetFund(config) {
     fundsArr.push(newFund);
     return newFund;
   } catch (error) {
-    debug('Error addFund(): %o', error);
+    debug('Error addAndGetFund(): %o', error);
   }
 }
 
@@ -49,7 +49,7 @@ function getFund(config) {
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 
-    throw new Error('fund %o@%o not found', fundid, serviceName);
+    throw new Error(`fund %${fundid}@${serviceName} not found`);
   } catch (error) {
     debug('Error getFund(): %o', error);
     throw error;

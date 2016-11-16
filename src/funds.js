@@ -27,7 +27,7 @@ async function addAndGetFund(config) {
         newFund = createSmartwinFuturesFund(config, broker, marketData);
         break;
       default:
-        throw new Error('No fund interface for this serviceName');
+        throw new Error('No fund interface for this serviceName: %o', config.serviceName);
     }
 
     await newFund.init();
@@ -49,7 +49,7 @@ function getFund(config) {
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 
-    throw new Error('fund not found');
+    throw new Error('fund %o@%o not found', fundid, serviceName);
   } catch (error) {
     debug('Error getFund(): %o', error);
     throw error;

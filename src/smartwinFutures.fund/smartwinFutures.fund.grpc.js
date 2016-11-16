@@ -1,13 +1,15 @@
 import createDebug from 'debug';
 import grpcCan from './acl';
 
-const debug = createDebug('smartwinFutures.grpc');
+const debug = createDebug('smartwinFutures.fund.grpc');
 
 let serviceName;
 let funds;
 
 async function getOrders(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     debug('call.metadata %o', call.metadata.get('Authorization'));
     await grpcCan(call, 'read', 'getOrders');
 
@@ -25,6 +27,8 @@ async function getOrders(call, callback) {
 
 async function getTrades(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
@@ -39,6 +43,8 @@ async function getTrades(call, callback) {
 
 async function getAccount(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
@@ -53,6 +59,8 @@ async function getAccount(call, callback) {
 
 async function getPositions(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
@@ -68,6 +76,8 @@ async function getPositions(call, callback) {
 
 async function getLiveAccount(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
     const liveAccount = await fund.getLiveAccount();
@@ -81,6 +91,8 @@ async function getLiveAccount(call, callback) {
 
 async function getLivePositions(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
     const livePositions = await fund.getLivePositions();
@@ -94,6 +106,8 @@ async function getLivePositions(call, callback) {
 
 async function placeOrder(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
@@ -109,6 +123,8 @@ async function placeOrder(call, callback) {
 
 async function cancelOrder(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
@@ -128,6 +144,8 @@ async function cancelOrder(call, callback) {
 
 async function getTradingday(call, callback) {
   try {
+    await grpcCan(call, 'read', 'getOrders');
+
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
     const tradingday = await fund.getTradingday();
@@ -139,14 +157,51 @@ async function getTradingday(call, callback) {
   }
 }
 
-async function getOrderStream(stream) {
+async function makeFundStream(stream, eventName) {
+  const user = await grpcCan(stream, 'read', 'getOrders');
+
+  const sessionid = stream.metadata.get('sessionid')[0];
+  const fundid = stream.request.fundid;
+  const streamDebug = createDebug(`${eventName}@${fundid}@${user.userid}:${sessionid.substr(0, 6)}@smartwinFuturesFund.grpc`);
+
   try {
-    const fundid = stream.request.fundid;
+    const peer = stream.getPeer();
+    streamDebug('peer %o get%oStream()', peer, eventName);
     const fund = funds.getFund({ serviceName, fundid });
 
-    fund.on('order', (eventData) => {
-      stream.write(eventData);
-    });
+    const listener = (eventData) => {
+      try {
+        stream.write(eventData);
+      } catch (error) {
+        streamDebug('Error listener() %o', error);
+      }
+    };
+
+    fund
+      .on(eventName, listener)
+      .on('error', error => streamDebug('%o.onError: %o', eventName, error))
+      ;
+
+    stream
+      .on('cancelled', () => {
+        streamDebug('connection cancelled');
+        fund.removeListener(eventName, listener);
+      })
+      .on('error', (error) => {
+        streamDebug('%oStream.onError: %o', eventName, error);
+        fund.removeListener(eventName, listener);
+      })
+      ;
+  } catch (error) {
+    streamDebug('Error setMarketDataStream() %o', error);
+    stream.emit('error', error);
+  }
+}
+
+async function getOrderStream(stream) {
+  try {
+    const eventName = 'order';
+    await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getOrderStream(): %o', error);
     stream.emit('error', error);
@@ -155,12 +210,8 @@ async function getOrderStream(stream) {
 
 async function getTradeStream(stream) {
   try {
-    const fundid = stream.request.fundid;
-    const fund = funds.getFund({ serviceName, fundid });
-
-    fund.on('trade', (eventData) => {
-      stream.write(eventData);
-    });
+    const eventName = 'trade';
+    await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getTradeStream(): %o', error);
     stream.emit('error', error);
@@ -169,12 +220,8 @@ async function getTradeStream(stream) {
 
 async function getAccountStream(stream) {
   try {
-    const fundid = stream.request.fundid;
-    const fund = funds.getFund({ serviceName, fundid });
-
-    fund.on('account', (eventData) => {
-      stream.write(eventData);
-    });
+    const eventName = 'account';
+    await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getAccountStream(): %o', error);
     stream.emit('error', error);
@@ -183,12 +230,8 @@ async function getAccountStream(stream) {
 
 async function getPositionsStream(stream) {
   try {
-    const fundid = stream.request.fundid;
-    const fund = funds.getFund({ serviceName, fundid });
-
-    fund.on('positions', (eventData) => {
-      stream.write(eventData);
-    });
+    const eventName = 'positions';
+    await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getPositionsStream(): %o', error);
     stream.emit('error', error);
@@ -197,12 +240,8 @@ async function getPositionsStream(stream) {
 
 async function getTradingdayStream(stream) {
   try {
-    const fundid = stream.request.fundid;
-    const fund = funds.getFund({ serviceName, fundid });
-
-    fund.on('tradingday', (tradingday) => {
-      stream.write({ tradingday });
-    });
+    const eventName = 'tradingday';
+    await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getTradingdayStream(): %o', error);
     stream.emit('error', error);

@@ -79,10 +79,9 @@ async function grpcCan(ctx, permissions, resource) {
     const hasRight = await can(roles, permissions, resource);
 
     if (!hasRight) {
-      throw new Error(`${user.userid} is member of '${roles}'.\
-   Not enough to '${permissions}' the '${resource}'.)`);
+      throw new Error(`Roles: '${roles}' cannot '${permissions}' the '${resource}'.)`);
     }
-    return true;
+    return user;
   } catch (error) {
     debug('grpcCan() Error: %o', error);
     const err = new Error('Access forbidden');

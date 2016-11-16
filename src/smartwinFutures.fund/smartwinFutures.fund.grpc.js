@@ -230,9 +230,9 @@ const fundGrpcInterface = {
   getTradingdayStream,
 };
 
-export default function createGrpcInterface(config, fundsModule) {
+export default function createGrpcInterface(uniqueServiceName, fundsModule) {
   try {
-    serviceName = config.serviceName;
+    serviceName = uniqueServiceName;
     funds = fundsModule;
     return fundGrpcInterface;
   } catch (error) {

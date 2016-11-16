@@ -31,6 +31,7 @@ export const fundConfigs = [
   },
   {
     fundid: '1248',
+    serviceName: 'smartwinFuturesFund',
     broker: {
       name: 'ice',
       server: {
@@ -42,6 +43,7 @@ export const fundConfigs = [
   },
   {
     fundid: '3000380',
+    serviceName: 'smartwinFuturesFund',
     broker: {
       name: 'ice',
       server: {
@@ -53,6 +55,7 @@ export const fundConfigs = [
   },
   {
     fundid: '0292',
+    serviceName: 'smartwinFuturesFund',
     broker: {
       name: 'ice',
       server: {
@@ -64,6 +67,7 @@ export const fundConfigs = [
   },
   {
     fundid: '1160020',
+    serviceName: 'smartwinFuturesFund',
     broker: {
       name: 'ice',
       server: {
@@ -75,6 +79,7 @@ export const fundConfigs = [
   },
   {
     fundid: '222959',
+    serviceName: 'smartwinFuturesFund',
     broker: {
       name: 'ice',
       server: {
@@ -86,6 +91,7 @@ export const fundConfigs = [
   },
   // {
   //   fundid: '1285',
+  //   serviceName: 'smartwinFuturesFund',
   //   broker: {
   //     name: 'ice',
   //     server: {
@@ -97,6 +103,7 @@ export const fundConfigs = [
   // },
   {
     fundid: '1448',
+    serviceName: 'smartwinFuturesFund',
     broker: {
       name: 'ice',
       server: {

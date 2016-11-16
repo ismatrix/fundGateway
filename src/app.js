@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import grpc from 'grpc';
 import program from 'commander';
-import { upperFirst } from 'lodash';
+import { upperFirst, uniq } from 'lodash';
 import fundGatewayGrpc from './fundGateway.grpc';
 import mongodb from './mongodb';
 import {
@@ -53,11 +53,11 @@ async function main() {
 
     const server = new grpc.Server();
 
-    for (const config of fundConfigs) {
-      debug('config %o', config);
+    const grpcUniqueServiceNames = uniq(funds.getFunds().map(elem => elem.config.serviceName));
+    for (const serviceName of grpcUniqueServiceNames) {
       server.addProtoService(
-        fundProto[config.serviceName][upperFirst(config.serviceName)].service,
-        fundGatewayGrpc[config.serviceName](config, funds),
+        fundProto[serviceName][upperFirst(serviceName)].service,
+        fundGatewayGrpc[serviceName](serviceName, funds),
       );
     }
 

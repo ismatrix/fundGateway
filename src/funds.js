@@ -49,7 +49,7 @@ function getFund(config) {
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 
-    throw new Error(`fund %${fundid}@${serviceName} not found`);
+    throw new Error(`fund ${fundid}@${serviceName} not found`);
   } catch (error) {
     debug('Error getFund(): %o', error);
     throw error;

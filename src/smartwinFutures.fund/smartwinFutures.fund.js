@@ -118,7 +118,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
-    const throttledCalcLivePositions = throttle(calcLivePositions, 10000);
+    const throttledCalcLivePositions = throttle(calcLivePositions, 5000);
 
     const getLivePositions = async function getLivePositions() {
       try {
@@ -132,12 +132,13 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     };
 
     const getLiveAccount = async () => {
+      const liveAccount = getAccount();
       const livePositions = await getLivePositions();
+
       const livePositionsProfit = livePositions
         .reduce((acc, cur) => acc + cur.positionprofit, 0);
 
-      const liveAccount = getLiveAccount();
-      if (livePositionsProfit !== 0) liveAccount.positionsProfit = livePositionsProfit;
+      liveAccount.positionprofit = livePositionsProfit;
       return liveAccount;
     };
 

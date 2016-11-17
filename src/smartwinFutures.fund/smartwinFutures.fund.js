@@ -15,7 +15,6 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     const tradesStore = [];
     let accountStore = {};
     let positionsStore = [];
-    let livePositionsStore = [];
 
     broker
       .on('order', (data) => { ordersStore.push(data); })
@@ -73,11 +72,14 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       try {
         const positions = getPositions();
 
-        const subs = positions.map(position => ({
-          symbol: position.instrumentid,
-          resolution: 'snapshot',
-          dataType: 'marketDepth',
-        }));
+        const subs = positions
+          .map(position => ({
+            symbol: position.instrumentid,
+            resolution: 'snapshot',
+            dataType: 'marketDepth',
+          }))
+          .filter(position => position.todayholdposition !== 0)
+          ;
         debug('subs from positions %o', subs);
         const symbols = positions.map(position => position.instrumentid);
 

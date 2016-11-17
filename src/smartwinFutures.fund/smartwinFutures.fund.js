@@ -1,4 +1,5 @@
 import createDebug from 'debug';
+import { throttle } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
 
 export default function createSmartwinFuturesFund(config, broker, marketData) {
@@ -14,6 +15,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     const tradesStore = [];
     let accountStore = {};
     let positionsStore = [];
+    let livePositionsStore = [];
 
     broker
       .on('order', (data) => { ordersStore.push(data); })
@@ -67,7 +69,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
-    const getLivePositions = async function getLivePositions() {
+    const calcLivePositions = async () => {
       try {
         const positions = getPositions();
 
@@ -77,31 +79,49 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           dataType: 'marketDepth',
         }));
         debug('subs from positions %o', subs);
-        const mdStore = await marketData.getLastMarketDepths(subs);
-        debug('mdStore %o', mdStore);
+        const symbols = positions.map(position => position.instrumentid);
+
+        const mdGatewayReturns = await Promise.all([
+          marketData.getLastMarketDepths(subs),
+          marketData.getInstruments(symbols),
+        ]);
+        const mdStore = mdGatewayReturns[0];
+        const instrumentsRes = mdGatewayReturns[1];
 
         if ('marketDepths' in mdStore) {
-          debug('mdStore %o', mdStore.marketDepths.map(({ symbol, price }) => ({ symbol, price })));
+          debug('marketDephts: %o', mdStore.marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
         }
-
-        const symbols = positions.map(position => position.instrumentid);
-        const instrumentsRes = await marketData.getInstruments(symbols);
-        debug('instruments %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
+        if ('instruments' in instrumentsRes) {
+          debug('instruments: %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
+        }
 
         const livePositions = positions.map((position) => {
           const marketDepth = mdStore.marketDepths.find(
             elem => elem.symbol === position.instrumentid);
-          // debug('marketData %o', marketData);
+
           const instrument = instrumentsRes.instruments.find(
             elem => elem.instrumentid === position.instrumentid);
-          // debug('instrument %o', instrument);
-          if (marketData && instrument) {
+
+          if (marketDepth !== undefined && instrument !== undefined) {
             position.positionprofit = calculations.calcPositionProfit(
               position, marketDepth, instrument);
           }
 
           return position;
         });
+
+        return livePositions;
+      } catch (error) {
+        debug('Error calcLivePositions() %o', error);
+      }
+    };
+
+    const throttledCalcLivePositions = throttle(calcLivePositions, 10000);
+
+    const getLivePositions = async function getLivePositions() {
+      try {
+        debug('getLivePositions');
+        const livePositions = throttledCalcLivePositions();
 
         return livePositions;
       } catch (error) {

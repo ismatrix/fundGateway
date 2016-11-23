@@ -53,6 +53,13 @@ async function main() {
 
     const server = new grpc.Server();
 
+    // load fundGatewayAdmin service
+    server.addProtoService(
+      fundProto.fundGatewayAdmin.FundGatewayAdmin.service,
+      fundGatewayGrpc.fundGatewayAdmin,
+    );
+
+    // load unique fund interface service
     const grpcUniqueServiceNames = uniq(funds.getFunds().map(elem => elem.config.serviceName));
     for (const serviceName of grpcUniqueServiceNames) {
       server.addProtoService(

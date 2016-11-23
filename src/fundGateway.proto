@@ -1,1 +1,2 @@
+import "fundGatewayAdmin.proto";
 import "smartwinFutures.fund/smartwinFutures.fund.proto";

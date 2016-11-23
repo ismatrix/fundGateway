@@ -171,11 +171,10 @@ message Position {
   double positioncost = 16; // 持仓成本 ctp.PositionCost/st.total_cost
   double premargin = 17; // 昨天占用的保证金 ctp.PreMargin/st.yd_usemargin
   double margin = 18; // 当前占用的保证金 ctp.UseMargin/st.total_margin
-  double opencommission = 19; // 开仓手续费-TThostFtdcMoneyType-double
-  double closecommission = 20; // 平仓手续费-TThostFtdcMoneyType-double
-  double closeprofit = 21; // 盯日平仓盈亏
-  double positionprofit = 22; // 盯日持仓盈亏
-  double totalprofile = 23; // 累计实现盈亏
-  string positiondate = 24; // 今仓昨仓 '1' '2' 默认今仓1
-  string updatedate = 25; // 最新更新时间
+  double commission = 19; // 手续费包含开平仓
+  double closeprofit = 20; // 盯日平仓盈亏
+  double positionprofit = 21; // 盯日持仓盈亏
+  double totalprofile = 22; // 累计实现盈亏
+  string positiondate = 23; // 今仓昨仓 '1' '2' 默认今仓1
+  string updatedate = 24; // 最新更新时间
 }

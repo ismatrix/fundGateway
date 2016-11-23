@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package fundGatewayAdmin;
+
+service FundGatewayAdmin {
+  rpc GetFundsConfigs(Empty) returns (FundsConfigs) {}
+  rpc AddFund(FundConfig) returns (Empty) {}
+}
+
+message Empty {
+}
+
+message FundsConfigs {
+  repeated FundConfig fundsConfigs = 1;
+}
+
+message FundConfig {
+  string fundid = 1;
+  string serviceName = 2;
+  BrokerConfig broker = 3;
+  MarketDataConfig marketData = 4;
+}
+
+message BrokerConfig {
+  string name = 1;
+  ServerConfig server = 2;
+}
+
+message ServerConfig {
+  string ip = 1;
+  string port = 2;
+}
+
+message MarketDataConfig {
+  string serviceName = 1;
+  ServerConfig server = 2;
+  string jwtoken = 3;
+}

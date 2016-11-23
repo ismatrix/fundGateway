@@ -76,11 +76,24 @@ function getFundsPositions() {
   }
 }
 
+
+function getFundsConfigs() {
+  try {
+    const allFunds = getFunds();
+    const fundsConfigs = allFunds.map(elem => elem.config);
+
+    return fundsConfigs;
+  } catch (error) {
+    debug('Error getFundsConfigs(): %o', error);
+  }
+}
+
 const funds = {
   addAndGetFund,
   getFund,
   getFunds,
   getFundsPositions,
+  getFundsConfigs,
 };
 
 export default funds;

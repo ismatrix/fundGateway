@@ -11,26 +11,50 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
   debug('config %o', config);
 
   try {
-    const ordersStore = [];
-    const tradesStore = [];
+    let ordersStore = [];
+    let tradesStore = [];
     let accountStore = {};
     let positionsStore = [];
-
-    broker
-      .on('order', (data) => { ordersStore.push(data); })
-      .on('trade', (data) => { tradesStore.push(data); })
-      .on('accountStore', (data) => { accountStore = data; })
-      .on('positions', (data) => {
-        positionsStore = data;
-      });
+    let tradingdayStore;
 
     const init = async () => {
       try {
         broker.connect();
+
+        let accountsStore = [];
+        [
+          ordersStore,
+          tradesStore,
+          accountsStore,
+          positionsStore,
+          tradingdayStore,
+        ] = await Promise.all([
+          broker.queryOrders(),
+          broker.queryTrades(),
+          broker.queryAccounts(),
+          broker.queryPositions(),
+          broker.getTradingday(),
+        ]);
+        accountStore = accountsStore[0];
       } catch (error) {
         debug('Error init() %o', error);
       }
     };
+
+    broker
+      .on('order', (data) => { ordersStore.push(data); })
+      .on('trade', (data) => { tradesStore.push(data); })
+      .on('account', (data) => { accountStore = data; })
+      .on('positions', (data) => {
+        positionsStore = data;
+      })
+      .on('tradingday', (data) => {
+        if (data !== tradingdayStore) {
+          tradingdayStore = data;
+          init();
+        }
+      })
+      ;
 
     const getOrders = () => {
       try {

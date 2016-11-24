@@ -97,22 +97,22 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const positions = getPositions();
 
         const subs = positions
+          .filter(position =>
+            (position.preholdposition !== 0 && position.todayholdposition !== 0)
+          )
           .map(position => ({
             symbol: position.instrumentid,
             resolution: 'snapshot',
             dataType: 'marketDepth',
           }))
-          .filter(position => position.todayholdposition !== 0)
           ;
         debug('subs from positions %o', subs);
         const symbols = positions.map(position => position.instrumentid);
 
-        const mdGatewayReturns = await Promise.all([
+        const [mdStore, instrumentsRes] = await Promise.all([
           marketData.getLastMarketDepths(subs),
           marketData.getInstruments(symbols),
         ]);
-        const mdStore = mdGatewayReturns[0];
-        const instrumentsRes = mdGatewayReturns[1];
 
         if ('marketDepths' in mdStore) {
           debug('marketDephts: %o', mdStore.marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
@@ -131,6 +131,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           if (marketDepth !== undefined && instrument !== undefined) {
             position.positionprofit = calculations.calcPositionProfit(
               position, marketDepth, instrument);
+            debug('position.positionprofit %o', position.positionprofit);
           }
 
           return position;

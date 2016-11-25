@@ -48,10 +48,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       .on('positions', (data) => {
         positionsStore = data;
       })
-      .on('tradingday', (data) => {
+      .on('tradingday', async (data) => {
         if (data !== tradingdayStore) {
-          tradingdayStore = data;
-          init();
+          await init();
+          broker.emit('tradingdayAfterInit', data);
         }
       })
       ;
@@ -97,9 +97,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const positions = getPositions();
 
         const subs = positions
-          .filter(position =>
-            (position.preholdposition !== 0 && position.todayholdposition !== 0)
-          )
+          .filter(position => position.position !== 0)
           .map(position => ({
             symbol: position.instrumentid,
             resolution: 'snapshot',

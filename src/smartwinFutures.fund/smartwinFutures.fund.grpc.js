@@ -240,7 +240,7 @@ async function getPositionsStream(stream) {
 
 async function getTradingdayStream(stream) {
   try {
-    const eventName = 'tradingday';
+    const eventName = 'tradingdayAfterInit';
     await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getTradingdayStream(): %o', error);

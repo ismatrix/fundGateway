@@ -51,7 +51,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       .on('tradingday', async (data) => {
         if (data !== tradingdayStore) {
           await init();
-          broker.emit('tradingdayAfterInit', data);
+          broker.emit('afterInitTradingday', data);
         }
       })
       ;

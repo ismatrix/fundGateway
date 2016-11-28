@@ -51,8 +51,9 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       })
       .on('broker:tradingday', async (data) => {
         debug('broker:tradingday %o, tradingdayStore %o', data, tradingdayStore);
+        const tradingdayCopy = tradingdayStore;
         await init();
-        if (data !== tradingdayStore) {
+        if (data !== tradingdayCopy) {
           debug('pushing tradingday %o', data);
           broker.emit('fund:tradingday', data);
         }
@@ -165,6 +166,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       const liveAccount = getAccount();
       const livePositions = await getLivePositions();
 
+      // need add .reduce check
       const livePositionsProfit = livePositions
         .reduce((acc, cur) => acc + cur.positionprofit, 0);
 

@@ -19,6 +19,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
     const init = async () => {
       try {
+        debug('init()');
         broker.connect();
 
         let accountsStore = [];
@@ -42,18 +43,23 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     };
 
     broker
-      .on('order', (data) => { ordersStore.push(data); })
-      .on('trade', (data) => { tradesStore.push(data); })
-      .on('account', (data) => { accountStore = data; })
-      .on('positions', (data) => {
+      .on('broker:order', (data) => { ordersStore.push(data); })
+      .on('broker:trade', (data) => { tradesStore.push(data); })
+      .on('broker:account', (data) => { accountStore = data; })
+      .on('broker:positions', (data) => {
         positionsStore = data;
       })
-      .on('tradingday', async (data) => {
+      .on('broker:tradingday', async (data) => {
+        debug('broker:tradingday %o, tradingdayStore %o', data, tradingdayStore);
+        await init();
         if (data !== tradingdayStore) {
-          await init();
-          debug('init done, pushing tradingday %o', data);
-          broker.emit('afterInitTradingday', data);
+          debug('pushing tradingday %o', data);
+          broker.emit('fund:tradingday', data);
         }
+      })
+      .on('broker:connect:success', async () => {
+        debug('broker:connect:success, start init()');
+        await init();
       })
       ;
 

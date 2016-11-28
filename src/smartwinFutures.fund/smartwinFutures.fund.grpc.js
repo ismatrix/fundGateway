@@ -200,7 +200,7 @@ async function makeFundStream(stream, eventName) {
 
 async function getOrderStream(stream) {
   try {
-    const eventName = 'order';
+    const eventName = 'broker:order';
     await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getOrderStream(): %o', error);
@@ -210,7 +210,7 @@ async function getOrderStream(stream) {
 
 async function getTradeStream(stream) {
   try {
-    const eventName = 'trade';
+    const eventName = 'broker:trade';
     await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getTradeStream(): %o', error);
@@ -220,7 +220,7 @@ async function getTradeStream(stream) {
 
 async function getAccountStream(stream) {
   try {
-    const eventName = 'account';
+    const eventName = 'broker:account';
     await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getAccountStream(): %o', error);
@@ -230,7 +230,7 @@ async function getAccountStream(stream) {
 
 async function getPositionsStream(stream) {
   try {
-    const eventName = 'positions';
+    const eventName = 'broker:positions';
     await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getPositionsStream(): %o', error);
@@ -240,7 +240,7 @@ async function getPositionsStream(stream) {
 
 async function getTradingdayStream(stream) {
   try {
-    const eventName = 'afterInitTradingday';
+    const eventName = 'fund:tradingday';
     await makeFundStream(stream, eventName);
   } catch (error) {
     debug('Error getTradingdayStream(): %o', error);

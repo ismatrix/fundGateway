@@ -30,8 +30,6 @@ async function addAndGetFund(config) {
         throw new Error('No fund interface for this serviceName: %o', config.serviceName);
     }
 
-    await newFund.init();
-
     fundsArr.push(newFund);
     return newFund;
   } catch (error) {

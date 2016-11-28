@@ -15,7 +15,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     let tradesStore = [];
     let accountStore = {};
     let positionsStore = [];
-    let tradingdayStore;
+    let tradingdayStore = '';
 
     const init = async () => {
       try {

@@ -43,7 +43,7 @@ function getFund(config) {
       serviceName,
       fundid,
     } = config;
-    debug('getFund(%o)', { serviceName, fundid });
+    // debug('getFund(%o)', { serviceName, fundid });
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 

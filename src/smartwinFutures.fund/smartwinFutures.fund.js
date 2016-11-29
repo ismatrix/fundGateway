@@ -67,13 +67,13 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           .send();
         debug(tradingdayDebug1);
 
-        if (data !== previousMemoryTradingday) {
-          const tradingdayDebug2 = `fundGateway:${fundid} pushing tradingday ${data}`;
-          qydev.createMessage().from(10).to('Victor').text(tradingdayDebug2)
-            .send();
-          debug(tradingdayDebug2);
-          broker.emit('fund:tradingday', data);
-        }
+        // if (data !== previousMemoryTradingday) {
+        const tradingdayDebug2 = `fundGateway:${fundid} pushing tradingday ${data}`;
+        qydev.createMessage().from(10).to('Victor').text(tradingdayDebug2)
+          .send();
+        debug(tradingdayDebug2);
+        broker.emit('fund:tradingday', data);
+        // }
       })
       .on('broker:connect:success', async () => {
         debug('broker:connect:success, start init()');

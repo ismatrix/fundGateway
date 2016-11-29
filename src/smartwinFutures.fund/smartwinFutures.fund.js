@@ -1,6 +1,12 @@
 import createDebug from 'debug';
 import { throttle } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
+import createQydev from 'sw-weixin-qydev';
+import {
+  wechatConfig,
+} from '../config';
+
+const qydev = createQydev(wechatConfig);
 
 export default function createSmartwinFuturesFund(config, broker, marketData) {
   const {
@@ -56,9 +62,16 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         await init();
 
-        debug('%o : broker:tradingday %o, previousMemoryTradingday %o, tradingdayStore %o', new Date(), data, previousMemoryTradingday, tradingdayStore);
+        const tradingdayDebug1 = `${fundid}: ${new Date()}: broker:tradingday ${data}, previousMemoryTradingday ${previousMemoryTradingday}, tradingdayStore ${tradingdayStore}`;
+        qydev.createMessage().from(10).to('Victor').text(tradingdayDebug1)
+          .send();
+        debug(tradingdayDebug1);
+
         if (data !== previousMemoryTradingday) {
-          debug('pushing tradingday %o', data);
+          const tradingdayDebug2 = `fundGateway:${fundid} pushing tradingday ${data}`;
+          qydev.createMessage().from(10).to('Victor').text(tradingdayDebug2)
+            .send();
+          debug(tradingdayDebug2);
           broker.emit('fund:tradingday', data);
         }
       })

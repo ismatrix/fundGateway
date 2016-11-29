@@ -10,7 +10,7 @@ export const grpcConfig = {
 const marketData = {
   serviceName: 'smartwinFuturesMd',
   server: {
-    ip: 'localhost',
+    ip: 'invesmart.win',
     port: '50052',
   },
   jwtoken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0',
@@ -41,148 +41,148 @@ export const fundConfigs = [
     },
     marketData,
   },
-  // {
-  //   fundid: '3000380',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20005',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '80000528',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20010',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '1339',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20011',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '890831',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20017',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '1285',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20020',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '1448',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20020',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '82660',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20022',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '222959',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20023',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '1160020',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20024',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '120100588',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20025',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '0292',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20027',
-  //     },
-  //   },
-  //   marketData,
-  // },
-  // {
-  //   fundid: '50202468',
-  //   serviceName: 'smartwinFuturesFund',
-  //   broker: {
-  //     name: 'ice',
-  //     server: {
-  //       ip: '127.0.0.1',
-  //       port: '20030',
-  //     },
-  //   },
-  //   marketData,
-  // },
+  {
+    fundid: '3000380',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20005',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '80000528',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20010',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '1339',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20011',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '890831',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20017',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '1285',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20020',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '1448',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20020',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '82660',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20022',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '222959',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20023',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '1160020',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20024',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '120100588',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20025',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '0292',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20027',
+      },
+    },
+    marketData,
+  },
+  {
+    fundid: '50202468',
+    serviceName: 'smartwinFuturesFund',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '127.0.0.1',
+        port: '20030',
+      },
+    },
+    marketData,
+  },
 ];

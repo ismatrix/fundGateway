@@ -34,6 +34,11 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           broker.queryPositions(),
           broker.getTradingday(),
         ]);
+        debug('init() ordersStore %o', ordersStore);
+        debug('init() tradesStore %o', tradesStore);
+        debug('init() accountStore %o', accountStore);
+        debug('init() positionsStore %o', positionsStore);
+        debug('init() tradingdayStore %o', tradingdayStore);
       } catch (error) {
         debug('Error init() %o', error);
       }

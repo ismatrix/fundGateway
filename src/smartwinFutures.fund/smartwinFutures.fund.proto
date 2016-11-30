@@ -10,6 +10,7 @@ service SmartwinFuturesFund {
 
   rpc GetLiveAccount(Fund) returns (Account) {}
   rpc GetLivePositions(Fund) returns (PositionsResponse) {}
+  rpc GetLiveNetValueAndEquityReport(Fund) returns (LiveNetValueAndEquityReport) {}
 
   rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
@@ -44,6 +45,34 @@ message TradesResponse {
 
 message PositionsResponse {
   repeated Position positions = 1;
+}
+
+message LiveNetValueAndEquityReport {
+  string fundid = 1;
+  string tradingday = 2;
+  Equity equity = 3;
+  Netvalue netvalue = 4;
+  string updatedate = 5;
+}
+
+message Equity {
+  double last = 1;
+  double open = 2;
+  double high = 3;
+  double low = 4;
+  double close = 5;
+  double settle = 6;
+}
+
+message Netvalue {
+  double last = 1;
+  double open = 2;
+  double high = 3;
+  double low = 4;
+  double close = 5;
+  double settle = 6;
+  double dividend = 7;
+  double inferior = 8;
 }
 
 message PlaceOrder {

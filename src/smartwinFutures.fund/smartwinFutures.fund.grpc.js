@@ -82,6 +82,7 @@ async function getLiveAccount(call, callback) {
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
+
     const liveAccount = await fund.getLiveAccount();
     debug('liveAccount %o', liveAccount);
     callback(null, liveAccount);
@@ -97,11 +98,28 @@ async function getLivePositions(call, callback) {
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
+
     const livePositions = await fund.getLivePositions();
     debug('livePositions %o', livePositions.map(({ instrumentid, positionprofit }) => ({ instrumentid, positionprofit })));
     callback(null, livePositions);
   } catch (error) {
     logError('getLivePositions(): %o', error);
+    callback(error);
+  }
+}
+
+async function getLiveNetValueAndEquityReport(call, callback) {
+  try {
+    await grpcCan(call, 'read', 'getOrders');
+
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
+    const liveNetValueAndEquityReport = await fund.getLiveNetValueAndEquityReport();
+    debug('liveNetValueAndEquityReport %o', liveNetValueAndEquityReport);
+    callback(null, liveNetValueAndEquityReport);
+  } catch (error) {
+    logError('getLiveNetValueAndEquityReport(): %o', error);
     callback(error);
   }
 }
@@ -169,7 +187,7 @@ async function makeFundStream(stream, eventName) {
 
     const streamID = `${sessionid.substr(0, 6)}:${user.userid}@${peer}>>${eventName}@${fundid}`;
 
-    debug('streamID: %o, listening to %o event', streamID, eventName);
+    logError('streamID: %o, listening to %o event', streamID, eventName);
 
     const fund = funds.getFund({ serviceName, fundid });
 
@@ -260,6 +278,7 @@ const fundGrpcInterface = {
 
   getLiveAccount,
   getLivePositions,
+  getLiveNetValueAndEquityReport,
 
   placeOrder,
   cancelOrder,

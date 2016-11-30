@@ -1,6 +1,10 @@
 import createDebug from 'debug';
 import { throttle } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
+import {
+  equity as equityDB,
+  fund as fundDB,
+} from 'sw-mongodb-crud';
 
 export default function createSmartwinFuturesFund(config, broker, marketData) {
   const {
@@ -19,6 +23,12 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     let accountStore = {};
     let positionsStore = [];
     let tradingdayStore = '';
+
+    let dbFundStore = {};
+    let dbEquityStore = {};
+    const dbTotalStore = {};
+
+    const liveEquityStore = {};
 
     const init = async () => {
       try {
@@ -43,6 +53,29 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('init() accountStore %o', accountStore);
         debug('init() positionsStore %o', positionsStore);
         debug('init() tradingdayStore %o', tradingdayStore);
+
+        [
+          dbFundStore,
+          dbEquityStore,
+          dbTotalStore.totalFixedIncome,
+          dbTotalStore.totalFixedIncomeReturns,
+          dbTotalStore.totalCostOut,
+          dbTotalStore.totalAppendShare,
+          dbTotalStore.totalRedemptionShare,
+        ] = await Promise.all([
+          fundDB.get(fundid),
+          equityDB.get(fundid, tradingdayStore),
+          equityDB.getTotalFixedIncome(fundid, tradingdayStore),
+          equityDB.getTotalFixedIncomeReturns(fundid, tradingdayStore),
+          equityDB.getTotalCostOut(fundid, tradingdayStore),
+          equityDB.getTotalAppendShare(fundid, tradingdayStore),
+          equityDB.getTotalRedemptionShare(fundid, tradingdayStore),
+        ]);
+        debug('init() dbFundStore %o', dbFundStore);
+        debug('init() dbEquityStore %o', dbEquityStore);
+        debug('init() dbTotalStore %o', dbTotalStore);
+
+        Object.assign(liveEquityStore, dbEquityStore);
       } catch (error) {
         logError('init() %o', error);
       }
@@ -188,6 +221,49 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
+    const updateLiveEquity = async () => {
+      try {
+        const liveAccount = await getLiveAccount();
+        const lastEquity = liveAccount.balance;
+
+        calculations.updateEquityBar(lastEquity, liveEquityStore);
+
+        return liveAccount;
+      } catch (error) {
+        logError('getLiveAccount() %o', error);
+        throw error;
+      }
+    };
+
+    const getLiveEquity = async () => {
+      try {
+        await updateLiveEquity();
+        const liveEquity = Object.assign({}, liveEquityStore);
+
+        return liveEquity;
+      } catch (error) {
+        logError('getLiveEquity() %o', error);
+        throw error;
+      }
+    };
+
+    const getLiveNetValueAndEquityReport = async () => {
+      try {
+        const tradingday = tradingdayStore;
+        const fundDBDoc = Object.assign({}, dbFundStore);
+        const equityDBDoc = await getLiveEquity();
+        const totalDoc = Object.assign({}, dbTotalStore);
+
+        const liveNetValueAndEquityReport =
+          calculations.getNetValueAndEquityReport(tradingday, fundDBDoc, equityDBDoc, totalDoc);
+
+        return liveNetValueAndEquityReport;
+      } catch (error) {
+        logError('getLiveNetValueAndEquityReport() %o', error);
+        throw error;
+      }
+    };
+
     const fundBase = {
       config,
       fundid,
@@ -198,6 +274,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       getPositions,
       getLiveAccount,
       getLivePositions,
+      getLiveNetValueAndEquityReport,
     };
     const fund = Object.assign(Object.create(broker), fundBase);
     return fund;

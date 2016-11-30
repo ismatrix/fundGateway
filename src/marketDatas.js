@@ -4,7 +4,8 @@ import path from 'path';
 import Promise from 'bluebird';
 import createGrpcClient from 'sw-grpc-client';
 
-const debug = createDebug('marketDatas');
+const logError = createDebug('app:marketDatas:error');
+logError.log = console.error.bind(console);
 const fs = Promise.promisifyAll(fsCb);
 
 const marketDataClients = [];
@@ -39,7 +40,7 @@ async function addAndGetMarketData(config) {
     marketDataClients.push(newMDGatewayClient);
     return newMDGatewayClient;
   } catch (error) {
-    debug('Error addMarketData(): %o', error);
+    logError('addMarketData(): %o', error);
   }
 }
 
@@ -50,7 +51,7 @@ function getMarketData(config) {
 
     throw new Error('marketDataClient not found');
   } catch (error) {
-    debug('Error getMarketData(): %o', error);
+    logError('getMarketData(): %o', error);
   }
 }
 

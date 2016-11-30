@@ -19,7 +19,9 @@ program
   .parse(process.argv);
 
 const grpcUrl = `${grpcConfig.ip}:${grpcConfig.port}`;
-const debug = createDebug(`app ${grpcUrl}`);
+const debug = createDebug(`app:main:${grpcUrl}`);
+const logError = createDebug(`app:main:${grpcUrl}`);
+logError.log = console.error.bind(console);
 
 async function init() {
   try {
@@ -28,7 +30,7 @@ async function init() {
       fundConfigs.map(config => funds.addAndGetFund(config)),
     ));
   } catch (error) {
-    debug('Error init(): %o', error);
+    logError('init(): %o', error);
   }
 }
 
@@ -71,7 +73,7 @@ async function main() {
     server.bind(`${grpcUrl}`, sslCreds);
     server.start();
   } catch (error) {
-    debug('Error main(): %o', error);
+    logError('main(): %o', error);
   }
 }
 main();

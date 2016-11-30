@@ -1,7 +1,9 @@
 import createDebug from 'debug';
 import grpcCan from './acl';
 
-const debug = createDebug('smartwinFutures.fund.grpc');
+const debug = createDebug('app:smartwinFutures.fund.grpc');
+const logError = createDebug('app:smartwinFutures.fund.grpc:error');
+logError.log = console.error.bind(console);
 
 let serviceName;
 let funds;
@@ -20,7 +22,7 @@ async function getOrders(call, callback) {
     debug('orders %o', orders);
     callback(null, orders);
   } catch (error) {
-    debug('Error getOrders(): %o', error);
+    logError('getOrders(): %o', error);
     callback(error);
   }
 }
@@ -36,7 +38,7 @@ async function getTrades(call, callback) {
     debug('trades %o', trades);
     callback(null, trades);
   } catch (error) {
-    debug('Error getTrades(): %o', error);
+    logError('getTrades(): %o', error);
     callback(error);
   }
 }
@@ -52,7 +54,7 @@ async function getAccount(call, callback) {
     debug('account %o', account);
     callback(null, account);
   } catch (error) {
-    debug('Error getAccount(): %o', error);
+    logError('getAccount(): %o', error);
     callback(error);
   }
 }
@@ -68,7 +70,7 @@ async function getPositions(call, callback) {
     debug('positions %o', positions);
     callback(null, positions);
   } catch (error) {
-    debug('Error getPositions(): %o', error);
+    logError('getPositions(): %o', error);
     callback(error);
   }
 }
@@ -84,7 +86,7 @@ async function getLiveAccount(call, callback) {
     debug('liveAccount %o', liveAccount);
     callback(null, liveAccount);
   } catch (error) {
-    debug('Error getLiveAccount(): %o', error);
+    logError('getLiveAccount(): %o', error);
     callback(error);
   }
 }
@@ -99,7 +101,7 @@ async function getLivePositions(call, callback) {
     debug('livePositions %o', livePositions.map(({ instrumentid, positionprofit }) => ({ instrumentid, positionprofit })));
     callback(null, livePositions);
   } catch (error) {
-    debug('Error getLivePositions(): %o', error);
+    logError('getLivePositions(): %o', error);
     callback(error);
   }
 }
@@ -116,7 +118,7 @@ async function placeOrder(call, callback) {
 
     callback(null, {});
   } catch (error) {
-    debug('Error placeOrder(): %o', error);
+    logError('placeOrder(): %o', error);
     callback(error);
   }
 }
@@ -137,7 +139,7 @@ async function cancelOrder(call, callback) {
 
     callback(null, {});
   } catch (error) {
-    debug('Error cancelOrder(): %o', error);
+    logError('cancelOrder(): %o', error);
     callback(error);
   }
 }
@@ -152,48 +154,50 @@ async function getTradingday(call, callback) {
 
     callback(null, { tradingday });
   } catch (error) {
-    debug('Error getTradingday(): %o', error);
+    logError('getTradingday(): %o', error);
     callback(error);
   }
 }
 
 async function makeFundStream(stream, eventName) {
-  const user = await grpcCan(stream, 'read', 'getOrders');
-
-  const sessionid = stream.metadata.get('sessionid')[0];
-  const fundid = stream.request.fundid;
-  const streamDebug = createDebug(`${eventName}@${fundid}@${user.userid}:${sessionid.substr(0, 6)}@smartwinFuturesFund.grpc`);
-
   try {
+    const user = await grpcCan(stream, 'read', 'getOrders');
+
+    const sessionid = stream.metadata.get('sessionid')[0];
+    const fundid = stream.request.fundid;
     const peer = stream.getPeer();
-    streamDebug('peer %o get%oStream()', peer, eventName);
+
+    const streamID = `${sessionid.substr(0, 6)}:${user.userid}@${peer}>>${eventName}@${fundid}`;
+
+    debug('streamID: %o, listening to %o event', streamID, eventName);
+
     const fund = funds.getFund({ serviceName, fundid });
 
     const listener = (eventData) => {
       try {
         stream.write(eventData);
       } catch (error) {
-        streamDebug('Error listener() %o', error);
+        logError('streamID: %o, listener() %o', streamID, error);
       }
     };
 
     fund
       .on(eventName, listener)
-      .on('error', error => streamDebug('%o.onError: %o', eventName, error))
+      .on('error', error => logError('streamID: %o, %o.onError: %o', streamID, eventName, error))
       ;
 
     stream
       .on('cancelled', () => {
-        streamDebug('connection cancelled');
+        logError('streamID: %o, connection cancelled', streamID);
         fund.removeListener(eventName, listener);
       })
       .on('error', (error) => {
-        streamDebug('%oStream.onError: %o', eventName, error);
+        logError('streamID: %o, %oStream.onError: %o', streamID, eventName, error);
         fund.removeListener(eventName, listener);
       })
       ;
   } catch (error) {
-    streamDebug('Error setMarketDataStream() %o', error);
+    logError('Error setMarketDataStream() %o', error);
     stream.emit('error', error);
   }
 }
@@ -203,7 +207,7 @@ async function getOrderStream(stream) {
     const eventName = 'broker:order';
     await makeFundStream(stream, eventName);
   } catch (error) {
-    debug('Error getOrderStream(): %o', error);
+    logError('getOrderStream(): %o', error);
     stream.emit('error', error);
   }
 }
@@ -213,7 +217,7 @@ async function getTradeStream(stream) {
     const eventName = 'broker:trade';
     await makeFundStream(stream, eventName);
   } catch (error) {
-    debug('Error getTradeStream(): %o', error);
+    logError('getTradeStream(): %o', error);
     stream.emit('error', error);
   }
 }
@@ -223,7 +227,7 @@ async function getAccountStream(stream) {
     const eventName = 'broker:account';
     await makeFundStream(stream, eventName);
   } catch (error) {
-    debug('Error getAccountStream(): %o', error);
+    logError('getAccountStream(): %o', error);
     stream.emit('error', error);
   }
 }
@@ -233,7 +237,7 @@ async function getPositionsStream(stream) {
     const eventName = 'broker:positions';
     await makeFundStream(stream, eventName);
   } catch (error) {
-    debug('Error getPositionsStream(): %o', error);
+    logError('getPositionsStream(): %o', error);
     stream.emit('error', error);
   }
 }
@@ -243,7 +247,7 @@ async function getTradingdayStream(stream) {
     const eventName = 'fund:tradingday';
     await makeFundStream(stream, eventName);
   } catch (error) {
-    debug('Error getTradingdayStream(): %o', error);
+    logError('getTradingdayStream(): %o', error);
     stream.emit('error', error);
   }
 }
@@ -275,6 +279,6 @@ export default function createGrpcInterface(uniqueServiceName, fundsModule) {
     funds = fundsModule;
     return fundGrpcInterface;
   } catch (error) {
-    debug('Error createGrpcInterface %o', error);
+    logError('createGrpcInterface %o', error);
   }
 }

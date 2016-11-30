@@ -1,18 +1,16 @@
 import createDebug from 'debug';
 import { throttle } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
-import createQydev from 'sw-weixin-qydev';
-import {
-  wechatConfig,
-} from '../config';
-
-const qydev = createQydev(wechatConfig);
 
 export default function createSmartwinFuturesFund(config, broker, marketData) {
   const {
     fundid,
   } = config;
-  const debug = createDebug(`smartwinFutures.fund:${fundid}`);
+
+  const debug = createDebug(`app:smartwinFutures.fund:${fundid}`);
+  const logError = createDebug(`app:smartwinFutures.fund:${fundid}:error`);
+  logError.log = console.error.bind(console);
+
   debug('config %o', config);
 
   try {
@@ -46,7 +44,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('init() positionsStore %o', positionsStore);
         debug('init() tradingdayStore %o', tradingdayStore);
       } catch (error) {
-        debug('Error init() %o', error);
+        logError('init() %o', error);
       }
     };
 
@@ -62,18 +60,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         await init();
 
-        const tradingdayDebug1 = `${fundid}: ${new Date()}: broker:tradingday ${data}, previousMemoryTradingday ${previousMemoryTradingday}, tradingdayStore ${tradingdayStore}`;
-        qydev.createMessage().from(10).to('Victor').text(tradingdayDebug1)
-          .send();
-        debug(tradingdayDebug1);
-
-        // if (data !== previousMemoryTradingday) {
-        const tradingdayDebug2 = `fundGateway:${fundid} pushing tradingday ${data}`;
-        qydev.createMessage().from(10).to('Victor').text(tradingdayDebug2)
-          .send();
-        debug(tradingdayDebug2);
+        debug(`${fundid}: ${new Date()}: broker:tradingday ${data}, previousMemoryTradingday ${previousMemoryTradingday}, tradingdayStore ${tradingdayStore}`);
         broker.emit('fund:tradingday', data);
-        // }
       })
       .on('broker:connect:success', async () => {
         debug('broker:connect:success, start init()');
@@ -86,7 +74,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const orders = ordersStore.map(elem => Object.assign({}, elem));
         return orders;
       } catch (error) {
-        debug('Error getOrders() %o', error);
+        logError('getOrders() %o', error);
         throw error;
       }
     };
@@ -96,7 +84,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const trades = tradesStore.map(elem => Object.assign({}, elem));
         return trades;
       } catch (error) {
-        debug('Error getTrades() %o', error);
+        logError('getTrades() %o', error);
         throw error;
       }
     };
@@ -106,7 +94,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const account = Object.assign({}, accountStore);
         return account;
       } catch (error) {
-        debug('Error getAccount() %o', error);
+        logError('getAccount() %o', error);
         throw error;
       }
     };
@@ -116,7 +104,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const positions = positionsStore.map(elem => Object.assign({}, elem));
         return positions;
       } catch (error) {
-        debug('Error getPositions() %o', error);
+        logError('getPositions() %o', error);
         throw error;
       }
     };
@@ -166,7 +154,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositions;
       } catch (error) {
-        debug('Error calcLivePositions() %o', error);
+        logError('calcLivePositions() %o', error);
         throw error;
       }
     };
@@ -180,7 +168,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositions;
       } catch (error) {
-        debug('Error getLivePositions() %o', error);
+        logError('getLivePositions() %o', error);
         throw error;
       }
     };
@@ -195,7 +183,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveAccount;
       } catch (error) {
-        debug('Error getLiveAccount() %o', error);
+        logError('getLiveAccount() %o', error);
         throw error;
       }
     };
@@ -214,6 +202,6 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     const fund = Object.assign(Object.create(broker), fundBase);
     return fund;
   } catch (error) {
-    debug('Error createSmartwinFuturesFund(): %o', error);
+    logError('createSmartwinFuturesFund(): %o', error);
   }
 }

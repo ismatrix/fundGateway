@@ -3,7 +3,8 @@ import createBroker from './broker';
 import marketDatas from './marketDatas';
 import createSmartwinFuturesFund from './smartwinFutures.fund/smartwinFutures.fund';
 
-const debug = createDebug('funds');
+const logError = createDebug('app:funds:error');
+logError.log = console.error.bind(console);
 
 const fundsArr = [];
 
@@ -31,9 +32,10 @@ async function addAndGetFund(config) {
     }
 
     fundsArr.push(newFund);
+
     return newFund;
   } catch (error) {
-    debug('Error addAndGetFund(): %o', error);
+    logError('addAndGetFund(): %o', error);
   }
 }
 
@@ -49,7 +51,7 @@ function getFund(config) {
 
     throw new Error(`fund ${fundid}@${serviceName} not found`);
   } catch (error) {
-    debug('Error getFund(): %o', error);
+    logError('getFund(): %o', error);
     throw error;
   }
 }
@@ -58,7 +60,7 @@ function getFunds() {
   try {
     return fundsArr;
   } catch (error) {
-    debug('Error getFunds(): %o', error);
+    logError('getFunds(): %o', error);
   }
 }
 
@@ -70,7 +72,7 @@ function getFundsPositions() {
       .reduce((acc, cur) => acc.concat(cur), []);
     return allPositions;
   } catch (error) {
-    debug('Error get(): %o', error);
+    logError('get(): %o', error);
   }
 }
 
@@ -82,7 +84,7 @@ function getFundsConfigs() {
 
     return fundsConfigs;
   } catch (error) {
-    debug('Error getFundsConfigs(): %o', error);
+    logError('getFundsConfigs(): %o', error);
   }
 }
 

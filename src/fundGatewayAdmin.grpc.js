@@ -2,7 +2,9 @@ import createDebug from 'debug';
 import grpcCan from './acl';
 import funds from './funds';
 
-const debug = createDebug('fundGatewayAdmin.grpc');
+const debug = createDebug('app:fundGatewayAdmin.grpc');
+const logError = createDebug('app:fundGatewayAdmin.grpc:error');
+logError.log = console.error.bind(console);
 
 async function getFundsConfigs(call, callback) {
   try {

@@ -1,18 +1,15 @@
 import createDebug from 'debug';
 import createIceBroker from 'sw-broker-ice';
 
+const logError = createDebug('app:broker:error');
+logError.log = console.error.bind(console);
+
 export default function createBroker(config) {
-  const {
-    fundid,
-  } = config;
-  const {
-    name,
-    server,
-  } = config.broker;
-
-  const debug = createDebug(`${fundid}@${name}@${server.ip}:${server.port}@broker`);
-
   try {
+    const {
+      name,
+    } = config.broker;
+
     let broker;
     switch (name) {
       case 'ice':
@@ -24,6 +21,6 @@ export default function createBroker(config) {
 
     return broker;
   } catch (error) {
-    debug('Error createBroker(): %o', error);
+    logError('createBroker() %o', error);
   }
 }

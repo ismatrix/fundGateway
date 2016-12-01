@@ -164,28 +164,15 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           marketData.getInstruments(symbols),
         ]);
 
-        if ('marketDepths' in mdStore) {
-          debug('marketDephts: %o', mdStore.marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
-        }
-        if ('instruments' in instrumentsRes) {
-          debug('instruments: %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
+        if (!('marketDepths' in mdStore) || !('instruments' in instrumentsRes)) {
+          return positions;
         }
 
-        const livePositions = positions.map((position) => {
-          const marketDepth = mdStore.marketDepths.find(
-            elem => elem.symbol === position.instrumentid);
+        debug('marketDephts: %o', mdStore.marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
+        debug('instruments: %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
 
-          const instrument = instrumentsRes.instruments.find(
-            elem => elem.instrumentid === position.instrumentid);
-
-          if (marketDepth !== undefined && instrument !== undefined) {
-            position.positionprofit = calculations.calcPositionProfit(
-              position, marketDepth, instrument);
-            debug('position.positionprofit %o', position.positionprofit);
-          }
-
-          return position;
-        });
+        const livePositions = calculations.positionsToLivePositions(
+          positions, mdStore.marketDepths, instrumentsRes.instruments);
 
         return livePositions;
       } catch (error) {
@@ -210,25 +197,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
     const getLiveAccount = async () => {
       try {
-        const liveAccount = getAccount();
+        const account = getAccount();
         const livePositions = await getLivePositions();
 
-        liveAccount.positionprofit = calculations.calcPositionsProfit(livePositions);
-        liveAccount.balance = calculations.calcAccountBalance(liveAccount);
-
-        return liveAccount;
-      } catch (error) {
-        logError('getLiveAccount() %o', error);
-        throw error;
-      }
-    };
-
-    const updateLiveEquity = async () => {
-      try {
-        const liveAccount = await getLiveAccount();
-        const lastEquity = liveAccount.balance;
-
-        calculations.updateEquityBar(lastEquity, liveEquityStore);
+        const liveAccount = calculations.accountToLiveAccount(account, livePositions);
 
         return liveAccount;
       } catch (error) {
@@ -239,8 +211,9 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
     const getLiveEquity = async () => {
       try {
-        await updateLiveEquity();
-        const liveEquity = Object.assign({}, liveEquityStore);
+        const liveAccount = await getLiveAccount();
+
+        const liveEquity = calculations.equityToLiveEquity(liveEquityStore, liveAccount);
 
         return liveEquity;
       } catch (error) {
@@ -258,6 +231,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         const liveNetValueAndEquityReport =
           calculations.getNetValueAndEquityReport(tradingday, fundDBDoc, equityDBDoc, totalDoc);
+        liveNetValueAndEquityReport.updatedate =
+          calculations.dateToISOStringWithTimezone(liveNetValueAndEquityReport.updatedate);
 
         return liveNetValueAndEquityReport;
       } catch (error) {

@@ -174,6 +174,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       try {
         const positions = getPositions();
         const account = getAccount();
+        const equity = getEquity();
+        const total = getTotal();
 
         const subs = positions
           .filter(position => position.position !== 0)
@@ -203,8 +205,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           mdStore.marketDepths,
           instrumentsRes.instruments,
           account,
-          dbEquityStore,
-          dbTotalStore,
+          equity,
+          total,
         );
 
         return livePositions;

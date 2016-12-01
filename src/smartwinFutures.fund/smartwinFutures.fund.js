@@ -304,7 +304,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const liveAccount = calcLiveAccount(account, livePositions);
         const equity = getEquity();
         const total = getTotal();
-        const realEquity = calculations.calcRealEquity(liveAccount, equity, total);
+        const realEquity = calculations.calcRealEquity(liveAccount.balance, equity, total);
 
         const livePositionsLevelReport =
           calculations.getPositionsLevelReport(livePositions, realEquity);

@@ -218,5 +218,5 @@ message Position {
   double totalprofile = 22; // 累计实现盈亏
   string positiondate = 23; // 今仓昨仓 '1' '2' 默认今仓1
   string updatedate = 24; // 最新更新时间
-  double positionleverage = 25;
+  double leverage = 25;
 }

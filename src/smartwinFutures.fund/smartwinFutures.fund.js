@@ -57,6 +57,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         [
           dbFundStore,
           dbEquityStore,
+          dbTotalStore.totalDividendNetValue,
           dbTotalStore.totalFixedIncome,
           dbTotalStore.totalFixedIncomeReturns,
           dbTotalStore.totalCostOut,
@@ -65,6 +66,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         ] = await Promise.all([
           fundDB.get(fundid),
           equityDB.get(fundid, tradingdayStore),
+          equityDB.getTotalDividendNetValue(fundid, tradingdayStore),
           equityDB.getTotalFixedIncome(fundid, tradingdayStore),
           equityDB.getTotalFixedIncomeReturns(fundid, tradingdayStore),
           equityDB.getTotalCostOut(fundid, tradingdayStore),

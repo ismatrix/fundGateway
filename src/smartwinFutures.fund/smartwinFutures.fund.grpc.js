@@ -20,6 +20,7 @@ async function getOrders(call, callback) {
 
     const orders = fund.getOrders();
     debug('orders %o', orders);
+
     callback(null, orders);
   } catch (error) {
     logError('getOrders(): %o', error);
@@ -36,6 +37,7 @@ async function getTrades(call, callback) {
 
     const trades = fund.getTrades();
     debug('trades %o', trades);
+
     callback(null, trades);
   } catch (error) {
     logError('getTrades(): %o', error);
@@ -52,6 +54,7 @@ async function getAccount(call, callback) {
 
     const account = fund.getAccount();
     debug('account %o', account);
+
     callback(null, account);
   } catch (error) {
     logError('getAccount(): %o', error);
@@ -68,6 +71,7 @@ async function getPositions(call, callback) {
 
     const positions = fund.getPositions();
     debug('positions %o', positions);
+
     callback(null, positions);
   } catch (error) {
     logError('getPositions(): %o', error);
@@ -85,6 +89,7 @@ async function getLiveAccount(call, callback) {
 
     const liveAccount = await fund.getLiveAccount();
     debug('liveAccount %o', liveAccount);
+
     callback(null, liveAccount);
   } catch (error) {
     logError('getLiveAccount(): %o', error);
@@ -101,6 +106,7 @@ async function getLivePositions(call, callback) {
 
     const livePositions = await fund.getLivePositions();
     debug('livePositions %o', livePositions.map(({ instrumentid, positionprofit }) => ({ instrumentid, positionprofit })));
+
     callback(null, livePositions);
   } catch (error) {
     logError('getLivePositions(): %o', error);
@@ -117,9 +123,44 @@ async function getLiveNetValueAndEquityReport(call, callback) {
 
     const liveNetValueAndEquityReport = await fund.getLiveNetValueAndEquityReport();
     debug('liveNetValueAndEquityReport %o', liveNetValueAndEquityReport);
+
     callback(null, liveNetValueAndEquityReport);
   } catch (error) {
     logError('getLiveNetValueAndEquityReport(): %o', error);
+    callback(error);
+  }
+}
+
+async function getLivePositionsLevelReport(call, callback) {
+  try {
+    await grpcCan(call, 'read', 'getOrders');
+
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
+    const livePositionsLevelReport = await fund.getLivePositionsLevelReport();
+    debug('livePositionsLevelReport %o', livePositionsLevelReport);
+
+    callback(null, livePositionsLevelReport);
+  } catch (error) {
+    logError('getLivePositionsLevelReport(): %o', error);
+    callback(error);
+  }
+}
+
+async function getLivePositionsLeverageReport(call, callback) {
+  try {
+    await grpcCan(call, 'read', 'getOrders');
+
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
+    const livePositionsLeverageReport = await fund.getLivePositionsLeverageReport();
+    debug('livePositionsLeverageReport %o', livePositionsLeverageReport);
+
+    callback(null, livePositionsLeverageReport);
+  } catch (error) {
+    logError('getLivePositionsLeverageReport(): %o', error);
     callback(error);
   }
 }
@@ -279,6 +320,8 @@ const fundGrpcInterface = {
   getLiveAccount,
   getLivePositions,
   getLiveNetValueAndEquityReport,
+  getLivePositionsLevelReport,
+  getLivePositionsLeverageReport,
 
   placeOrder,
   cancelOrder,

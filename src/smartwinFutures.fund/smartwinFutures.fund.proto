@@ -11,6 +11,8 @@ service SmartwinFuturesFund {
   rpc GetLiveAccount(Fund) returns (Account) {}
   rpc GetLivePositions(Fund) returns (PositionsResponse) {}
   rpc GetLiveNetValueAndEquityReport(Fund) returns (LiveNetValueAndEquityReport) {}
+  rpc GetLivePositionsLevelReport(Fund) returns (LivePositionsLevelReport) {}
+  rpc GetLivePositionsLeverageReport(Fund) returns (LivePositionsLeverageReport) {}
 
   rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
@@ -73,6 +75,16 @@ message Netvalue {
   double settle = 6;
   double dividend = 7;
   double inferior = 8;
+}
+message LivePositionsLevelReport {
+  double total = 1;
+  double long = 2;
+  double short = 3;
+  double net = 4;
+}
+
+message LivePositionsLeverageReport {
+  double total = 1;
 }
 
 message PlaceOrder {
@@ -206,4 +218,5 @@ message Position {
   double totalprofile = 22; // 累计实现盈亏
   string positiondate = 23; // 今仓昨仓 '1' '2' 默认今仓1
   string updatedate = 24; // 最新更新时间
+  double positionleverage = 25;
 }

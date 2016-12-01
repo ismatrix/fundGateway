@@ -28,8 +28,6 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     let dbEquityStore = {};
     const dbTotalStore = {};
 
-    const liveEquityStore = {};
-
     const init = async () => {
       try {
         debug('init()');
@@ -76,8 +74,6 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('init() dbFundStore %o', dbFundStore);
         debug('init() dbEquityStore %o', dbEquityStore);
         debug('init() dbTotalStore %o', dbTotalStore);
-
-        Object.assign(liveEquityStore, dbEquityStore);
       } catch (error) {
         logError('init() %o', error);
       }
@@ -144,9 +140,40 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
+    const getFund = () => {
+      try {
+        const fund = Object.assign({}, dbFundStore);
+        return fund;
+      } catch (error) {
+        logError('getFund() %o', error);
+        throw error;
+      }
+    };
+
+    const getEquity = () => {
+      try {
+        const equity = Object.assign({}, dbEquityStore);
+        return equity;
+      } catch (error) {
+        logError('getEquity() %o', error);
+        throw error;
+      }
+    };
+
+    const getTotal = () => {
+      try {
+        const total = Object.assign({}, dbTotalStore);
+        return total;
+      } catch (error) {
+        logError('getTotal() %o', error);
+        throw error;
+      }
+    };
+
     const calcLivePositions = async () => {
       try {
         const positions = getPositions();
+        const account = getAccount();
 
         const subs = positions
           .filter(position => position.position !== 0)
@@ -172,7 +199,13 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('instruments: %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
 
         const livePositions = calculations.positionsToLivePositions(
-          positions, mdStore.marketDepths, instrumentsRes.instruments);
+          positions,
+          mdStore.marketDepths,
+          instrumentsRes.instruments,
+          account,
+          dbEquityStore,
+          dbTotalStore,
+        );
 
         return livePositions;
       } catch (error) {
@@ -195,12 +228,23 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
+    const calcLiveAccount = (account, livePositions) => {
+      try {
+        const liveAccount = calculations.accountToLiveAccount(account, livePositions);
+
+        return liveAccount;
+      } catch (error) {
+        logError('calcLiveAccount() %o', error);
+        throw error;
+      }
+    };
+
     const getLiveAccount = async () => {
       try {
         const account = getAccount();
         const livePositions = await getLivePositions();
 
-        const liveAccount = calculations.accountToLiveAccount(account, livePositions);
+        const liveAccount = calcLiveAccount(account, livePositions);
 
         return liveAccount;
       } catch (error) {
@@ -209,11 +253,23 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
+    const calcLiveEquity = (equity, liveAccount) => {
+      try {
+        const liveEquity = calculations.equityToLiveEquity(equity, liveAccount);
+
+        return liveEquity;
+      } catch (error) {
+        logError('calcLiveEquity() %o', error);
+        throw error;
+      }
+    };
+
     const getLiveEquity = async () => {
       try {
+        const equity = getEquity();
         const liveAccount = await getLiveAccount();
 
-        const liveEquity = calculations.equityToLiveEquity(liveEquityStore, liveAccount);
+        const liveEquity = calcLiveEquity(equity, liveAccount);
 
         return liveEquity;
       } catch (error) {
@@ -225,18 +281,51 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     const getLiveNetValueAndEquityReport = async () => {
       try {
         const tradingday = tradingdayStore;
-        const fundDBDoc = Object.assign({}, dbFundStore);
-        const equityDBDoc = await getLiveEquity();
-        const totalDoc = Object.assign({}, dbTotalStore);
+        const fund = getFund();
+        const total = getTotal();
+        const liveEquity = await getLiveEquity();
 
         const liveNetValueAndEquityReport =
-          calculations.getNetValueAndEquityReport(tradingday, fundDBDoc, equityDBDoc, totalDoc);
+          calculations.getNetValueAndEquityReport(tradingday, fund, liveEquity, total);
         liveNetValueAndEquityReport.updatedate =
           calculations.dateToISOStringWithTimezone(liveNetValueAndEquityReport.updatedate);
 
         return liveNetValueAndEquityReport;
       } catch (error) {
         logError('getLiveNetValueAndEquityReport() %o', error);
+        throw error;
+      }
+    };
+
+    const getLivePositionsLevelReport = async () => {
+      try {
+        const livePositions = await getLivePositions();
+        const account = getAccount();
+        const liveAccount = calcLiveAccount(account, livePositions);
+        const equity = getEquity();
+        const total = getTotal();
+        const realEquity = calculations.calcRealEquity(liveAccount, equity, total);
+
+        const livePositionsLevelReport =
+          calculations.getPositionsLevelReport(livePositions, realEquity);
+
+        return livePositionsLevelReport;
+      } catch (error) {
+        logError('getLivePositionsLevelReport() %o', error);
+        throw error;
+      }
+    };
+
+    const getLivePositionsLeverageReport = async () => {
+      try {
+        const livePositions = await getLivePositions();
+
+        const livePositionsLeverageReport =
+          calculations.getPositionsLeverageReport(livePositions);
+
+        return livePositionsLeverageReport;
+      } catch (error) {
+        logError('getLivePositionsLeverageReport() %o', error);
         throw error;
       }
     };
@@ -252,6 +341,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       getLiveAccount,
       getLivePositions,
       getLiveNetValueAndEquityReport,
+      getLivePositionsLevelReport,
+      getLivePositionsLeverageReport,
     };
     const fund = Object.assign(Object.create(broker), fundBase);
     return fund;

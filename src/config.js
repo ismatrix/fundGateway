@@ -199,7 +199,7 @@ export const fundConfigs = [
     broker: {
       name: 'ice',
       server: {
-        ip: '127.0.0.1',
+        ip: '120.76.98.94',
         port: '20032',
       },
     },

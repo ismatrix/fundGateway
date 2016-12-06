@@ -10,9 +10,10 @@ service SmartwinFuturesFund {
 
   rpc GetLiveAccount(Fund) returns (Account) {}
   rpc GetLivePositions(Fund) returns (PositionsResponse) {}
-  rpc GetLiveNetValueAndEquityReport(Fund) returns (LiveNetValueAndEquityReport) {}
-  rpc GetLivePositionsLevelReport(Fund) returns (LivePositionsLevelReport) {}
-  rpc GetLivePositionsLeverageReport(Fund) returns (LivePositionsLeverageReport) {}
+  rpc GetNetValueAndEquityReport(Fund) returns (NetValueAndEquityReport) {}
+  rpc GetPositionsLevelReport(Fund) returns (PositionsLevelReport) {}
+  rpc GetPositionsLeverageReport(Fund) returns (PositionsLeverageReport) {}
+  rpc GetCombinedReport(Fund) returns (CombinedReport) {}
 
   rpc PlaceOrder(PlaceOrder) returns (Empty) {}
   rpc CancelOrder(CancelOrder) returns (Empty) {}
@@ -49,7 +50,7 @@ message PositionsResponse {
   repeated Position positions = 1;
 }
 
-message LiveNetValueAndEquityReport {
+message NetValueAndEquityReport {
   string fundid = 1;
   string tradingday = 2;
   Equity equity = 3;
@@ -76,15 +77,21 @@ message Netvalue {
   double dividend = 7;
   double inferior = 8;
 }
-message LivePositionsLevelReport {
+message PositionsLevelReport {
   double total = 1;
   double long = 2;
   double short = 3;
   double net = 4;
 }
 
-message LivePositionsLeverageReport {
+message PositionsLeverageReport {
   double total = 1;
+}
+
+message CombinedReport {
+  NetValueAndEquityReport netValueAndEquityReport = 1;
+  PositionsLevelReport positionsLevelReport = 2;
+  PositionsLeverageReport positionsLeverageReport = 3;
 }
 
 message PlaceOrder {
@@ -219,4 +226,5 @@ message Position {
   string positiondate = 23; // 今仓昨仓 '1' '2' 默认今仓1
   string updatedate = 24; // 最新更新时间
   double leverage = 25;
+  double level = 26;
 }

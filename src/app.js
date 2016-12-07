@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import grpc from 'grpc';
 import program from 'commander';
+import pmx from 'pmx';
 import { upperFirst, uniq } from 'lodash';
 import fundGatewayGrpc from './fundGateway.grpc';
 import mongodb from './mongodb';
@@ -22,6 +23,11 @@ const grpcUrl = `${grpcConfig.ip}:${grpcConfig.port}`;
 const debug = createDebug(`app:main:${grpcUrl}`);
 const logError = createDebug(`app:main:${grpcUrl}`);
 logError.log = console.error.bind(console);
+
+pmx.init({
+  network: true,
+  ports: true,
+});
 
 async function init() {
   try {

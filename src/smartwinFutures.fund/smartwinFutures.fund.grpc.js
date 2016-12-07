@@ -252,6 +252,7 @@ async function makeFundStream(stream, eventName) {
     const listener = (eventData) => {
       try {
         stream.write(eventData);
+        if (eventName === 'fund:tradingday') logError('streamID: %o, eventData() %o', streamID, eventData);
       } catch (error) {
         logError('streamID: %o, listener() %o', streamID, error);
       }

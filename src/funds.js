@@ -36,6 +36,7 @@ async function addAndGetFund(config) {
     return newFund;
   } catch (error) {
     logError('addAndGetFund(): %o', error);
+    throw error;
   }
 }
 
@@ -61,6 +62,7 @@ function getFunds() {
     return fundsArr;
   } catch (error) {
     logError('getFunds(): %o', error);
+    throw error;
   }
 }
 
@@ -73,6 +75,7 @@ function getFundsPositions() {
     return allPositions;
   } catch (error) {
     logError('get(): %o', error);
+    throw error;
   }
 }
 
@@ -85,6 +88,7 @@ function getFundsConfigs() {
     return fundsConfigs;
   } catch (error) {
     logError('getFundsConfigs(): %o', error);
+    throw error;
   }
 }
 

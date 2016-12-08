@@ -95,7 +95,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const orders = ordersStore.map(elem => Object.assign({}, elem));
         return orders;
       } catch (error) {
-        logError('getOrders() %o', error);
+        logError('getOrders(): %o', error);
         throw error;
       }
     };
@@ -105,7 +105,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const trades = tradesStore.map(elem => Object.assign({}, elem));
         return trades;
       } catch (error) {
-        logError('getTrades() %o', error);
+        logError('getTrades(): %o', error);
         throw error;
       }
     };
@@ -115,7 +115,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const account = Object.assign({}, accountStore);
         return account;
       } catch (error) {
-        logError('getAccount() %o', error);
+        logError('getAccount(): %o', error);
         throw error;
       }
     };
@@ -125,7 +125,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const positions = positionsStore.map(elem => Object.assign({}, elem));
         return positions;
       } catch (error) {
-        logError('getPositions() %o', error);
+        logError('getPositions(): %o', error);
         throw error;
       }
     };
@@ -135,7 +135,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const fund = Object.assign({}, dbFundStore);
         return fund;
       } catch (error) {
-        logError('getFund() %o', error);
+        logError('getFund(): %o', error);
         throw error;
       }
     };
@@ -145,7 +145,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const equity = Object.assign({}, dbEquityStore);
         return equity;
       } catch (error) {
-        logError('getEquity() %o', error);
+        logError('getEquity(): %o', error);
         throw error;
       }
     };
@@ -155,7 +155,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const total = Object.assign({}, dbTotalStore);
         return total;
       } catch (error) {
-        logError('getTotal() %o', error);
+        logError('getTotal(): %o', error);
         throw error;
       }
     };
@@ -201,7 +201,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositions;
       } catch (error) {
-        logError('calcLivePositions() %o', error);
+        logError('calcLivePositions(): %o', error);
         throw error;
       }
     };
@@ -215,7 +215,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositions;
       } catch (error) {
-        logError('getLivePositions() %o', error);
+        logError('getLivePositions(): %o', error);
         throw error;
       }
     };
@@ -231,7 +231,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveAccount;
       } catch (error) {
-        logError('getLiveAccount() %o', error);
+        logError('getLiveAccount(): %o', error);
         throw error;
       }
     };
@@ -249,7 +249,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveEquity;
       } catch (error) {
-        logError('getLiveEquity() %o', error);
+        logError('getLiveEquity(): %o', error);
         throw error;
       }
     };
@@ -265,7 +265,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveNetValueAndEquityReport;
       } catch (error) {
-        logError('getNetValueAndEquityReport() %o', error);
+        logError('getNetValueAndEquityReport(): %o', error);
         throw error;
       }
     };
@@ -283,7 +283,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositionsLevelReport;
       } catch (error) {
-        logError('getPositionsLevelReport() %o', error);
+        logError('getPositionsLevelReport(): %o', error);
         throw error;
       }
     };
@@ -299,7 +299,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositionsLeverageReport;
       } catch (error) {
-        logError('getPositionsLeverageReport() %o', error);
+        logError('getPositionsLeverageReport(): %o', error);
         throw error;
       }
     };
@@ -323,7 +323,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveCombinedReport;
       } catch (error) {
-        logError('getCombinedReport() %o', error);
+        logError('getCombinedReport(): %o', error);
         throw error;
       }
     };
@@ -348,5 +348,6 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     return fund;
   } catch (error) {
     logError('createSmartwinFuturesFund(): %o', error);
+    throw error;
   }
 }

@@ -15,7 +15,7 @@ async function getFundsConfigs(call, callback) {
     debug('fundsConfigs %o', fundsConfigs);
     callback(null, { fundsConfigs });
   } catch (error) {
-    debug('Error getFundsConfigs(): %o', error);
+    logError('getFundsConfigs(): %o', error);
     callback(error);
   }
 }
@@ -29,7 +29,7 @@ async function addFund(call, callback) {
     await funds.addAndGetFund(fundConfig);
     callback(null, {});
   } catch (error) {
-    debug('Error addFund(): %o', error);
+    logError('addFund(): %o', error);
     callback(error);
   }
 }

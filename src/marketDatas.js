@@ -41,6 +41,7 @@ async function addAndGetMarketData(config) {
     return newMDGatewayClient;
   } catch (error) {
     logError('addMarketData(): %o', error);
+    throw error;
   }
 }
 
@@ -52,6 +53,7 @@ function getMarketData(config) {
     throw new Error('marketDataClient not found');
   } catch (error) {
     logError('getMarketData(): %o', error);
+    throw error;
   }
 }
 

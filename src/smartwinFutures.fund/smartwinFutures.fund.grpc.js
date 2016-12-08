@@ -260,7 +260,7 @@ async function makeFundStream(stream, eventName) {
 
     fund
       .on(eventName, listener)
-      .on('error', error => logError('streamID: %o, %o.onError: %o', streamID, eventName, error))
+      .on('error', error => logError('fund.on(error): streamID: %o, %o.onError: %o', streamID, eventName, error))
       ;
 
     stream
@@ -274,7 +274,7 @@ async function makeFundStream(stream, eventName) {
       })
       ;
   } catch (error) {
-    logError('Error setMarketDataStream() %o', error);
+    logError('setMarketDataStream(): %o', error);
     stream.emit('error', error);
   }
 }
@@ -360,6 +360,7 @@ export default function createGrpcInterface(uniqueServiceName, fundsModule) {
     funds = fundsModule;
     return fundGrpcInterface;
   } catch (error) {
-    logError('createGrpcInterface %o', error);
+    logError('createGrpcInterface(): %o', error);
+    throw error;
   }
 }

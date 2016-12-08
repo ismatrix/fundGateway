@@ -21,6 +21,7 @@ export default function createBroker(config) {
 
     return broker;
   } catch (error) {
-    logError('createBroker() %o', error);
+    logError('createBroker(): %o', error);
+    throw error;
   }
 }

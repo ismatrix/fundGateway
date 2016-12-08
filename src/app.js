@@ -23,6 +23,7 @@ const grpcUrl = `${grpcConfig.ip}:${grpcConfig.port}`;
 const debug = createDebug(`app:main:${grpcUrl}`);
 const logError = createDebug(`app:main:${grpcUrl}`);
 logError.log = console.error.bind(console);
+process.on('uncaughtException', error => logError('process.on(uncaughtException): %o', error));
 
 pmx.init({
   network: true,

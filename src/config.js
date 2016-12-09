@@ -38,7 +38,7 @@ export const fundConfigs = [
     marketData,
   },
   {
-    fundid: '75697',
+    fundid: '075697',
     serviceName: 'smartwinFuturesFund',
     broker: {
       name: 'ice',

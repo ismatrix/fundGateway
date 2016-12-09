@@ -5,11 +5,15 @@ import grpc from 'grpc';
 import program from 'commander';
 import pmx from 'pmx';
 import { upperFirst, uniq } from 'lodash';
+import {
+  fund as fundDB,
+} from 'sw-mongodb-crud';
 import fundGatewayGrpc from './fundGateway.grpc';
 import mongodb from './mongodb';
 import {
   mongodbUrl,
-  fundConfigs,
+  fundConfigs as localFundConfigs,
+  marketDataConfig,
   grpcConfig,
 } from './config';
 import funds from './funds';
@@ -17,6 +21,7 @@ import funds from './funds';
 program
   .version('1.0.2')
   .option('-c, --credentials-name [value]', 'the name of the server ssl credentials .crt/.key')
+  .option('-f, --fund-configs-source [value]', 'config.js|mongodb')
   .parse(process.argv);
 
 const grpcUrl = `${grpcConfig.ip}:${grpcConfig.port}`;
@@ -30,7 +35,7 @@ pmx.init({
   ports: true,
 });
 
-async function init() {
+async function init(fundConfigs) {
   try {
     await Promise.all([].concat(
       mongodb.connect(mongodbUrl),
@@ -44,7 +49,31 @@ async function init() {
 async function main() {
   try {
     debug('app.js main');
-    await init();
+
+    const fundConfigsSource = program.fundConfigsSource || 'config.js';
+
+    let fundConfigs;
+    if (fundConfigsSource === 'config.js') {
+      fundConfigs = localFundConfigs;
+    } else {
+      const dbFunds = await fundDB.getList({ state: 'online' }, {});
+      debug('dbFunds %o', dbFunds.map(f => f.fundid));
+      fundConfigs = dbFunds.map(dbFund => ({
+        fundid: dbFund.fundid,
+        serviceName: 'smartwinFuturesFund',
+        broker: {
+          name: 'ice',
+          server: {
+            ip: dbFund.service.ip,
+            port: dbFund.service.port,
+          },
+        },
+        marketData: marketDataConfig,
+      }));
+    }
+    debug('fundConfigs %o', fundConfigs.map(f => f.fundid));
+
+    await init(fundConfigs);
 
     const fundProto = grpc.load(__dirname.concat('/fundGateway.proto'));
 

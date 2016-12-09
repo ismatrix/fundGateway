@@ -8,7 +8,7 @@ npm install
 
 ## Dev
 ```
-DEBUG_FD=1 DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --log-date-format="MM-DD HH:mm:ss" --name fundGateway -- --credentials-name invesmart.win
+DEBUG_FD=1 DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --log-date-format="MM-DD HH:mm:ss" --name fundGateway -- --fund-configs-source mongodb --credentials-name invesmart.win
 ```
 
 ## Prod

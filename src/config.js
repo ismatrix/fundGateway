@@ -18,7 +18,7 @@ export const grpcConfig = {
 export const marketDataConfig = {
   serviceName: 'smartwinFuturesMd',
   server: {
-    ip: 'invesmart.win',
+    ip: 'markets.invesmart.net',
     port: '50052',
   },
   jwtoken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0',

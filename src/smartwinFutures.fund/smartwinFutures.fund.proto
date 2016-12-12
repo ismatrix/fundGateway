@@ -15,8 +15,8 @@ service SmartwinFuturesFund {
   rpc GetPositionsLeverageReport(Fund) returns (PositionsLeverageReport) {}
   rpc GetCombinedReport(Fund) returns (CombinedReport) {}
 
-  rpc PlaceOrder(PlaceOrder) returns (Empty) {}
-  rpc CancelOrder(CancelOrder) returns (Empty) {}
+  rpc PlaceOrder(PlaceOrderRequest) returns (Empty) {}
+  rpc CancelOrder(CancelOrderRequest) returns (Empty) {}
 
   rpc GetTradingday(Fund) returns (TradingdayResponse) {}
 
@@ -94,7 +94,7 @@ message CombinedReport {
   PositionsLeverageReport positionsLeverageReport = 3;
 }
 
-message PlaceOrder {
+message PlaceOrderRequest {&
   string fundid = 1; // 基金帐号
   string exchangeid = 2; // 交易所代码  ["SHFE", "上海期货交易所" ], [ "CZCE", "郑州商品交易所" ], [ "DCE", "大连商品交易所" ], [ "CFFEX", "中国金融期货交易所"]
   string brokerid = 3; // 经纪
@@ -115,7 +115,7 @@ message PlaceOrder {
   string requestid = 18;
 }
 
-message CancelOrder {
+message CancelOrderRequest {
   string fundid = 1;
   string sessionid = 2;
   string instrumentid = 3;

@@ -31,6 +31,8 @@ deploy:
     - npm --registry=https://registry.npm.taobao.org install
     - rm -Rf dist
     - npm run compile
+    - rm -rf /home/ops/production/fundGateway/crt
+    - ln -s /home/ops/victor/crt /home/ops/production/fundGateway/crt
     - pm2 restart fundGateway
   only:
     - master

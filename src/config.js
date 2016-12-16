@@ -61,18 +61,18 @@ export const fundConfigs = [
     },
     marketData: marketDataConfig,
   },
-  {
-    fundid: '1333',
-    serviceName: 'smartwinFuturesFund',
-    broker: {
-      name: 'ice',
-      server: {
-        ip: '120.76.98.94',
-        port: '20033',
-      },
-    },
-    marketData: marketDataConfig,
-  },
+  // {
+  //   fundid: '1333',
+  //   serviceName: 'smartwinFuturesFund',
+  //   broker: {
+  //     name: 'ice',
+  //     server: {
+  //       ip: '120.76.98.94',
+  //       port: '20033',
+  //     },
+  //   },
+  //   marketData: marketDataConfig,
+  // },
   // {
   //   fundid: '3000380',
   //   serviceName: 'smartwinFuturesFund',

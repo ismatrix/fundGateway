@@ -3,13 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import grpc from 'grpc';
 import program from 'commander';
-import pmx from 'pmx';
 import { upperFirst, uniq } from 'lodash';
 import {
   fund as fundDB,
 } from 'sw-mongodb-crud';
+import mongodb from 'sw-mongodb';
 import fundGatewayGrpc from './fundGateway.grpc';
-import mongodb from './mongodb';
 import {
   mongodbUrl,
   fundConfigs as localFundConfigs,
@@ -29,11 +28,6 @@ const debug = createDebug(`app:main:${grpcUrl}`);
 const logError = createDebug(`app:main:${grpcUrl}`);
 logError.log = console.error.bind(console);
 process.on('uncaughtException', error => logError('process.on(uncaughtException): %o', error));
-
-pmx.init({
-  network: true,
-  ports: true,
-});
 
 async function init(fundConfigs) {
   try {
@@ -77,7 +71,7 @@ async function main() {
 
     const fundProto = grpc.load(__dirname.concat('/fundGateway.proto'));
 
-    const credentialsName = program.credentialsName || 'server';
+    const credentialsName = program.credentialsName || 'localhost';
     const sslServerCrtPath = path.join(__dirname, `../crt/${credentialsName}.crt`);
     const sslServerKeyPath = path.join(__dirname, `../crt/${credentialsName}.key`);
     const sslServerCrt = fs.readFileSync(sslServerCrtPath);

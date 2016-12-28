@@ -82,7 +82,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         await init();
 
         debug(`${fundid}: ${new Date()}: broker:tradingday ${data}, previousMemoryTradingday ${previousMemoryTradingday}, tradingdayStore ${tradingdayStore}`);
-        if (data !== tradingdayStore) {
+        if (data !== previousMemoryTradingday) {
           broker.emit('fund:tradingday', data);
         }
       })

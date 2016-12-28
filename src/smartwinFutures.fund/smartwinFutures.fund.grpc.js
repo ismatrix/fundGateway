@@ -1,12 +1,18 @@
 import createDebug from 'debug';
 import grpcCan from '../acl';
+import { redis, redisSub } from '../redis';
 
 const debug = createDebug('app:smartwinFutures.fund.grpc');
 const logError = createDebug('app:smartwinFutures.fund.grpc:error');
 logError.log = console.error.bind(console);
 
+const grpcClientStreams = new Set();
 let serviceName;
 let funds;
+
+// Redis keys descriptions
+const SUBID_SESSIONIDS = 'subID|sessionIDs';
+const SUBID_BROKERDATA = 'subID|brokerData';
 
 function createCallID(call) {
   const sessionid = call.metadata.get('sessionid')[0];
@@ -19,6 +25,53 @@ function createCallID(call) {
 function createBetterCallID(callID, ...args) {
   return [callID, ...args].join('@');
 }
+
+function streamToSubID(stream, brokerName) {
+  const subID = [brokerName, stream.request.fundid, stream.dataType].join(':');
+  return subID;
+}
+
+async function removeSessionIDFromAllSubIDsByDataType(sessionID, dataType) {
+  try {
+    const allSubIDSessionIDsKeys = await redis.keysAsync(`${SUBID_SESSIONIDS}:*`);
+    const allDataTypeFilteredSessionIDs =
+      allSubIDSessionIDsKeys.filter(key => key.includes(dataType));
+
+    const isRemovedSessionID = await redis
+      .multi(allDataTypeFilteredSessionIDs.map(elem => (['SREM', elem, sessionID])))
+      .execAsync()
+      ;
+
+    const removedFromSessionIDs = allDataTypeFilteredSessionIDs.reduce((accu, curr, index) => {
+      if (isRemovedSessionID[index]) accu.push(curr.substr(SUBID_SESSIONIDS.length + 1));
+      return accu;
+    }, []);
+    debug('stream %o left these rooms %o', sessionID, removedFromSessionIDs);
+    return removedFromSessionIDs;
+  } catch (error) {
+    logError('removeSessionIDFromAllSubIDsByDataType(): %o', error);
+    throw error;
+  }
+}
+
+redisSub.on('message', async (room, message) => {
+  try {
+    debug('from room %o message %o', room, message);
+    const [keyType, key] = room.split('-');
+
+    if (keyType === SUBID_BROKERDATA) {
+      const subID = key;
+      debug('key %o', [SUBID_SESSIONIDS, subID].join('-'));
+      const subscribersSessionIDs = await redis.smembersAsync([SUBID_SESSIONIDS, subID].join('-'));
+      debug('subscribersSessionIDs %o', subscribersSessionIDs);
+      for (const stream of grpcClientStreams) {
+        if (subscribersSessionIDs.includes(stream.sessionID)) stream.write(JSON.parse(message));
+      }
+    }
+  } catch (error) {
+    logError('redisSub.on(message): %o', error);
+  }
+});
 
 async function getOrders(call, callback) {
   const callID = createCallID(call);
@@ -283,51 +336,54 @@ async function getTradingday(call, callback) {
   }
 }
 
-async function makeFundStream(stream, eventName) {
+async function getFundStream(stream, eventName) {
   const callID = createCallID(stream);
   try {
     const user = await grpcCan(stream, 'read', 'getOrders');
+    stream.user = user;
+    stream.sessionID = stream.metadata.get('sessionid')[0];
+
     const betterCallID = createBetterCallID(callID, user.userid, eventName);
-    debug('makeFundStream(): grpcCall from callID: %o', betterCallID);
+    debug('getFundStream(): grpcCall from callID: %o', betterCallID);
 
-    const fundid = stream.request.fundid;
-
-    const fund = funds.getFund({ serviceName, fundid });
-
-    const listener = (eventData) => {
-      try {
-        stream.write(eventData);
-        if (eventName === 'fund:tradingday') logError('listener(): write tradingday %o to callID: %o', eventData, betterCallID);
-      } catch (error) {
-        logError('listener(): callID: %o, %o', betterCallID, error);
-      }
-    };
-
-    fund
-      .on(eventName, listener)
-      .on('error', error => logError('fund.on(error): callID: %o, %o', betterCallID, error))
-      ;
+    grpcClientStreams.forEach((existingStream) => {
+      if (
+        existingStream.sessionID === stream.sessionID
+        && existingStream.dataType === stream.dataType
+      ) throw new Error(`you already opened a similar stream of type "${stream.dataType}"`);
+    });
 
     stream
-      .on('cancelled', () => {
-        logError('stream.on(cancelled): callID: %o, connection cancelled', betterCallID);
-        fund.removeListener(eventName, listener);
+      .on('cancelled', async () => {
+        try {
+          logError('stream.on(cancelled): callID: %o', betterCallID);
+          grpcClientStreams.delete(stream);
+          await removeSessionIDFromAllSubIDsByDataType(stream.sessionID, stream.dataType);
+        } catch (error) {
+          logError('stream.on(cancelled): %o', error);
+        }
       })
       .on('error', (error) => {
         logError('stream.on(error): callID: %o, %o', betterCallID, error);
-        fund.removeListener(eventName, listener);
+        grpcClientStreams.delete(stream);
       })
       ;
+
+    const fund = funds.getFund({ serviceName, fundid: stream.request.fundid });
+    const subID = streamToSubID(stream, fund.config.broker.name);
+    grpcClientStreams.add(stream);
+    await redis.saddAsync([SUBID_SESSIONIDS, subID].join('-'), stream.sessionID);
+    await redisSub.subscribeAsync([SUBID_BROKERDATA, subID].join('-'));
   } catch (error) {
-    logError('setMarketDataStream(): callID: %o, %o', callID, error);
+    logError('getFundStream(): callID: %o, %o', callID, error);
     stream.emit('error', error);
   }
 }
 
 async function getOrderStream(stream) {
   try {
-    const eventName = 'broker:order';
-    await makeFundStream(stream, eventName);
+    stream.dataType = 'order';
+    await getFundStream(stream);
   } catch (error) {
     logError('getOrderStream(): %o', error);
     stream.emit('error', error);
@@ -336,8 +392,8 @@ async function getOrderStream(stream) {
 
 async function getTradeStream(stream) {
   try {
-    const eventName = 'broker:trade';
-    await makeFundStream(stream, eventName);
+    stream.dataType = 'trade';
+    await getFundStream(stream);
   } catch (error) {
     logError('getTradeStream(): %o', error);
     stream.emit('error', error);
@@ -346,8 +402,8 @@ async function getTradeStream(stream) {
 
 async function getAccountStream(stream) {
   try {
-    const eventName = 'broker:account';
-    await makeFundStream(stream, eventName);
+    stream.dataType = 'account';
+    await getFundStream(stream);
   } catch (error) {
     logError('getAccountStream(): %o', error);
     stream.emit('error', error);
@@ -356,8 +412,8 @@ async function getAccountStream(stream) {
 
 async function getPositionsStream(stream) {
   try {
-    const eventName = 'broker:positions';
-    await makeFundStream(stream, eventName);
+    stream.dataType = 'positions';
+    await getFundStream(stream);
   } catch (error) {
     logError('getPositionsStream(): %o', error);
     stream.emit('error', error);
@@ -366,8 +422,8 @@ async function getPositionsStream(stream) {
 
 async function getTradingdayStream(stream) {
   try {
-    const eventName = 'fund:tradingday';
-    await makeFundStream(stream, eventName);
+    stream.dataType = 'tradingday';
+    await getFundStream(stream);
   } catch (error) {
     logError('getTradingdayStream(): %o', error);
     stream.emit('error', error);

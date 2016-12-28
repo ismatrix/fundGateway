@@ -5,6 +5,10 @@ import {
   equity as equityDB,
   fund as fundDB,
 } from 'sw-mongodb-crud';
+import { redis } from '../redis';
+
+// Redis keys descriptions
+const SUBID_BROKERDATA = 'subID|brokerData';
 
 export default function createSmartwinFuturesFund(config, broker, marketData) {
   const {
@@ -70,25 +74,65 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     };
 
     broker
-      .on('broker:order', (data) => { ordersStore.push(data); })
-      .on('broker:trade', (data) => { tradesStore.push(data); })
-      .on('broker:account', (data) => { accountStore = data; })
-      .on('broker:positions', (data) => {
-        positionsStore = data;
-      })
-      .on('broker:tradingday', async (data) => {
-        const previousMemoryTradingday = tradingdayStore;
-
-        await init();
-
-        debug(`${fundid}: ${new Date()}: broker:tradingday ${data}, previousMemoryTradingday ${previousMemoryTradingday}, tradingdayStore ${tradingdayStore}`);
-        if (data !== previousMemoryTradingday) {
-          broker.emit('fund:tradingday', data);
+      .on('order', async (data) => {
+        try {
+          ordersStore.push(data);
+          const subID = [config.broker.name, fundid, 'order'].join(':');
+          await redis.publishAsync([SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+        } catch (error) {
+          logError('broker.on(order) %o', error);
         }
       })
-      .on('broker:connect:success', async () => {
-        debug('broker:connect:success, start init()');
-        await init();
+      .on('trade', async (data) => {
+        try {
+          tradesStore.push(data);
+          const subID = [config.broker.name, fundid, 'trade'].join(':');
+          await redis.publishAsync([SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+        } catch (error) {
+          logError('broker.on(trade) %o', error);
+        }
+      })
+      .on('account', async (data) => {
+        try {
+          accountStore = data;
+          const subID = [config.broker.name, fundid, 'account'].join(':');
+          await redis.publishAsync([SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+        } catch (error) {
+          logError('broker.on(account) %o', error);
+        }
+      })
+      .on('positions', async (data) => {
+        try {
+          positionsStore = data;
+          const subID = [config.broker.name, fundid, 'positions'].join(':');
+          await redis.publishAsync([SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+        } catch (error) {
+          logError('broker.on(positions) %o', error);
+        }
+      })
+      .on('tradingday', async (data) => {
+        try {
+          const beforeInitTradingday = tradingdayStore.tradingday;
+
+          await init();
+
+          const subID = [config.broker.name, fundid, 'tradingday'].join(':');
+          logError('broker.on(tradingday): fundid %o, broker:tradingday %o, beforeInitTradingday %o', fundid, data.tradingday, beforeInitTradingday);
+
+          if (data.tradingday !== beforeInitTradingday) {
+            await redis.publishAsync([SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+          }
+        } catch (error) {
+          logError('broker.on(tradingday) %o', error);
+        }
+      })
+      .on('connect:success', async () => {
+        try {
+          debug('broker:connect:success, start init()');
+          await init();
+        } catch (error) {
+          logError('broker.on(connect:success) %o', error);
+        }
       })
       ;
 

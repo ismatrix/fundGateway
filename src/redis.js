@@ -29,6 +29,7 @@ function joinNamespace(keyDefinition, valueDefinition) {
 function joinFullKey(namespace, key) {
   return [namespace, key].join(ns.NSANDKEYSEP);
 }
+const join = joinFullKey;
 
 function joinSubKeys(...subKeys) {
   return [...subKeys].join(ns.SUBKEYSSEP);
@@ -55,12 +56,16 @@ function getSubKeys(fullKey) {
 
 const redisKeyDefs = Object.keys(redisConfig.keys);
 
+// Add redisConfig keys to ns object
 redisKeyDefs.reduce((accu, keyDef) => {
   for (const valueDef of redisConfig.keys[keyDef].valueDefs) {
     accu[''.concat(keyDef.toUpperCase(), ns.NSVARSEP, valueDef.toUpperCase())] = joinNamespace(keyDef, valueDef);
   }
   return accu;
 }, ns);
+
+// Add redisConfig constants to ns object
+if ('constants' in redisConfig) for (const constant of redisConfig.constants) ns[constant.toUpperCase()] = constant;
 
 function getSubKeysByNames(fullKey, ...subKeyNames) {
   try {
@@ -77,7 +82,7 @@ function getSubKeysByNames(fullKey, ...subKeyNames) {
       } else if (subKeyName === ns.KEY) {
         return getKey(fullKey);
       }
-      const indexOfSubKey = redisConfig.keys[keyDef].composition.indexOf(subKeyName);
+      const indexOfSubKey = redisConfig.keys[keyDef].subKeyDefs.indexOf(subKeyName);
       if (indexOfSubKey !== -1) return subKeys[indexOfSubKey];
       throw new Error(`cannot find the subkey ${subKeyName}`);
     });
@@ -90,6 +95,7 @@ function getSubKeysByNames(fullKey, ...subKeyNames) {
 const redisTools = {
   joinNamespace,
   joinFullKey,
+  join,
   joinSubKeys,
   getSubKeysByNames,
   getSubKeys,

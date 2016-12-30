@@ -14,7 +14,7 @@ export const redisConfig = {
   port: 6380,
   keys: {
     subID: {
-      composition: ['brokerName', 'fundID', 'dataType'],
+      subKeyDefs: ['brokerName', 'fundID', 'dataType'],
       valueDefs: ['sessionIDs', 'brokerData'],
     },
   },

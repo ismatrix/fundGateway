@@ -1,10 +1,7 @@
 import createDebug from 'debug';
 import { difference } from 'lodash';
 import grpcCan from '../acl';
-import {
-  redis,
-  redisSub,
-} from '../redis';
+import { redis, redisSub } from '../redis';
 
 const debug = createDebug('app:smartwinFutures.fund.grpc');
 const logError = createDebug('app:smartwinFutures.fund.grpc:error');
@@ -94,7 +91,7 @@ redisSub.on('message', async (room, message) => {
 
     if (keyNamespace === redis.SUBID_BROKERDATA) {
       const subscribersSessionIDs =
-        await redis.smembersAsync(redis.joinFullKey(redis.SUBID_SESSIONIDS, key));
+        await redis.smembersAsync(redis.join(redis.SUBID_SESSIONIDS, key));
 
       for (const stream of grpcClientStreams) {
         if (
@@ -407,8 +404,8 @@ async function getFundStream(stream, eventName) {
     const fund = funds.getFund({ serviceName, fundid: stream.request.fundid });
     const subID = streamToSubID(stream, fund.config.broker.name);
     grpcClientStreams.add(stream);
-    await redis.saddAsync(redis.joinFullKey(redis.SUBID_SESSIONIDS, subID), stream.sessionID);
-    await redisSub.subscribeAsync(redis.joinFullKey(redis.SUBID_BROKERDATA, subID));
+    await redis.saddAsync(redis.join(redis.SUBID_SESSIONIDS, subID), stream.sessionID);
+    await redisSub.subscribeAsync(redis.join(redis.SUBID_BROKERDATA, subID));
   } catch (error) {
     logError('getFundStream(): callID: %o, %o', callID, error);
     stream.emit('error', error);

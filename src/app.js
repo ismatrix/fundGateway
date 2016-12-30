@@ -4,18 +4,16 @@ import path from 'path';
 import grpc from 'grpc';
 import program from 'commander';
 import { upperFirst, uniq } from 'lodash';
-import {
-  fund as fundDB,
-} from 'sw-mongodb-crud';
+import { fund as fundDB } from 'sw-mongodb-crud';
 import mongodb from 'sw-mongodb';
 import fundGatewayGrpc from './fundGateway.grpc';
+import funds from './funds';
 import {
   mongodbUrl,
   fundConfigs as localFundConfigs,
   marketDataConfig,
   grpcConfig,
 } from './config';
-import funds from './funds';
 
 program
   .version('1.0.2')
@@ -33,7 +31,7 @@ async function init(fundConfigs) {
   try {
     await Promise.all([].concat(
       mongodb.connect(mongodbUrl),
-      fundConfigs.map(config => funds.addAndGetFund(config)),
+      fundConfigs.map(fundConfig => funds.addAndGetFund(fundConfig)),
     ));
   } catch (error) {
     logError('init(): %o', error);

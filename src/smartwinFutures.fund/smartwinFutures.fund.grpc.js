@@ -4,10 +4,6 @@ import grpcCan from '../acl';
 import {
   redis,
   redisSub,
-  redisTools as rt,
-  SUBID_SESSIONIDS,
-  SUBID_BROKERDATA,
-  NSANDKEYSEP,
 } from '../redis';
 
 const debug = createDebug('app:smartwinFutures.fund.grpc');
@@ -23,7 +19,7 @@ async function removeSessionIDsWithoutOpenStream() {
     const grpcClientStreamsArr = Array.from(grpcClientStreams);
     const allLocalSessionIDs = grpcClientStreamsArr.map(elem => elem.sessionID);
 
-    const allKeysHavingSessionIDs = await redis.keysAsync(SUBID_SESSIONIDS.concat(NSANDKEYSEP, '*'));
+    const allKeysHavingSessionIDs = await redis.keysAsync(redis.SUBID_SESSIONIDS.concat(redis.NSANDKEYSEP, '*'));
 
     if (allKeysHavingSessionIDs.length === 0) return;
 
@@ -59,18 +55,18 @@ function createBetterCallID(callID, ...args) {
 }
 
 function streamToSubID(stream, brokerName) {
-  const subID = rt.joinSubKeys(brokerName, stream.request.fundid, stream.dataType);
+  const subID = redis.joinSubKeys(brokerName, stream.request.fundid, stream.dataType);
   return subID;
 }
 
 async function removeSessionIDFromAllSubIDsByDataType(sessionID, dataType) {
   try {
-    const allSubIDSessionIDsKeys = await redis.keysAsync(SUBID_SESSIONIDS.concat(NSANDKEYSEP, '*'));
+    const allSubIDSessionIDsKeys = await redis.keysAsync(redis.SUBID_SESSIONIDS.concat(redis.NSANDKEYSEP, '*'));
     debug('allSubIDSessionIDsKeys %o', allSubIDSessionIDsKeys);
 
     const allDataTypeFilteredSessionIDs =
       allSubIDSessionIDsKeys.filter((fullKey) => {
-        const [keyDataType] = rt.getSubKeysByNames(fullKey, 'dataType');
+        const [keyDataType] = redis.getSubKeysByNames(fullKey, 'dataType');
         return keyDataType === dataType;
       });
     debug('allDataTypeFilteredSessionIDs %o', allDataTypeFilteredSessionIDs);
@@ -81,7 +77,7 @@ async function removeSessionIDFromAllSubIDsByDataType(sessionID, dataType) {
       ;
 
     const removedFromSessionIDs = allDataTypeFilteredSessionIDs.reduce((accu, curr, index) => {
-      if (isRemovedSessionID[index]) accu.push(curr.substr(SUBID_SESSIONIDS.length + 1));
+      if (isRemovedSessionID[index]) accu.push(curr.substr(redis.SUBID_SESSIONIDS.length + 1));
       return accu;
     }, []);
     debug('stream %o left these rooms %o', sessionID, removedFromSessionIDs);
@@ -94,11 +90,11 @@ async function removeSessionIDFromAllSubIDsByDataType(sessionID, dataType) {
 
 redisSub.on('message', async (room, message) => {
   try {
-    const [keyNamespace, key, dataType] = rt.getSubKeysByNames(room, 'namespace', 'key', 'dataType');
+    const [keyNamespace, key, dataType] = redis.getSubKeysByNames(room, 'namespace', 'key', 'dataType');
 
-    if (keyNamespace === SUBID_BROKERDATA) {
+    if (keyNamespace === redis.SUBID_BROKERDATA) {
       const subscribersSessionIDs =
-        await redis.smembersAsync(rt.joinFullKey(SUBID_SESSIONIDS, key));
+        await redis.smembersAsync(redis.joinFullKey(redis.SUBID_SESSIONIDS, key));
 
       for (const stream of grpcClientStreams) {
         if (
@@ -411,8 +407,8 @@ async function getFundStream(stream, eventName) {
     const fund = funds.getFund({ serviceName, fundid: stream.request.fundid });
     const subID = streamToSubID(stream, fund.config.broker.name);
     grpcClientStreams.add(stream);
-    await redis.saddAsync(rt.joinFullKey(SUBID_SESSIONIDS, subID), stream.sessionID);
-    await redisSub.subscribeAsync(rt.joinFullKey(SUBID_BROKERDATA, subID));
+    await redis.saddAsync(redis.joinFullKey(redis.SUBID_SESSIONIDS, subID), stream.sessionID);
+    await redisSub.subscribeAsync(redis.joinFullKey(redis.SUBID_BROKERDATA, subID));
   } catch (error) {
     logError('getFundStream(): callID: %o, %o', callID, error);
     stream.emit('error', error);

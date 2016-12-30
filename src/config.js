@@ -9,7 +9,16 @@ export const wechatConfig = {
 };
 
 export const mongodbUrl = 'mongodb://127.0.0.1:27017/smartwin';
-export const redisPort = 6380;
+
+export const redisConfig = {
+  port: 6380,
+  keys: {
+    subID: {
+      composition: ['brokerName', 'fundID', 'dataType'],
+      valueDefs: ['sessionIDs', 'brokerData'],
+    },
+  },
+};
 
 export const grpcConfig = {
   ip: '0.0.0.0',

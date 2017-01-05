@@ -23,6 +23,7 @@ const productionConfig = {
       },
     },
   },
+  marketDataConfig,
   fundConfigs: [
     {
       fundid: '068074',

@@ -13,6 +13,7 @@ service SmartwinFuturesFund {
   rpc GetNetValueAndEquityReport(Fund) returns (NetValueAndEquityReport) {}
   rpc GetPositionsLevelReport(Fund) returns (PositionsLevelReport) {}
   rpc GetPositionsLeverageReport(Fund) returns (PositionsLeverageReport) {}
+  rpc GetAllPeriodsDrawdownReport(Fund) returns (AllPeriodsDrawdownReport) {}
   rpc GetCombinedReport(Fund) returns (CombinedReport) {}
 
   rpc PlaceOrder(PlaceOrderRequest) returns (Empty) {}
@@ -88,10 +89,21 @@ message PositionsLeverageReport {
   double total = 1;
 }
 
+message DrawdownReport {
+  double peak = 1;
+  double maxDrawdown = 2;
+}
+
+message AllPeriodsDrawdownReport {
+  DrawdownReport history = 1;
+  DrawdownReport today = 2;
+}
+
 message CombinedReport {
   NetValueAndEquityReport netValueAndEquityReport = 1;
   PositionsLevelReport positionsLevelReport = 2;
   PositionsLeverageReport positionsLeverageReport = 3;
+  AllPeriodsDrawdownReport allPeriodsDrawdownReport = 4;
 }
 
 message PlaceOrderRequest {

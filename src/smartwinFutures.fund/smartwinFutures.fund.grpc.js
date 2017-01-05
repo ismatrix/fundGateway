@@ -286,6 +286,25 @@ async function getPositionsLeverageReport(call, callback) {
   }
 }
 
+async function getAllPeriodsDrawdownReport(call, callback) {
+  const callID = createCallID(call);
+  try {
+    const user = await grpcCan(call, 'read', 'getOrders');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    debug('getAllPeriodsDrawdownReport(): grpcCall from callID: %o', betterCallID);
+
+    const fundid = call.request.fundid;
+    const fund = funds.getFund({ serviceName, fundid });
+
+    const drawdownReport = await fund.getAllPeriodsDrawdownReport();
+
+    callback(null, drawdownReport);
+  } catch (error) {
+    logError('getAllPeriodsDrawdownReport(): callID: %o, %o', callID, error);
+    callback(error);
+  }
+}
+
 async function getCombinedReport(call, callback) {
   const callID = createCallID(call);
   try {
@@ -473,6 +492,7 @@ const fundGrpcInterface = {
   getNetValueAndEquityReport,
   getPositionsLevelReport,
   getPositionsLeverageReport,
+  getAllPeriodsDrawdownReport,
   getCombinedReport,
 
   placeOrder,

@@ -29,6 +29,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     let dbEquityStore = {};
     let dbTotalStore = {};
 
+    let allPeriodsDrawdownReportStore = {};
+
     const init = async () => {
       try {
         debug('init()');
@@ -53,20 +55,41 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('init() positionsStore %o', positionsStore);
         debug('init() tradingdayStore %o', tradingdayStore);
 
+        let equities = {};
         [
           dbFundStore,
           dbEquityStore,
           dbTotalStore,
+          equities,
         ] = await Promise.all([
           fundDB.get(fundid),
           equityDB.get(fundid, tradingdayStore),
           equityDB.getTotal(fundid, tradingdayStore),
+          equityDB.getList({ fundid }),
         ]);
+
+        const netValues =
+          calculations.createNetValueAndEquityReports(equities, dbFundStore)
+          .map(report => report.netvalue);
+        allPeriodsDrawdownReportStore = calculations.createAllPeriodsDrawdownReport(netValues);
         debug('init() dbFundStore %o', dbFundStore);
         debug('init() dbEquityStore %o', dbEquityStore);
         debug('init() dbTotalStore %o', dbTotalStore);
+        debug('init() allPeriodsDrawdownReportStore %o', allPeriodsDrawdownReportStore);
       } catch (error) {
         logError('init() %o', error);
+        throw error;
+      }
+    };
+
+    const initOnNewTradingday = async () => {
+      try {
+        debug('initOnNewTradingday()');
+        allPeriodsDrawdownReportStore.today.peak = -1;
+        allPeriodsDrawdownReportStore.today.maxDrawdown = 0;
+      } catch (error) {
+        logError('initOnNewTradingday() %o', error);
+        throw error;
       }
     };
 
@@ -118,6 +141,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
           if (data.tradingday !== beforeInitTradingday) {
             await redis.publishAsync([redis.SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+            initOnNewTradingday();
           }
         } catch (error) {
           logError('broker.on(tradingday) %o', error);
@@ -347,6 +371,24 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
+    const updateAllPeriodsDrawdownReport = netValue =>
+      calculations.updateAllPeriodsDrawdownReport(allPeriodsDrawdownReportStore, netValue);
+
+    const getAllPeriodsDrawdownReport = async () => {
+      try {
+        const liveEquity = await getLiveEquity();
+        const liveNetValueAndEquityReport = calcNetValueAndEquityReport(liveEquity);
+
+        const allPeriodsDrawdownReport =
+          updateAllPeriodsDrawdownReport(liveNetValueAndEquityReport.netvalue);
+
+        return allPeriodsDrawdownReport;
+      } catch (error) {
+        logError('getAllPeriodsDrawdownReport(): %o', error);
+        throw error;
+      }
+    };
+
     const getCombinedReport = async () => {
       try {
         const livePositions = await getLivePositions();
@@ -357,11 +399,14 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const positionsLevelReport = calcPositionsLevelReport(livePositions, realEquity);
         const positionsLeverageReport = calcPositionsLeverageReport(livePositions);
         const netValueAndEquityReport = calcNetValueAndEquityReport(liveEquity);
+        const allPeriodsDrawdownReport =
+          updateAllPeriodsDrawdownReport(netValueAndEquityReport.netvalue);
 
         const liveCombinedReport = {
           positionsLevelReport,
           positionsLeverageReport,
           netValueAndEquityReport,
+          allPeriodsDrawdownReport,
         };
 
         return liveCombinedReport;
@@ -385,6 +430,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       getNetValueAndEquityReport,
       getPositionsLevelReport,
       getPositionsLeverageReport,
+      getAllPeriodsDrawdownReport,
       getCombinedReport,
     };
     const fund = Object.assign(Object.create(broker), fundBase);

@@ -4,16 +4,11 @@ import path from 'path';
 import grpc from 'grpc';
 import program from 'commander';
 import { upperFirst, uniq } from 'lodash';
-import { fund as fundDB } from 'sw-mongodb-crud';
 import mongodb from 'sw-mongodb';
+import crud from 'sw-mongodb-crud';
 import fundGatewayGrpc from './fundGateway.grpc';
 import funds from './funds';
-import {
-  mongodbUrl,
-  fundConfigs as localFundConfigs,
-  marketDataConfig,
-  grpcConfig,
-} from './config';
+import config from './config';
 
 program
   .version('1.0.2')
@@ -21,16 +16,18 @@ program
   .option('-f, --fund-configs-source [value]', 'config.js|mongodb')
   .parse(process.argv);
 
-const grpcUrl = `${grpcConfig.ip}:${grpcConfig.port}`;
+const grpcUrl = `${config.grpcConfig.ip}:${config.grpcConfig.port}`;
 const debug = createDebug(`app:main:${grpcUrl}`);
 const logError = createDebug(`app:main:${grpcUrl}`);
 logError.log = console.error.bind(console);
-process.on('uncaughtException', error => logError('process.on(uncaughtException): %o', error));
+process
+ .on('uncaughtException', error => logError('process.on(uncaughtException): %o', error))
+ .on('warning', warning => logError('process.on(warning): %o', warning))
+ ;
 
 async function init(fundConfigs) {
   try {
     await Promise.all([].concat(
-      mongodb.connect(mongodbUrl),
       fundConfigs.map(fundConfig => funds.addAndGetFund(fundConfig)),
     ));
   } catch (error) {
@@ -41,14 +38,16 @@ async function init(fundConfigs) {
 async function main() {
   try {
     debug('app.js main');
+    const dbInstance = await mongodb.getDB(config.mongodbURL);
+    crud.setDB(dbInstance);
 
     const fundConfigsSource = program.fundConfigsSource || 'config.js';
 
     let fundConfigs;
     if (fundConfigsSource === 'config.js') {
-      fundConfigs = localFundConfigs;
+      fundConfigs = config.fundConfigs;
     } else {
-      const dbFunds = await fundDB.getList({ state: 'online' }, {});
+      const dbFunds = await crud.fund.getList({ state: 'online' }, {});
       debug('dbFunds %o', dbFunds.map(f => f.fundid));
       fundConfigs = dbFunds.map(dbFund => ({
         fundid: dbFund.fundid,
@@ -60,7 +59,7 @@ async function main() {
             port: dbFund.service.port,
           },
         },
-        marketData: marketDataConfig,
+        marketData: config.marketDataConfig,
       }));
     }
     debug('fundConfigs %o', fundConfigs.map(f => f.fundid));

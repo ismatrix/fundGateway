@@ -1,10 +1,7 @@
 import createDebug from 'debug';
 import { throttle } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
-import {
-  equity as equityDB,
-  fund as fundDB,
-} from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 import { redis } from '../redis';
 
 export default function createSmartwinFuturesFund(config, broker, marketData) {
@@ -62,10 +59,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           dbTotalStore,
           equities,
         ] = await Promise.all([
-          fundDB.get(fundid),
-          equityDB.get(fundid, tradingdayStore),
-          equityDB.getTotal(fundid, tradingdayStore),
-          equityDB.getList({ fundid }),
+          crud.fund.get(fundid),
+          crud.equity.get(fundid, tradingdayStore),
+          crud.equity.getTotal(fundid, tradingdayStore),
+          crud.equity.getList({ fundid }),
         ]);
 
         const netValues =

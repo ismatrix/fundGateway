@@ -8,13 +8,13 @@ npm install
 
 ## Dev
 ```
-DEBUG_FD=1 DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --log-date-format="MM-DD HH:mm:ss" --name fundGateway --node-args="--inspect=9230" -- --fund-configs-source config.js --credentials-name localhost
+NODE_ENV=development DEBUG_FD=1 DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --log-date-format="MM-DD HH:mm:ss" --name fundGateway --node-args="--inspect=9230" -- --fund-configs-source config.js --credentials-name localhost
 ```
 
 ## Prod
 ```
 npm run compile
-DEBUG_FD=1 DEBUG=*,-babel,-sw-fund-smartwin-futures-calculations:* DEBUG_COLORS=true pm2 start dist/app.js --log-date-format="MM-DD HH:mm:ss" --name fundGateway --node-args="--inspect=9240" -- --fund-configs-source mongodb --credentials-name funds.invesmart.net
+NODE_ENV=production DEBUG_FD=1 DEBUG=*,-babel,-sw-fund-smartwin-futures-calculations:* DEBUG_COLORS=true pm2 start dist/app.js --log-date-format="MM-DD HH:mm:ss" --name fundGateway --node-args="--inspect=9240" -- --fund-configs-source mongodb --credentials-name funds.invesmart.net
 ```
 
 ## Logs

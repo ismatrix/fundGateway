@@ -251,12 +251,16 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           return positions;
         }
 
-        debug('marketDephts: %o', mdStore.marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
+        // keep only same day quotes
+        const marketDepths =
+          mdStore.marketDepths.filter(marketDepth => marketDepth.tradingDay === tradingdayStore);
+
+        debug('marketDephts: %o', marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
         debug('instruments: %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
 
         const livePositions = calculations.positionsToLivePositions(
           positions,
-          mdStore.marketDepths,
+          marketDepths,
           instrumentsRes.instruments,
           account,
           equity,

@@ -58,6 +58,6 @@ const developmentConfig = Object.assign(
   }
 );
 
-const config = process.env.NODE_ENV === 'production' ? productionConfig : developmentConfig;
+const config = process.env.NODE_ENV === 'development' ? developmentConfig : productionConfig;
 
 export default config;

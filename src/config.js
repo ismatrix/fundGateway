@@ -51,7 +51,7 @@ const productionConfig = {
   ],
 };
 
-const developmentConfig = Object.assign(
+const developmentConfig = Object.assign({},
   productionConfig,
   {
     mongodbURL: 'mongodb://127.0.0.1:27018/smartwin',

@@ -38,6 +38,7 @@ async function init(fundConfigs) {
 async function main() {
   try {
     debug('app.js main');
+    debug('config %o', config);
     const dbInstance = await mongodb.getDB(config.mongodbURL);
     crud.setDB(dbInstance);
 

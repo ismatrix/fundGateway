@@ -336,9 +336,9 @@ async function placeOrder(call, callback) {
     const fund = funds.getFund({ serviceName, fundid });
 
     delete call.request.fundid;
-    await fund.order(call.request);
+    const privateno = await fund.order(call.request);
 
-    callback(null, {});
+    callback(null, { privateno });
   } catch (error) {
     logError('placeOrder(): callID: %o, %o', callID, error);
     callback(error);

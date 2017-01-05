@@ -16,7 +16,7 @@ service SmartwinFuturesFund {
   rpc GetAllPeriodsDrawdownReport(Fund) returns (AllPeriodsDrawdownReport) {}
   rpc GetCombinedReport(Fund) returns (CombinedReport) {}
 
-  rpc PlaceOrder(PlaceOrderRequest) returns (Empty) {}
+  rpc PlaceOrder(PlaceOrderRequest) returns (PlaceOrderResponse) {}
   rpc CancelOrder(CancelOrderRequest) returns (Empty) {}
 
   rpc GetTradingday(Fund) returns (TradingdayResponse) {}
@@ -125,6 +125,10 @@ message PlaceOrderRequest {
   string signalname	= 16; // "signal.name",*/
   string tradingday = 17;
   string requestid = 18;
+}
+
+message PlaceOrderResponse {
+  string privateno = 1; // tdLive doOrder()的返回值
 }
 
 message CancelOrderRequest {

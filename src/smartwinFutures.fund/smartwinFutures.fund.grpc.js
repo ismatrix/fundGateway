@@ -63,7 +63,7 @@ async function removeSessionIDFromAllSubIDsByDataType(sessionID, dataType) {
 
     const allDataTypeFilteredSessionIDs =
       allSubIDSessionIDsKeys.filter((fullKey) => {
-        const [keyDataType] = redis.getSubKeysByNames(fullKey, 'dataType');
+        const [keyDataType] = redis.getFullKeyParts(fullKey, 'dataType');
         return keyDataType === dataType;
       });
     debug('allDataTypeFilteredSessionIDs %o', allDataTypeFilteredSessionIDs);
@@ -87,7 +87,7 @@ async function removeSessionIDFromAllSubIDsByDataType(sessionID, dataType) {
 
 redisSub.on('message', async (room, message) => {
   try {
-    const [keyNamespace, key, dataType] = redis.getSubKeysByNames(room, 'namespace', 'key', 'dataType');
+    const [keyNamespace, key, dataType] = redis.getFullKeyParts(room, 'namespace', 'key', 'dataType');
 
     if (keyNamespace === redis.SUBID_BROKERDATA) {
       const subscribersSessionIDs =

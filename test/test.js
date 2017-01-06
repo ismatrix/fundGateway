@@ -1,4 +1,3 @@
-// import createDebug from 'debug';
 import fs from 'fs';
 import path from 'path';
 import createGrpcClient from 'sw-grpc-client';
@@ -12,27 +11,13 @@ const md = createGrpcClient({
   serviceName: 'smartwinFuturesFund',
   fundid: '068074',
   server: {
+    // ip: 'funds.invesmart.net',
     ip: 'localhost',
     port: '50051',
   },
   jwtoken,
   sslCaCrt,
 });
-
-const symbols = ['ag1712'];
-
-const marketDepthSubscriptions = [
-    { symbol: 'ag1712', resolution: 'snapshot', dataType: 'marketDepth' },
-];
-const barSubscriptions = [
-    { symbol: 'ag1712', resolution: 'minute', dataType: 'bar' },
-];
-const tickerSubscriptions = [
-    { symbol: 'ag1712', resolution: 'snapshot', dataType: 'ticker' },
-];
-const dayBarSubscriptions = [
-    { symbol: 'ag1712', resolution: 'snapshot', dataType: 'dayBar' },
-];
 
 describe('#getOrders()', () => {
   it('success', () => md.getOrders());
@@ -81,7 +66,7 @@ describe('#placeOrder()', () => {
     ordertype: '1',
     direction: 'buy',
     offsetflag: 'open',
-    price: 4242,
+    price: 4257,
     volume: 1,
     strategyid: 'test',
     userid: '',

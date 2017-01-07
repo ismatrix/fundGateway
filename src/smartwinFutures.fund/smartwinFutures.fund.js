@@ -231,7 +231,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         const equity = getEquity();
         const total = getTotal();
 
-        const subs = positions
+        const subscriptions = positions
           .filter(position => position.position !== 0)
           .map(position => ({
             symbol: position.instrumentid,
@@ -239,12 +239,15 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
             dataType: 'marketDepth',
           }))
           ;
-        debug('subs from positions %o', subs);
+
+        if (subscriptions.length === 0) return positions;
+
         const symbols = positions.map(position => position.instrumentid);
+        debug('query mdGateway for positions symbols: %o', symbols);
 
         const [mdStore, instrumentsRes] = await Promise.all([
-          marketData.getLastMarketDepths(subs),
-          marketData.getInstruments(symbols),
+          marketData.getLastMarketDepths({ subscriptions }),
+          marketData.getInstruments({ symbols }),
         ]);
 
         if (!('marketDepths' in mdStore) || !('instruments' in instrumentsRes)) {

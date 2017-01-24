@@ -9,7 +9,7 @@ logError.log = console.error.bind(console);
 async function getFundsConfigs(call, callback) {
   try {
     debug('getFundsConfigs()');
-    await can.grpc(call, 'get', 'fundid:all/configs');
+    await can.grpc(call, 'get', 'fundGateway/configs');
 
     const fundsConfigs = funds.getFundsConfigs();
     debug('fundsConfigs %o', fundsConfigs);

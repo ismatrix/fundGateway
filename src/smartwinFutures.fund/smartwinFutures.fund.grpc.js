@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 import { difference } from 'lodash';
-import grpcCan from '../acl';
+import can from 'sw-can';
 import { redis, redisSub } from '../redis';
 
 const debug = createDebug('app:smartwinFutures.fund.grpc');
@@ -108,7 +108,7 @@ redisSub.on('message', async (room, message) => {
 async function getOrders(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/orders');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getOrders(): grpcCall from callID: %o', betterCallID);
 
@@ -128,7 +128,7 @@ async function getOrders(call, callback) {
 async function getTrades(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/trades');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getTrades(): grpcCall from callID: %o', betterCallID);
 
@@ -148,7 +148,7 @@ async function getTrades(call, callback) {
 async function getAccount(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/account');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getAccount(): grpcCall from callID: %o', betterCallID);
 
@@ -168,7 +168,7 @@ async function getAccount(call, callback) {
 async function getPositions(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/positions');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getPositions(): grpcCall from callID: %o', betterCallID);
 
@@ -189,7 +189,7 @@ async function getPositions(call, callback) {
 async function getLiveAccount(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/liveAccount');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getLiveAccount(): grpcCall from callID: %o', betterCallID);
 
@@ -209,7 +209,7 @@ async function getLiveAccount(call, callback) {
 async function getLivePositions(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/livePositions');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getLivePositions(): grpcCall from callID: %o', betterCallID);
 
@@ -229,7 +229,7 @@ async function getLivePositions(call, callback) {
 async function getNetValueAndEquityReport(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/netValueAndEquityReport');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getNetValueAndEquityReport(): grpcCall from callID: %o', betterCallID);
 
@@ -249,7 +249,7 @@ async function getNetValueAndEquityReport(call, callback) {
 async function getPositionsLevelReport(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/positionsLevelReport');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getPositionsLevelReport(): grpcCall from callID: %o', betterCallID);
 
@@ -269,7 +269,7 @@ async function getPositionsLevelReport(call, callback) {
 async function getPositionsLeverageReport(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/positionsLeverageReport');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getPositionsLeverageReport(): grpcCall from callID: %o', betterCallID);
 
@@ -289,7 +289,7 @@ async function getPositionsLeverageReport(call, callback) {
 async function getAllPeriodsDrawdownReport(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/allPeriodsDrawdownReport');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getAllPeriodsDrawdownReport(): grpcCall from callID: %o', betterCallID);
 
@@ -308,7 +308,7 @@ async function getAllPeriodsDrawdownReport(call, callback) {
 async function getCombinedReport(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/combinedReport');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getCombinedReport(): grpcCall from callID: %o', betterCallID);
 
@@ -328,11 +328,11 @@ async function getCombinedReport(call, callback) {
 async function placeOrder(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const fundid = call.request.fundid;
+    const user = await can.grpc(call, 'add', `fundid:${fundid}/order`);
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('placeOrder(): grpcCall from callID: %o', betterCallID);
 
-    const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
     delete call.request.fundid;
@@ -350,11 +350,11 @@ async function placeOrder(call, callback) {
 async function cancelOrder(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const fundid = call.request.fundid;
+    const user = await can.grpc(call, 'delete', `fundid:${fundid}/order`);
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('cancelOrder(): grpcCall from callID: %o', betterCallID);
 
-    const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
     const sessionid = call.request.sessionid;
@@ -374,7 +374,7 @@ async function cancelOrder(call, callback) {
 async function getTradingday(call, callback) {
   const callID = createCallID(call);
   try {
-    const user = await grpcCan(call, 'read', 'getOrders');
+    const user = await can.grpc(call, 'get', 'fundid:all/tradingday');
     const betterCallID = createBetterCallID(callID, user.userid);
     debug('getTradingday(): grpcCall from callID: %o', betterCallID);
 
@@ -389,14 +389,14 @@ async function getTradingday(call, callback) {
   }
 }
 
-async function getFundStream(stream, eventName) {
+async function getFundStream(stream) {
   const callID = createCallID(stream);
   try {
-    const user = await grpcCan(stream, 'read', 'getOrders');
+    const user = await can.grpc(stream, 'get', `fundid:all/${stream.dataType}Stream`);
     stream.user = user;
     stream.sessionID = stream.metadata.get('sessionid')[0];
 
-    const betterCallID = createBetterCallID(callID, user.userid, eventName);
+    const betterCallID = createBetterCallID(callID, user.userid);
     debug('getFundStream(): grpcCall from callID: %o', betterCallID);
 
     grpcClientStreams.forEach((existingStream) => {

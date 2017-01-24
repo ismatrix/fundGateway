@@ -6,6 +6,7 @@ import program from 'commander';
 import { upperFirst, uniq } from 'lodash';
 import mongodb from 'sw-mongodb';
 import crud from 'sw-mongodb-crud';
+import can from 'sw-can';
 import fundGatewayGrpc from './fundGateway.grpc';
 import funds from './funds';
 import config from './config';
@@ -41,6 +42,10 @@ async function main() {
     debug('config %o', config);
     const dbInstance = await mongodb.getDB(config.mongodbURL);
     crud.setDB(dbInstance);
+
+    // init can module with ACL
+    const acl = await dbInstance.collection('ACL').find().toArray();
+    can.init({ jwtSecret: config.jwtSecret, acl });
 
     const fundConfigsSource = program.fundConfigsSource || 'config.js';
 

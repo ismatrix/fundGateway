@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import grpcCan from './acl';
+import can from 'sw-can';
 import funds from './funds';
 
 const debug = createDebug('app:fundGatewayAdmin.grpc');
@@ -9,7 +9,7 @@ logError.log = console.error.bind(console);
 async function getFundsConfigs(call, callback) {
   try {
     debug('getFundsConfigs()');
-    await grpcCan(call, 'read', 'getOrders');
+    await can.grpc(call, 'get', 'fundid:all/configs');
 
     const fundsConfigs = funds.getFundsConfigs();
     debug('fundsConfigs %o', fundsConfigs);
@@ -23,7 +23,7 @@ async function getFundsConfigs(call, callback) {
 async function addFund(call, callback) {
   try {
     debug('addFund()');
-    await grpcCan(call, 'read', 'getOrders');
+    await can.grpc(call, 'add', 'fundGateway/fund');
 
     const fundConfig = call.request;
     await funds.addAndGetFund(fundConfig);

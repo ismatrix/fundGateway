@@ -247,7 +247,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         const [mdStore, instrumentsRes] = await Promise.all([
           marketData.getLastMarketDepths({ subscriptions }),
-          marketData.getInstruments({ symbols }),
+          marketData.getMemoryInstruments({ symbols }),
         ]);
 
         if (!('marketDepths' in mdStore) || !('instruments' in instrumentsRes)) {

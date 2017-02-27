@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import { throttle } from 'lodash';
+import { throttle, isEmpty } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
 import crud from 'sw-mongodb-crud';
 import { redis } from '../redis';
@@ -153,6 +153,52 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         }
       })
       ;
+
+    const placeOrder = async (order) => {
+      try {
+        debug('order: %o', order);
+        if (!['limitPrice', '1'].includes(order.ordertype)) {
+          try {
+            const subscriptions = [{
+              symbol: order.instrumentid,
+              resolution: 'snapshot',
+              dataType: 'marketDepth',
+            }];
+
+            const lastMDsResponse = await marketData.getLastMarketDepths({ subscriptions });
+            const lastMD = lastMDsResponse.marketDepths[0];
+            debug('placeOrder getLastMarketDepths: %o', lastMD);
+
+            if (['marketPrice', 'anyPrice', '0'].includes(order.ordertype)) {
+              order.price = order.direction === 'buy' ? lastMD.askPrice1 : lastMD.bidPrice1;
+            } else if (order.ordertype === 'bestPrice') {
+              order.price = order.direction === 'buy' ? lastMD.askPrice1 : lastMD.bidPrice1;
+            } else if (order.ordertype === 'lastPrice') {
+              order.price = lastMD.lastPrice;
+            } else if (order.ordertype === 'askPrice1') {
+              order.price = lastMD.askPrice1;
+            } else if (order.ordertype === 'bidPrice1') {
+              order.price = lastMD.bidPrice1;
+            }
+
+            order.ordertype = '1';
+          } catch (error) {
+            logError('placeOrder(): %o', error);
+            throw new Error(`Failed to get ${order.ordertype}`);
+          }
+        }
+
+        const privatenoInt = await broker.order(order);
+
+        const privateno = privatenoInt.toString();
+        const placeOrderResponse = { privateno };
+
+        return placeOrderResponse;
+      } catch (error) {
+        logError('placeOrder(): %o', error);
+        throw error;
+      }
+    };
 
     const getOrders = () => {
       try {
@@ -424,6 +470,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       config,
       fundid,
       init,
+      placeOrder,
       getOrders,
       getTrades,
       getAccount,

@@ -20,50 +20,62 @@ const md = createGrpcClient({
 });
 
 describe('#getOrders()', () => {
-  it('success', () => md.getOrders());
+  it('getOrders', () => md.getOrders());
 });
 
 describe('#getTrades()', () => {
-  it('success', () => md.getTrades());
+  it('getTrades', () => md.getTrades());
 });
 
 describe('#getAccount()', () => {
-  it('success', () => md.getAccount());
+  it('getAccount', () => md.getAccount());
 });
 
 describe('#getPositions()', () => {
-  it('success', () => md.getPositions());
+  it('getPositions', () => md.getPositions());
 });
 
 describe('#getLiveAccount()', () => {
-  it('success', () => md.getLiveAccount());
+  it('getLiveAccount', () => md.getLiveAccount());
 });
 
 describe('#getLivePositions()', () => {
-  it('success', () => md.getLivePositions());
+  it('getLivePositions', () => md.getLivePositions());
 });
 
 describe('#getNetValueAndEquityReport()', () => {
-  it('success', () => md.getNetValueAndEquityReport());
+  it('getNetValueAndEquityReport', () => md.getNetValueAndEquityReport());
 });
 
 describe('#getPositionsLevelReport()', () => {
-  it('success', () => md.getPositionsLevelReport());
+  it('getPositionsLevelReport', () => md.getPositionsLevelReport());
 });
 
 describe('#getPositionsLeverageReport()', () => {
-  it('success', () => md.getPositionsLeverageReport());
+  it('getPositionsLeverageReport', () => md.getPositionsLeverageReport());
 });
 
 describe('#getCombinedReport()', () => {
-  it('success', () => md.getCombinedReport());
+  it('getCombinedReport', () => md.getCombinedReport());
 });
 
 describe('#placeOrder()', () => {
-  it('success', () => md.placeOrder({
+  it('placeLimitOrder', () => md.placeOrder({
     exchangeid: 'SHFE',
     instrumentid: 'ag1712',
     ordertype: '1',
+    direction: 'buy',
+    offsetflag: 'open',
+    price: 4257,
+    volume: 1,
+    strategyid: 'test',
+    userid: '',
+    signalname: 'test',
+  }));
+  it('placeBestPriceOrder', () => md.placeOrder({
+    exchangeid: 'SHFE',
+    instrumentid: 'ag1712',
+    ordertype: 'bestPrice',
     direction: 'buy',
     offsetflag: 'open',
     price: 4257,

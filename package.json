@@ -5,7 +5,7 @@
   "main": "dist/app",
   "scripts": {
     "start": "node dist/app",
-    "test": "mocha --compilers js:babel-register",
+    "test": "mocha $(find test -name '*test.js') --compilers js:babel-register",
     "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files"
   },
   "repository": {
@@ -36,7 +36,7 @@
     "redis": "^2.6.5",
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.20",
     "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.0",
-    "sw-fund-smartwin-futures-calculations": "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.23",
+    "sw-fund-smartwin-futures-calculations": "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.24",
     "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.26",
     "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3",
     "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.0",

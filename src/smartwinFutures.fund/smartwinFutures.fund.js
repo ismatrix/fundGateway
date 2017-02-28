@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import { throttle, isEmpty } from 'lodash';
+import { throttle } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
 import crud from 'sw-mongodb-crud';
 import { redis } from '../redis';
@@ -95,7 +95,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         try {
           ordersStore.push(data);
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'order');
-          await redis.publishAsync([redis.SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+          await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
         } catch (error) {
           logError('broker.on(order) %o', error);
         }
@@ -104,7 +104,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         try {
           tradesStore.push(data);
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'trade');
-          await redis.publishAsync([redis.SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+          await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
         } catch (error) {
           logError('broker.on(trade) %o', error);
         }
@@ -113,7 +113,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         try {
           accountStore = data;
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'account');
-          await redis.publishAsync([redis.SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+          await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
         } catch (error) {
           logError('broker.on(account) %o', error);
         }
@@ -122,7 +122,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         try {
           positionsStore = data;
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'positions');
-          await redis.publishAsync([redis.SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+          await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
         } catch (error) {
           logError('broker.on(positions) %o', error);
         }
@@ -137,7 +137,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           logError('broker.on(tradingday): fundid %o, broker:tradingday %o, beforeInitTradingday %o', fundid, data.tradingday, beforeInitTradingday);
 
           if (data.tradingday !== beforeInitTradingday) {
-            await redis.publishAsync([redis.SUBID_BROKERDATA, subID].join('-'), JSON.stringify(data));
+            await redis.publishAsync(
+                redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
             initOnNewTradingday();
           }
         } catch (error) {

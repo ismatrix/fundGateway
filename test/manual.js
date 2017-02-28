@@ -9,9 +9,9 @@ const jwtoken = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDN
 const sslCaCrtPath = path.join(__dirname, '../crt/rootCA.pem');
 const sslCaCrt = fs.readFileSync(sslCaCrtPath);
 
-const md = createGrpcClient({
+const fund = createGrpcClient({
   serviceName: 'smartwinFuturesFund',
-  fundid: '068074',
+  fundid: '068074-sub1',
   server: {
     // ip: 'funds.invesmart.net',
     ip: 'localhost',
@@ -21,20 +21,29 @@ const md = createGrpcClient({
   sslCaCrt,
 });
 
-async function main() {
-  const placeOrderResponse = await md.placeOrder({
-    exchangeid: 'SHFE',
-    instrumentid: 'ag1712',
-    ordertype: 'bestPrice',
-    direction: 'buy',
-    offsetflag: 'open',
-    price: 4257,
-    volume: 1,
-    strategyid: 'test',
-    userid: '',
-    signalname: 'test',
-  });
+const streams = fund.getStreams('tradingday', 'order', 'positions', 'account', 'trade');
+streams
+  .on('tradingday', tradingday => debug('tradingday %o', tradingday))
+  .on('order', order => debug('order %o', order))
+  .on('positions', positions => debug('positions %o', positions))
+  .on('account', account => debug('account %o', account))
+  .on('trade', trade => debug('trade %o', trade))
+  ;
 
-  debug('placeOrderResponse: %o', placeOrderResponse);
-}
-main();
+// async function main() {
+//   const placeOrderResponse = await fund.placeOrder({
+//     exchangeid: 'SHFE',
+//     instrumentid: 'ag1712',
+//     ordertype: 'bestPrice',
+//     direction: 'buy',
+//     offsetflag: 'open',
+//     price: 4257,
+//     volume: 1,
+//     strategyid: 'test',
+//     userid: '',
+//     signalname: 'test',
+//   });
+//
+//   debug('placeOrderResponse: %o', placeOrderResponse);
+// }
+// main();

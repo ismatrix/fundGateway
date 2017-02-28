@@ -110,11 +110,11 @@ message PlaceOrderRequest {
   string fundid = 1; // 基金帐号
   string exchangeid = 2; // 交易所代码  ["SHFE", "上海期货交易所" ], [ "CZCE", "郑州商品交易所" ], [ "DCE", "大连商品交易所" ], [ "CFFEX", "中国金融期货交易所"]
   string brokerid = 3; // 经纪
-  string instrumentid = 4; // 合约
-  string ordertype = 5; // 订单类型		[ "limitPrice", "marketPrice", "bestPrice", "lastPrice", "askPrice1", "bidPrice1" ]
-  string direction = 6; // 多空方向		[ "buy", "买入" ], [ "sell", "卖出" ]
-  string offsetflag = 7; // 买卖标志		[ "open", "开仓" ], [ "close", "平仓" ]
-  string hedgeflag = 8; // 套保			[ "speculation", "投机/非备兑" ], [ "hedge", "保值/备兑" ], [ "arbitrage", "套利" ]   我们只用到speculation
+  string instrumentid = 4; // 合约 "IF1608"
+  string ordertype = 5; // 订单类型	["limitPrice":限价, "marketPrice":市价, "bestPrice":对手方最优, "lastPrice":最新价, "askPrice1":卖一价, "bidPrice1":买一价]
+  string direction = 6; // 多空方向	["buy", "买入" ], [ "sell", "卖出" ]
+  string offsetflag = 7; // 买卖标志	["open", "开仓" ], [ "close", "平仓" ]
+  string hedgeflag = 8; // 套保	["speculation", "投机/非备兑" ], [ "hedge", "保值/备兑" ], [ "arbitrage", "套利" ]   我们只用到speculation
   double price = 9; // 委托价格
   int32 volume = 10; // 委托数量
   string donetype = 11; // 成交类型		[ "0", "GFD当日有效" ], [ "1", "FOK限价全成或全撤" ], [ "2", "FAK限价立即成交剩余撤销" ], [ "3", "IOC立即成交剩余自动撤销" ]  0 2 3有效。 2=3

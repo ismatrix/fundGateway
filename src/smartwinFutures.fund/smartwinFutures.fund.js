@@ -189,6 +189,46 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           }
         }
 
+        if (order.offsetflag === 'close') {
+          const directionMap = { buy: 'short', sell: 'long' };
+
+          const positionToClose = positionsStore.find(position => (
+              position.instrumentid === order.instrumentid
+              && position.direction === directionMap[order.direction])
+          );
+
+          if (positionToClose === undefined) {
+            throw new Error(`No existing position to close with symbol: ${order.instrumentid} AND direction: ${directionMap[order.direction]}`);
+          }
+
+          if (positionToClose.preholdposition === 0) {
+            // all positions are opened today
+            order.offsetflag = 'closetoday';
+          } else if (order.volume <= positionToClose.preholdposition) {
+            // order volume to close will close positions opened yesterday
+            order.offsetflag = 'closeyesterday';
+          } else {
+            // Need 2 orders to close all yesterday's positions + part of today's positions
+            const yesterdayVolumeToClose = positionToClose.preholdposition;
+            const todayVolumeToClose = order.volume - yesterdayVolumeToClose;
+
+            const yesterdayPositionsOrder = Object.assign(
+              {}, order, { offsetflag: 'closeyesterday', volume: yesterdayVolumeToClose });
+            const todayPositionsOrder = Object.assign(
+              {}, order, { offsetflag: 'closetoday', volume: todayVolumeToClose });
+
+            const privatenoInts = await Promise.all(
+              broker.order(yesterdayPositionsOrder),
+              broker.order(todayPositionsOrder),
+            );
+            const placeOrderResponse = {
+              privateno: privatenoInts.join(','),
+            };
+
+            return placeOrderResponse;
+          }
+        }
+
         const privatenoInt = await broker.order(order);
 
         const privateno = privatenoInt.toString();

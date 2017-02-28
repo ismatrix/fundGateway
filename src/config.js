@@ -38,6 +38,18 @@ const productionConfig = {
       marketData: marketDataConfig,
     },
     {
+      fundid: '068074-sub1',
+      serviceName: 'smartwinFuturesFund',
+      broker: {
+        name: 'ice',
+        server: {
+          ip: '120.76.98.94',
+          port: '20002',
+        },
+      },
+      marketData: marketDataConfig,
+    },
+    {
       fundid: '075697',
       serviceName: 'smartwinFuturesFund',
       broker: {

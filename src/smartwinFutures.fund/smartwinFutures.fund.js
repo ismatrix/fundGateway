@@ -170,7 +170,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
             const lastMD = lastMDsResponse.marketDepths[0];
             debug('placeOrder getLastMarketDepths: %o', lastMD);
 
-            if (['marketPrice', 'anyPrice', '0'].includes(order.ordertype)) {
+            if (['marketPrice', '0'].includes(order.ordertype)) {
               order.price = order.direction === 'buy' ? lastMD.askPrice1 : lastMD.bidPrice1;
             } else if (order.ordertype === 'bestPrice') {
               order.price = order.direction === 'buy' ? lastMD.askPrice1 : lastMD.bidPrice1;
@@ -180,6 +180,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
               order.price = lastMD.askPrice1;
             } else if (order.ordertype === 'bidPrice1') {
               order.price = lastMD.bidPrice1;
+            } else {
+              throw new Error(`Invalid order.ordertype: ${order.ordertype}`);
             }
 
             order.ordertype = '1';
@@ -192,13 +194,21 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         if (order.offsetflag === 'close') {
           const directionMap = { buy: 'short', sell: 'long' };
 
-          const positionToClose = positionsStore.find(position => (
-              position.instrumentid === order.instrumentid
-              && position.direction === directionMap[order.direction])
-          );
+          const positionToClose = positionsStore.reduce((accu, position) => {
+            if (position.instrumentid === order.instrumentid
+            && position.direction === directionMap[order.direction]) {
+              accu.preholdposition += position.preholdposition;
+              accu.todayholdposition += position.todayholdposition;
+            }
+            return accu;
+          }, {
+            preholdposition: 0,
+            todayholdposition: 0,
+          });
+          debug('positionToClose: %o', positionToClose);
 
-          if (positionToClose === undefined) {
-            throw new Error(`No existing position to close with symbol: ${order.instrumentid} AND direction: ${directionMap[order.direction]}`);
+          if (positionToClose.preholdposition === 0 && positionToClose.todayholdposition === 0) {
+            throw new Error(`No existing position for the symbol: ${order.instrumentid} WITH direction: ${directionMap[order.direction]}`);
           }
 
           if (positionToClose.preholdposition === 0) {
@@ -217,10 +227,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
             const todayPositionsOrder = Object.assign(
               {}, order, { offsetflag: 'closetoday', volume: todayVolumeToClose });
 
-            const privatenoInts = await Promise.all(
+            const privatenoInts = await Promise.all([
               broker.order(yesterdayPositionsOrder),
               broker.order(todayPositionsOrder),
-            );
+            ]);
             const placeOrderResponse = {
               privateno: privatenoInts.join(','),
             };

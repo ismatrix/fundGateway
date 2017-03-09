@@ -35,7 +35,7 @@
     "lodash": "^4.17.4",
     "redis": "^2.6.5",
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.20",
-    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.0",
+    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.1",
     "sw-fund-smartwin-futures-calculations": "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.24",
     "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.26",
     "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3",

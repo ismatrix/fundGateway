@@ -2117,9 +2117,9 @@ supports-color@^2.0.0:
     sw-ice-common "git+ssh://git@code.invesmart.net:8800/npm/sw-ice-common.git#v1.0.6"
     sw-ice-tradesession "git+ssh://git@code.invesmart.net:8800/npm/sw-ice-tradesession.git#v1.0.7"
 
-"sw-can@git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.0":
-  version "1.0.0"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#28b02ce365ab2828941b508053aceb087c4b4906"
+"sw-can@git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.1":
+  version "1.0.1"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#d55624a9834535c88f1cdaf8b39e1903a747a2cf"
   dependencies:
     acl "^0.4.10"
     bluebird "^3.4.7"

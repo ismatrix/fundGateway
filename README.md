@@ -8,7 +8,7 @@ npm install
 
 ## Dev
 ```
-NODE_ENV=development DEBUG_FD=1 DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --log-date-format="MM-DD HH:mm:ss" --name fundGateway --node-args="--inspect=9230" -- --fund-configs-source config.js --credentials-name localhost
+NODE_ENV=development DEBUG_FD=1 DEBUG=*,-babel DEBUG_COLORS=true pm2 start src/index.js --watch src --no-autorestart --log-date-format="MM-DD HH:mm:ss" --name fundGateway --node-args="--inspect=9230" -- --fund-configs-source config.js --credentials-name localhost
 ```
 
 ## Prod

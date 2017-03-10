@@ -2181,23 +2181,16 @@ supports-color@^2.0.0:
   dependencies:
     sw-ice-common "git+ssh://git@code.invesmart.net:8800/npm/sw-ice-common.git#v1.0.6"
 
-"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.0":
-  version "2.0.0"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#9897b27c411954a61cce3c45b66096d3d581b129"
+"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.2":
+  version "2.0.2"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#93f234e0e3141a56024fdf6ec1b70381ae394000"
   dependencies:
     babel-register "^6.18.0"
     debug "^2.6.0"
     lodash "^4.17.4"
     moment "^2.17.1"
     sw-fund-smartwin-futures-calculations "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.23"
-    sw-mongodb "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.2"
-
-"sw-mongodb@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.2":
-  version "1.0.2"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#23e72983c8def19bea5d51fe991073d1ddf528f6"
-  dependencies:
-    debug "^2.3.3"
-    mongodb "^2.2.16"
+    sw-mongodb "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3"
 
 "sw-mongodb@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3":
   version "1.0.3"

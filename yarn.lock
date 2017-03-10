@@ -399,11 +399,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.0.2, bluebird@^3.4.7:
-  version "3.4.7"
-  resolved "http://registry.npm.taobao.org/bluebird/download/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
-
-bluebird@^3.5.0:
+bluebird@^3.0.2, bluebird@^3.4.7, bluebird@^3.5.0:
   version "3.5.0"
   resolved "http://registry.npm.taobao.org/bluebird/download/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
 
@@ -2128,12 +2124,12 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "http://registry.npm.taobao.org/supports-color/download/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
-"sw-broker-ice@git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.20":
-  version "1.0.20"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#de1a8fa6d3ac40d28f54d54cc787233283517e6c"
+"sw-broker-ice@git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.21":
+  version "1.0.21"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#c6255da1abd884b57411800e8c56d55ec4daaa36"
   dependencies:
-    babel-register "^6.18.0"
-    debug "^2.2.0"
+    babel-register "^6.23.0"
+    debug "^2.6.1"
     ice "^3.6.3"
     sw-ice-common "git+ssh://git@code.invesmart.net:8800/npm/sw-ice-common.git#v1.0.6"
     sw-ice-tradesession "git+ssh://git@code.invesmart.net:8800/npm/sw-ice-tradesession.git#v1.0.7"

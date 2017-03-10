@@ -50,7 +50,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('init() tradesStore %o', tradesStore);
         debug('init() accountStore %o', accountStore);
         debug('init() positionsStore %o', positionsStore);
-        debug('init() tradingdayStore %o', tradingdayStore);
+        logError('init() tradingdayStore %o', tradingdayStore);
 
         let equities = {};
         [
@@ -129,7 +129,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       })
       .on('tradingday', async (data) => {
         try {
-          const beforeInitTradingday = tradingdayStore.tradingday;
+          const beforeInitTradingday = tradingdayStore;
 
           await init();
 
@@ -139,7 +139,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           if (data.tradingday !== beforeInitTradingday) {
             await redis.publishAsync(
                 redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
-            initOnNewTradingday();
+            await initOnNewTradingday();
           }
         } catch (error) {
           logError('broker.on(tradingday) %o', error);
@@ -153,6 +153,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           logError('broker.on(connect:success) %o', error);
         }
       })
+      .on('error', error => logError('broker.on(error) %o', error))
       ;
 
     const placeOrder = async (order) => {

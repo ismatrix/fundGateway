@@ -48,7 +48,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         ]);
         debug('init() ordersStore %o', ordersStore);
         debug('init() tradesStore %o', tradesStore);
-        debug('init() accountStore %o', accountStore);
+        logError('init() accountStore %o', accountStore);
         debug('init() positionsStore %o', positionsStore);
         logError('init() tradingdayStore %o', tradingdayStore);
 
@@ -93,6 +93,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     broker
       .on('order', async (data) => {
         try {
+          logError('broker.on(order) %o', data);
           ordersStore.push(data);
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'order');
           await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));

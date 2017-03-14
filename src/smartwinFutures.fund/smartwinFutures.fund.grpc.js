@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import { difference } from 'lodash';
 import can from 'sw-can';
+import crud from 'sw-mongodb-crud';
 import { redis, redisSub } from '../redis';
 
 const debug = createDebug('app:smartwinFutures.fund.grpc');
@@ -242,6 +243,25 @@ async function getNetValueAndEquityReport(call, callback) {
     callback(null, netValueAndEquityReport);
   } catch (error) {
     logError('getNetValueAndEquityReport(): callID: %o, %o', callID, error);
+    callback(error);
+  }
+}
+
+async function getNetValueAndEquityReports(call, callback) {
+  const callID = createCallID(call);
+  try {
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    debug('getNetValueAndEquityReports(): grpcCall from callID: %o', betterCallID);
+
+    const fundid = call.request.fundid;
+
+    const netValueAndEquityReports = await crud.equity.getNetLines(fundid);
+    debug('netValueAndEquityReports %o', netValueAndEquityReports[0]);
+
+    callback(null, { netValueAndEquityReports });
+  } catch (error) {
+    logError('getNetValueAndEquityReports(): callID: %o, %o', callID, error);
     callback(error);
   }
 }
@@ -497,6 +517,7 @@ const fundGrpcInterface = {
   getLiveAccount,
   getLivePositions,
   getNetValueAndEquityReport,
+  getNetValueAndEquityReports,
   getPositionsLevelReport,
   getPositionsLeverageReport,
   getAllPeriodsDrawdownReport,

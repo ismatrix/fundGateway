@@ -11,6 +11,7 @@ service SmartwinFuturesFund {
   rpc GetLiveAccount(Fund) returns (Account) {}
   rpc GetLivePositions(Fund) returns (PositionsResponse) {}
   rpc GetNetValueAndEquityReport(Fund) returns (NetValueAndEquityReport) {}
+  rpc GetNetValueAndEquityReports(Fund) returns (NetValueAndEquityReports) {}
   rpc GetPositionsLevelReport(Fund) returns (PositionsLevelReport) {}
   rpc GetPositionsLeverageReport(Fund) returns (PositionsLeverageReport) {}
   rpc GetAllPeriodsDrawdownReport(Fund) returns (AllPeriodsDrawdownReport) {}
@@ -51,6 +52,10 @@ message PositionsResponse {
   repeated Position positions = 1;
 }
 
+message NetValueAndEquityReports {
+  repeated NetValueAndEquityReport netValueAndEquityReports = 1;
+}
+
 message NetValueAndEquityReport {
   string fundid = 1;
   string tradingday = 2;
@@ -77,6 +82,7 @@ message Netvalue {
   double settle = 6;
   double dividend = 7;
   double inferior = 8;
+  double returns = 9;
 }
 message PositionsLevelReport {
   double total = 1;

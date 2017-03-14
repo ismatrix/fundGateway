@@ -209,35 +209,40 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           });
           debug('positionToClose: %o', positionToClose);
 
+          const totalVolume = positionToClose.preholdposition + positionToClose.todayholdposition;
+          order.volume = Math.min(order.volume, totalVolume);
+
           if (positionToClose.preholdposition === 0 && positionToClose.todayholdposition === 0) {
             throw new Error(`No existing position for the symbol: ${order.instrumentid} WITH direction: ${directionMap[order.direction]}`);
           }
 
-          if (positionToClose.preholdposition === 0) {
-            // all positions are opened today
-            order.offsetflag = 'closetoday';
-          } else if (order.volume <= positionToClose.preholdposition) {
-            // order volume to close will close positions opened yesterday
-            order.offsetflag = 'closeyesterday';
-          } else {
-            // Need 2 orders to close all yesterday's positions + part of today's positions
-            const yesterdayVolumeToClose = positionToClose.preholdposition;
-            const todayVolumeToClose = order.volume - yesterdayVolumeToClose;
+          if (order.exchangeid === 'SHFE') {
+            if (positionToClose.preholdposition === 0) {
+              // all positions are opened today
+              order.offsetflag = 'closetoday';
+            } else if (order.volume <= positionToClose.preholdposition) {
+              // order volume to close will close positions opened yesterday
+              order.offsetflag = 'closeyesterday';
+            } else {
+              // Need 2 orders to close all yesterday's positions + part of today's positions
+              const yesterdayVolumeToClose = positionToClose.preholdposition;
+              const todayVolumeToClose = order.volume - yesterdayVolumeToClose;
 
-            const yesterdayPositionsOrder = Object.assign(
-              {}, order, { offsetflag: 'closeyesterday', volume: yesterdayVolumeToClose });
-            const todayPositionsOrder = Object.assign(
-              {}, order, { offsetflag: 'closetoday', volume: todayVolumeToClose });
+              const yesterdayPositionsOrder = Object.assign(
+                {}, order, { offsetflag: 'closeyesterday', volume: yesterdayVolumeToClose });
+              const todayPositionsOrder = Object.assign(
+                {}, order, { offsetflag: 'closetoday', volume: todayVolumeToClose });
 
-            const privatenoInts = await Promise.all([
-              broker.order(yesterdayPositionsOrder),
-              broker.order(todayPositionsOrder),
-            ]);
-            const placeOrderResponse = {
-              privateno: privatenoInts.join(','),
-            };
+              const privatenoInts = await Promise.all([
+                broker.order(yesterdayPositionsOrder),
+                broker.order(todayPositionsOrder),
+              ]);
+              const placeOrderResponse = {
+                privateno: privatenoInts.join(','),
+              };
 
-            return placeOrderResponse;
+              return placeOrderResponse;
+            }
           }
         }
 

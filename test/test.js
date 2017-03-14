@@ -19,47 +19,26 @@ const md = createGrpcClient({
   sslCaCrt,
 });
 
-describe('#getOrders()', () => {
+describe('#FUND()', () => {
   it('getOrders', () => md.getOrders());
-});
-
-describe('#getTrades()', () => {
   it('getTrades', () => md.getTrades());
-});
-
-describe('#getAccount()', () => {
   it('getAccount', () => md.getAccount());
-});
-
-describe('#getPositions()', () => {
   it('getPositions', () => md.getPositions());
-});
-
-describe('#getLiveAccount()', () => {
   it('getLiveAccount', () => md.getLiveAccount());
-});
-
-describe('#getLivePositions()', () => {
   it('getLivePositions', () => md.getLivePositions());
+  it('getTradingday', () => md.getTradingday());
 });
 
-describe('#getNetValueAndEquityReport()', () => {
+describe('#REPORTS', () => {
   it('getNetValueAndEquityReport', () => md.getNetValueAndEquityReport());
-});
-
-describe('#getPositionsLevelReport()', () => {
+  it('getNetValueAndEquityReports', () => md.getNetValueAndEquityReports());
   it('getPositionsLevelReport', () => md.getPositionsLevelReport());
-});
-
-describe('#getPositionsLeverageReport()', () => {
   it('getPositionsLeverageReport', () => md.getPositionsLeverageReport());
-});
-
-describe('#getCombinedReport()', () => {
   it('getCombinedReport', () => md.getCombinedReport());
 });
 
-describe('#placeOrder()', () => {
+
+describe('#ORDERS()', () => {
   it('placeLimitOrder', () => md.placeOrder({
     exchangeid: 'SHFE',
     instrumentid: 'ag1712',
@@ -90,26 +69,10 @@ describe('#placeOrder()', () => {
 //   it('success', () => md.cancelOrder());
 // });
 
-describe('#getTradingday()', () => {
-  it('success', () => md.getTradingday());
-});
-
-describe('#getOrderStream()', () => {
-  it('success', () => md.getOrderStream({}).on('data', () => {}));
-});
-
-describe('#getTradeStream()', () => {
-  it('success', () => md.getTradeStream({}).on('data', () => {}));
-});
-
-describe('#getAccountStream()', () => {
-  it('success', () => md.getAccountStream({}).on('data', () => {}));
-});
-
-describe('#getPositionsStream()', () => {
-  it('success', () => md.getPositionsStream({}).on('data', () => {}));
-});
-
-describe('#getTradingdayStream()', () => {
-  it('success', () => md.getPositionsStream({}).on('data', () => {}));
+describe('#STREAMS()', () => {
+  it('getOrderStream', () => md.getOrderStream().on('data', () => {}));
+  it('getTradeStream', () => md.getTradeStream().on('data', () => {}));
+  it('getAccountStream', () => md.getAccountStream().on('data', () => {}));
+  it('getPositionsStream', () => md.getPositionsStream().on('data', () => {}));
+  it('getTradingdayStream', () => md.getPositionsStream().on('data', () => {}));
 });

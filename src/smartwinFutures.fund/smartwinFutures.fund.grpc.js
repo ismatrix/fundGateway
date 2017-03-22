@@ -287,7 +287,6 @@ async function getPastPositions(call, callback) {
   }
 }
 
-
 async function getLiveAccount(call, callback) {
   const callID = createCallID(call);
   try {

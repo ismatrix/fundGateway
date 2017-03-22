@@ -94,12 +94,12 @@ redisSub.on('message', async (room, message) => {
       const subscribersSessionIDs =
         await redis.smembersAsync(redis.join(redis.SUBID_SESSIONIDS, key));
 
-      for (const stream of grpcClientStreams) {
+      grpcClientStreams.forEach((stream) => {
         if (
           stream.dataType === dataType
           && subscribersSessionIDs.includes(stream.sessionID)
         ) stream.write(JSON.parse(message));
-      }
+      });
     }
   } catch (error) {
     logError('redisSub.on(message): %o', error);
@@ -182,6 +182,107 @@ async function getPositions(call, callback) {
     callback(null, positions);
   } catch (error) {
     logError('getPositions(): callID: %o, %o', callID, error);
+    callback(error);
+  }
+}
+
+async function getPastOrders(call, callback) {
+  const callID = createCallID(call);
+  try {
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    debug('getPastOrders(): grpcCall from callID: %o', betterCallID);
+
+    const fundid = call.request.fundid;
+    const startDate = call.request.startDate.split('-').join();
+    const endDate = call.request.endDate.split('-').join();
+
+    const pastOrders = await crud.order.getList({
+      fundid,
+      tradingday: { $gte: startDate, $lte: endDate },
+    });
+
+    const orders = pastOrders.reduce((accu, curr) => accu.concat(curr.order), []);
+
+    callback(null, orders);
+  } catch (error) {
+    logError('getPastOrders(): callID: %o, %o', callID, error);
+    callback(error);
+  }
+}
+
+async function getPastTrades(call, callback) {
+  const callID = createCallID(call);
+  try {
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    debug('getPastTrades(): grpcCall from callID: %o', betterCallID);
+
+    const fundid = call.request.fundid;
+    const startDate = call.request.startDate.split('-').join();
+    const endDate = call.request.endDate.split('-').join();
+
+    const pastTrades = await crud.done.getList({
+      fundid,
+      tradingday: { $gte: startDate, $lte: endDate },
+    });
+
+    const trades = pastTrades.reduce((accu, curr) => accu.concat(curr.done), []);
+    debug('trades %o', trades);
+
+    callback(null, trades);
+  } catch (error) {
+    logError('getPastTrades(): callID: %o, %o', callID, error);
+    callback(error);
+  }
+}
+
+async function getPastAccounts(call, callback) {
+  const callID = createCallID(call);
+  try {
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    debug('getPastAccounts(): grpcCall from callID: %o', betterCallID);
+
+    const fundid = call.request.fundid;
+    const startDate = call.request.startDate.split('-').join();
+    const endDate = call.request.endDate.split('-').join();
+
+    const pastAccounts = await crud.account.getList({
+      fundid,
+      tradingday: { $gte: startDate, $lte: endDate },
+    });
+
+    const accounts = pastAccounts.reduce((accu, curr) => accu.concat(curr.account), []);
+
+    callback(null, accounts);
+  } catch (error) {
+    logError('getPastAccounts(): callID: %o, %o', callID, error);
+    callback(error);
+  }
+}
+
+async function getPastPositions(call, callback) {
+  const callID = createCallID(call);
+  try {
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    debug('getPastPositions(): grpcCall from callID: %o', betterCallID);
+
+    const fundid = call.request.fundid;
+    const startDate = call.request.startDate.split('-').join();
+    const endDate = call.request.endDate.split('-').join();
+
+    const pastPositions = await crud.position.getList({
+      fundid,
+      tradingday: { $gte: startDate, $lte: endDate },
+    });
+
+    const positions = pastPositions.reduce((accu, curr) => accu.concat(curr.positions), []);
+
+    callback(null, positions);
+  } catch (error) {
+    logError('getPastPositions(): callID: %o, %o', callID, error);
     callback(error);
   }
 }
@@ -513,6 +614,11 @@ const fundGrpcInterface = {
   getTrades,
   getAccount,
   getPositions,
+
+  getPastOrders,
+  getPastTrades,
+  getPastAccounts,
+  getPastPositions,
 
   getLiveAccount,
   getLivePositions,

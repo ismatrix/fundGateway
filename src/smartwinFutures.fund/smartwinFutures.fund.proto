@@ -8,6 +8,11 @@ service SmartwinFuturesFund {
   rpc GetAccount(Fund) returns (Account) {}
   rpc GetPositions(Fund) returns (PositionsResponse) {}
 
+  rpc GetPastOrders(PastRequest) returns (OrdersResponse) {}
+  rpc GetPastTrades(PastRequest) returns (TradesResponse) {}
+  rpc GetPastAccounts(PastRequest) returns (AccountsResponse) {}
+  rpc GetPastPositions(PastRequest) returns (PositionsResponse) {}
+
   rpc GetLiveAccount(Fund) returns (Account) {}
   rpc GetLivePositions(Fund) returns (PositionsResponse) {}
   rpc GetNetValueAndEquityReport(Fund) returns (NetValueAndEquityReport) {}
@@ -40,12 +45,22 @@ message TradingdayResponse {
   string tradingday = 1;
 }
 
+message PastRequest {
+  string fundid = 1;
+  string startDate = 2;
+  string endDate = 3;
+}
+
 message OrdersResponse {
   repeated Order orders = 1;
 }
 
 message TradesResponse {
   repeated Trade trades = 1;
+}
+
+message AccountsResponse {
+  repeated Account accounts = 1;
 }
 
 message PositionsResponse {
@@ -177,6 +192,9 @@ message Order {
   string strategyid = 29; // 策略标识
   string userid = 30; // 操作人员标识
   string signalname = 31; // "signal.name", 信号名称
+  int32 donevol = 32;
+  string statusmsg = 33;
+  string updatedate = 34;
 }
 
 message Trade {
@@ -201,6 +219,7 @@ message Trade {
   string strategyid = 19; // 策略标识
   string userid = 20; // 操作人员标识
   string signalname = 21; // "signal.name" 信号名称 参加codemap.signal.nam
+  string privateno = 22;
 }
 
 message Account {

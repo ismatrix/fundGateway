@@ -1147,6 +1147,16 @@ grpc@^1.1.2:
     node-pre-gyp "^0.6.0"
     protobufjs "^5.0.0"
 
+grpc@^1.2.0:
+  version "1.2.0"
+  resolved "http://registry.npm.taobao.org/grpc/download/grpc-1.2.0.tgz#9b99516a885475fdd25f28766cab8e6460153f52"
+  dependencies:
+    arguejs "^0.2.3"
+    lodash "^4.15.0"
+    nan "^2.0.0"
+    node-pre-gyp "^0.6.0"
+    protobufjs "^5.0.0"
+
 har-validator@~2.0.6:
   version "2.0.6"
   resolved "http://registry.npm.taobao.org/har-validator/download/har-validator-2.0.6.tgz#cdcbc08188265ad119b6a5a7c8ab70eecfb5d27d"
@@ -1917,15 +1927,7 @@ redis-parser@^2.5.0:
   version "2.5.0"
   resolved "http://registry.npm.taobao.org/redis-parser/download/redis-parser-2.5.0.tgz#79fc2b1d4a6e4d2870b35368433639271fca2617"
 
-redis@^2.2.5:
-  version "2.7.0"
-  resolved "http://registry.npm.taobao.org/redis/download/redis-2.7.0.tgz#e5b6ae2e097ce74a9b898e0a68212156ae2d4fa9"
-  dependencies:
-    double-ended-queue "^2.1.0-0"
-    redis-commands "^1.2.0"
-    redis-parser "^2.5.0"
-
-redis@^2.7.1:
+redis@^2.2.5, redis@^2.7.1:
   version "2.7.1"
   resolved "http://registry.npm.taobao.org/redis/download/redis-2.7.1.tgz#7d56f7875b98b20410b71539f1d878ed58ebf46a"
   dependencies:
@@ -2195,9 +2197,9 @@ supports-color@^2.0.0:
   dependencies:
     sw-ice-common "git+ssh://git@code.invesmart.net:8800/npm/sw-ice-common.git#v1.0.6"
 
-"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.5":
-  version "2.0.5"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#b3d9ad0f784c86c4e8066e3794463083e074ec8a"
+"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.6":
+  version "2.0.6"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#90777887dc01ba393c91c16aa50f440e6731f002"
   dependencies:
     babel-register "^6.24.0"
     debug "^2.6.3"

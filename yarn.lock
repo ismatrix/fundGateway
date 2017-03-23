@@ -1137,16 +1137,6 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.4:
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/graceful-readlink/download/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-grpc@^1.1.2:
-  version "1.1.2"
-  resolved "http://registry.npm.taobao.org/grpc/download/grpc-1.1.2.tgz#a6dc02d659fcd802554a210f7906a49f59e1e353"
-  dependencies:
-    arguejs "^0.2.3"
-    lodash "^4.15.0"
-    nan "^2.0.0"
-    node-pre-gyp "^0.6.0"
-    protobufjs "^5.0.0"
-
 grpc@^1.2.0:
   version "1.2.0"
   resolved "http://registry.npm.taobao.org/grpc/download/grpc-1.2.0.tgz#9b99516a885475fdd25f28766cab8e6460153f52"
@@ -2176,14 +2166,14 @@ supports-color@^2.0.0:
     lodash "^4.17.4"
     moment "^2.17.1"
 
-"sw-grpc-client@git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.27":
-  version "1.1.27"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#caf7aaa65bab3bc14e54c0c0c93900996a42b359"
+"sw-grpc-client@git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.28":
+  version "1.1.28"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#47169444601d992888f694af3e49e4d21083da32"
   dependencies:
     babel-register "^6.24.0"
     bluebird "^3.5.0"
-    debug "^2.6.2"
-    grpc "^1.1.2"
+    debug "^2.6.3"
+    grpc "^1.2.0"
     lodash "^4.17.4"
     uuid "^3.0.1"
 

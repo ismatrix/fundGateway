@@ -9,21 +9,32 @@ const sslCaCrt = fs.readFileSync(sslCaCrtPath);
 
 const md = createGrpcClient({
   serviceName: 'smartwinFuturesFund',
-  fundid: '068074',
+  fundid: '075697',
   server: {
-    // ip: 'funds.invesmart.net',
-    ip: 'localhost',
+    ip: 'funds.invesmart.net',
+    // ip: 'localhost',
     port: '50051',
   },
   jwtoken,
-  sslCaCrt,
+  // sslCaCrt,
 });
+
+const pastRequest = {
+  startDate: '20170301',
+  endDate: '20170301',
+};
 
 describe('#FUND()', () => {
   it('getOrders', () => md.getOrders());
   it('getTrades', () => md.getTrades());
   it('getAccount', () => md.getAccount());
   it('getPositions', () => md.getPositions());
+
+  it('getPastOrders', () => md.getPastOrders(pastRequest));
+  it('getPastTrades', () => md.getPastTrades(pastRequest));
+  it('getPastAccounts', () => md.getPastAccounts(pastRequest));
+  it('getPastPositions', () => md.getPastPositions(pastRequest));
+
   it('getLiveAccount', () => md.getLiveAccount());
   it('getLivePositions', () => md.getLivePositions());
   it('getTradingday', () => md.getTradingday());

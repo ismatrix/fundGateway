@@ -83,7 +83,7 @@ async function main() {
     const sslCreds = grpc.ServerCredentials.createSsl(
       null,
       [{ private_key: sslServerKey, cert_chain: sslServerCrt }],
-      true
+      true,
     );
 
     const server = new grpc.Server();
@@ -96,14 +96,15 @@ async function main() {
 
     // load unique fund interface service
     const grpcUniqueServiceNames = uniq(funds.getFunds().map(elem => elem.config.serviceName));
-    for (const serviceName of grpcUniqueServiceNames) {
+    grpcUniqueServiceNames.forEach((serviceName) => {
       server.addProtoService(
         fundProto[serviceName][upperFirst(serviceName)].service,
         fundGatewayGrpc[serviceName](serviceName, funds),
       );
-    }
+    });
 
     server.bind(`${grpcUrl}`, sslCreds);
+    server.bind(`${config.grpcConfig.ip}:60051`, grpc.ServerCredentials.createInsecure());
     server.start();
   } catch (error) {
     logError('main(): %o', error);

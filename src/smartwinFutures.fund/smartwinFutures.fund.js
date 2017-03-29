@@ -358,9 +358,13 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           return positions;
         }
 
-        // keep only same day quotes
-        const marketDepths =
-          mdStore.marketDepths.filter(marketDepth => marketDepth.tradingDay === tradingdayStore);
+        // If quote's tradingday is not current tradingday, update preSettlementPrice
+        mdStore.marketDepths.forEach((marketDepth) => {
+          if (marketDepth.tradingDay !== tradingdayStore) {
+            marketDepth.preSettlementPrice = marketDepth.lastPrice;
+          }
+        });
+        const marketDepths = mdStore.marketDepths;
 
         debug('marketDephts: %o', marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
         debug('instruments: %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));

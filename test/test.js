@@ -9,14 +9,14 @@ const sslCaCrt = fs.readFileSync(sslCaCrtPath);
 
 const md = createGrpcClient({
   serviceName: 'smartwinFuturesFund',
-  fundid: '075697',
+  fundid: '081679',
   server: {
-    ip: 'funds.invesmart.net',
-    // ip: 'localhost',
+    // ip: 'funds.invesmart.net',
+    ip: 'localhost',
     port: '50051',
   },
   jwtoken,
-  // sslCaCrt,
+  sslCaCrt,
 });
 
 const pastRequest = {

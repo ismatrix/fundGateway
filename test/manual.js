@@ -11,14 +11,14 @@ const sslCaCrt = fs.readFileSync(sslCaCrtPath);
 
 const fund = createGrpcClient({
   serviceName: 'smartwinFuturesFund',
-  fundid: 'huiwang01',
+  fundid: '081679',
   server: {
-    ip: 'funds.invesmart.net',
-    // ip: 'localhost',
+    // ip: 'funds.invesmart.net',
+    ip: 'localhost',
     port: '50051',
   },
   jwtoken,
-  // sslCaCrt,
+  sslCaCrt,
 });
 
 // const streams = fund.getStreams('tradingday', 'order', 'positions', 'account', 'trade');
@@ -47,5 +47,8 @@ async function main() {
 
   const td = await fund.getTradingday();
   debug('td %o', td);
+
+  const livePositions = await fund.getLivePositions();
+  debug('livePositions %o', livePositions);
 }
 main();

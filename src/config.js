@@ -26,6 +26,18 @@ const productionConfig = {
   marketDataConfig,
   fundConfigs: [
     {
+      fundid: '081679',
+      serviceName: 'smartwinFuturesFund',
+      broker: {
+        name: 'ice',
+        server: {
+          ip: '120.76.98.94',
+          port: '20037',
+        },
+      },
+      marketData: marketDataConfig,
+    },
+    {
       fundid: '068074',
       serviceName: 'smartwinFuturesFund',
       broker: {
@@ -68,7 +80,7 @@ const developmentConfig = Object.assign({},
   productionConfig,
   {
     mongodbURL: 'mongodb://127.0.0.1:27018/smartwin',
-  }
+  },
 );
 
 const config = process.env.NODE_ENV === 'development' ? developmentConfig : productionConfig;

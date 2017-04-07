@@ -268,4 +268,7 @@ message Position {
   string updatedate = 24; // 最新更新时间
   double leverage = 25;
   double level = 26;
+  double todayopenaverage = 27;
+  double closeprofitbytrade = 28;
+  double positionprofitbytrade = 29;
 }

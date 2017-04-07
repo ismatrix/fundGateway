@@ -318,7 +318,7 @@ async function getLivePositions(call, callback) {
     const fund = funds.getFund({ serviceName, fundid });
 
     const livePositions = await fund.getLivePositions();
-    debug('livePositions %o', livePositions.map(({ instrumentid, positionprofit }) => ({ instrumentid, positionprofit })));
+    debug('livePositions %o', livePositions.map(({ instrumentid, positionprofit, positionprofitbytrade }) => ({ instrumentid, positionprofit, positionprofitbytrade })));
 
     callback(null, livePositions);
   } catch (error) {

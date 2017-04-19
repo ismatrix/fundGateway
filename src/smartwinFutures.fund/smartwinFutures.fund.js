@@ -12,6 +12,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
   const debug = createDebug(`app:smartwinFutures.fund:${fundid}`);
   const logError = createDebug(`app:smartwinFutures.fund:${fundid}:error`);
   logError.log = console.error.bind(console);
+  const POSITIONS_CACHE_TIME = 5000;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
 
   debug('config %o', config);
 
@@ -138,6 +140,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'tradingday');
 
           if (data.tradingday !== beforeInitTradingday) {
+            await sleep(POSITIONS_CACHE_TIME * 2);
             await redis.publishAsync(
                 redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
             await initOnNewTradingday();
@@ -385,7 +388,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
-    const throttledCalcLivePositions = throttle(calcLivePositions, 5000);
+    const throttledCalcLivePositions = throttle(calcLivePositions, POSITIONS_CACHE_TIME);
 
     const getLivePositions = async () => {
       try {

@@ -37,7 +37,7 @@
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.23",
     "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.2",
     "sw-fund-smartwin-futures-calculations": "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.27",
-    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.29",
+    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.30",
     "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.4",
     "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.6",
     "through2": "^2.0.3"

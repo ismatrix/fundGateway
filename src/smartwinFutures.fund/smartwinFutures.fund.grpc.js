@@ -119,7 +119,7 @@ async function getOrders(call, callback) {
     const orders = fund.getOrders();
     // debug('orders %o', orders);
 
-    callback(null, orders);
+    callback(null, { orders });
   } catch (error) {
     logError('getOrders(): callID: %o, %o', callID, error);
     callback(error);
@@ -139,7 +139,7 @@ async function getTrades(call, callback) {
     const trades = fund.getTrades();
     // debug('trades %o', trades);
 
-    callback(null, trades);
+    callback(null, { trades });
   } catch (error) {
     logError('getTrades(): callID: %o, %o', callID, error);
     callback(error);
@@ -179,7 +179,7 @@ async function getPositions(call, callback) {
     const positions = fund.getPositions();
     // debug('positions %o', positions);
 
-    callback(null, positions);
+    callback(null, { positions });
   } catch (error) {
     logError('getPositions(): callID: %o, %o', callID, error);
     callback(error);
@@ -204,7 +204,7 @@ async function getPastOrders(call, callback) {
 
     const orders = pastOrders.reduce((accu, curr) => accu.concat(curr.order), []);
 
-    callback(null, orders);
+    callback(null, { orders });
   } catch (error) {
     logError('getPastOrders(): callID: %o, %o', callID, error);
     callback(error);
@@ -230,7 +230,7 @@ async function getPastTrades(call, callback) {
     const trades = pastTrades.reduce((accu, curr) => accu.concat(curr.done), []);
     debug('trades %o', trades);
 
-    callback(null, trades);
+    callback(null, { trades });
   } catch (error) {
     logError('getPastTrades(): callID: %o, %o', callID, error);
     callback(error);
@@ -255,7 +255,7 @@ async function getPastAccounts(call, callback) {
 
     const accounts = pastAccounts.reduce((accu, curr) => accu.concat(curr.account), []);
 
-    callback(null, accounts);
+    callback(null, { accounts });
   } catch (error) {
     logError('getPastAccounts(): callID: %o, %o', callID, error);
     callback(error);
@@ -280,7 +280,7 @@ async function getPastPositions(call, callback) {
 
     const positions = pastPositions.reduce((accu, curr) => accu.concat(curr.positions), []);
 
-    callback(null, positions);
+    callback(null, { positions });
   } catch (error) {
     logError('getPastPositions(): callID: %o, %o', callID, error);
     callback(error);
@@ -320,7 +320,7 @@ async function getLivePositions(call, callback) {
     const livePositions = await fund.getLivePositions();
     debug('livePositions %o', livePositions.map(({ instrumentid, positionprofit, positionprofitbytrade }) => ({ instrumentid, positionprofit, positionprofitbytrade })));
 
-    callback(null, livePositions);
+    callback(null, { livePositions });
   } catch (error) {
     logError('getLivePositions(): callID: %o, %o', callID, error);
     callback(error);

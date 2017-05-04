@@ -125,7 +125,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         try {
           positionsStore = data;
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'positions');
-          await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
+          await redis.publishAsync(
+            redis.join(redis.SUBID_BROKERDATA, subID),
+            JSON.stringify({ positions: data }),
+          );
         } catch (error) {
           logError('broker.on(positions) %o', error);
         }

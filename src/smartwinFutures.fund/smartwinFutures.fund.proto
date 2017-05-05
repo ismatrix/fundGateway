@@ -113,6 +113,7 @@ message PositionsLeverageReport {
 message DrawdownReport {
   double peak = 1;
   double maxDrawdown = 2;
+  double currentDrawdown = 3;
 }
 
 message AllPeriodsDrawdownReport {

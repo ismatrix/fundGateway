@@ -86,6 +86,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('initOnNewTradingday()');
         allPeriodsDrawdownReportStore.today.peak = -1;
         allPeriodsDrawdownReportStore.today.maxDrawdown = 0;
+        allPeriodsDrawdownReportStore.today.currentDrawdown = 0;
       } catch (error) {
         logError('initOnNewTradingday() %o', error);
         throw error;

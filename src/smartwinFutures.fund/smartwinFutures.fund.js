@@ -265,75 +265,13 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       }
     };
 
-    const getOrders = () => {
-      try {
-        const orders = ordersStore.map(elem => Object.assign({}, elem));
-        return orders;
-      } catch (error) {
-        logError('getOrders(): %o', error);
-        throw error;
-      }
-    };
-
-    const getTrades = () => {
-      try {
-        const trades = tradesStore.map(elem => Object.assign({}, elem));
-        return trades;
-      } catch (error) {
-        logError('getTrades(): %o', error);
-        throw error;
-      }
-    };
-
-    const getAccount = () => {
-      try {
-        const account = Object.assign({}, accountStore);
-        return account;
-      } catch (error) {
-        logError('getAccount(): %o', error);
-        throw error;
-      }
-    };
-
-    const getPositions = () => {
-      try {
-        const positions = positionsStore.map(elem => Object.assign({}, elem));
-        return positions;
-      } catch (error) {
-        logError('getPositions(): %o', error);
-        throw error;
-      }
-    };
-
-    const getFund = () => {
-      try {
-        const fund = Object.assign({}, dbFundStore);
-        return fund;
-      } catch (error) {
-        logError('getFund(): %o', error);
-        throw error;
-      }
-    };
-
-    const getEquity = () => {
-      try {
-        const equity = Object.assign({}, dbEquityStore);
-        return equity;
-      } catch (error) {
-        logError('getEquity(): %o', error);
-        throw error;
-      }
-    };
-
-    const getTotal = () => {
-      try {
-        const total = Object.assign({}, dbTotalStore);
-        return total;
-      } catch (error) {
-        logError('getTotal(): %o', error);
-        throw error;
-      }
-    };
+    const getOrders = () => ordersStore.map(elem => Object.assign({}, elem));
+    const getTrades = () => tradesStore.map(elem => Object.assign({}, elem));
+    const getAccount = () => Object.assign({}, accountStore);
+    const getPositions = () => positionsStore.map(elem => Object.assign({}, elem));
+    const getFund = () => Object.assign({}, dbFundStore);
+    const getEquity = () => Object.assign({}, dbEquityStore);
+    const getTotal = () => Object.assign({}, dbTotalStore);
 
     const calcLivePositions = async () => {
       try {
@@ -393,18 +331,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     };
 
     const throttledCalcLivePositions = throttle(calcLivePositions, POSITIONS_CACHE_TIME);
-
-    const getLivePositions = async () => {
-      try {
-        debug('getLivePositions');
-        const livePositions = throttledCalcLivePositions();
-
-        return livePositions;
-      } catch (error) {
-        logError('getLivePositions(): %o', error);
-        throw error;
-      }
-    };
+    const getLivePositions = () => throttledCalcLivePositions();
 
     const calcLiveAccount = livePositions =>
       calculations.accountToLiveAccount(getAccount(), livePositions);

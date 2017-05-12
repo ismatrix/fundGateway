@@ -54,27 +54,36 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         debug('init() positionsStore %o', positionsStore);
         logError('init() tradingdayStore %o', tradingdayStore);
 
-        let equities = {};
+        let equities = [];
+        let intraDayNetValues = [];
         [
           dbFundStore,
           dbEquityStore,
           dbTotalStore,
           equities,
+          intraDayNetValues,
         ] = await Promise.all([
           crud.fund.get(fundid),
           crud.equity.get(fundid, tradingdayStore),
           crud.equity.getTotal(fundid, tradingdayStore),
           crud.equity.getList({ fundid }),
+          crud.netvalue.get(fundid, tradingdayStore),
         ]);
 
-        const netValues =
+        const pastDaysNetValues =
           calculations.createNetValueAndEquityReports(equities, dbFundStore)
           .map(report => report.netvalue);
-        allPeriodsDrawdownReportStore = calculations.createAllPeriodsDrawdownReport(netValues);
+        allPeriodsDrawdownReportStore =
+          calculations.createAllPeriodsDrawdownReport(pastDaysNetValues);
+        const todayDrawdownReport = calculations.createAllPeriodsDrawdownReport(
+          intraDayNetValues.netvalues.map(e => ({ open: e[1], high: e[1], low: e[1], last: e[1] })),
+        );
+        allPeriodsDrawdownReportStore.today = todayDrawdownReport.history;
         debug('init() dbFundStore %o', dbFundStore);
         debug('init() dbEquityStore %o', dbEquityStore);
         debug('init() dbTotalStore %o', dbTotalStore);
         debug('init() allPeriodsDrawdownReportStore %o', allPeriodsDrawdownReportStore);
+        debug('init() todayDrawdownReport %o', todayDrawdownReport);
       } catch (error) {
         logError('init() %o', error);
         throw error;

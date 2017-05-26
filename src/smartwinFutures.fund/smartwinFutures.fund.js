@@ -214,22 +214,22 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           }
         }
 
+        const directionMap = { buy: 'short', sell: 'long' };
+
+        const positionToClose = positionsStore.reduce((accu, position) => {
+          if (position.instrumentid === order.instrumentid
+          && position.direction === directionMap[order.direction]) {
+            accu.preholdposition += position.preholdposition;
+            accu.todayholdposition += position.todayholdposition;
+          }
+          return accu;
+        }, {
+          preholdposition: 0,
+          todayholdposition: 0,
+        });
+        debug('positionToClose: %o', positionToClose);
+
         if (order.offsetflag === 'close') {
-          const directionMap = { buy: 'short', sell: 'long' };
-
-          const positionToClose = positionsStore.reduce((accu, position) => {
-            if (position.instrumentid === order.instrumentid
-            && position.direction === directionMap[order.direction]) {
-              accu.preholdposition += position.preholdposition;
-              accu.todayholdposition += position.todayholdposition;
-            }
-            return accu;
-          }, {
-            preholdposition: 0,
-            todayholdposition: 0,
-          });
-          debug('positionToClose: %o', positionToClose);
-
           const totalVolume = positionToClose.preholdposition + positionToClose.todayholdposition;
           order.volume = Math.min(order.volume, totalVolume);
 
@@ -242,7 +242,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
               // all positions are opened today
               order.offsetflag = 'closetoday';
             } else if (order.volume <= positionToClose.preholdposition) {
-              // order volume to close will close positions opened yesterday
+              // Priotity to close yesterday positions if quantity sufficient
               order.offsetflag = 'closeyesterday';
             } else {
               // Need 2 orders to close all yesterday's positions + part of today's positions
@@ -265,6 +265,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
               return placeOrderResponse;
             }
           }
+        } else if (order.offsetflag === 'closeyesterday') {
+          order.volume = Math.min(order.volume, positionToClose.preholdposition);
+        } else if (order.offsetflag === 'closetoday') {
+          order.volume = Math.min(order.volume, positionToClose.todayholdposition);
         }
 
         const privatenoInt = await broker.order(order);

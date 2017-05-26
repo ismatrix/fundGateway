@@ -522,7 +522,7 @@ async function getFundStream(stream) {
     stream.sessionID = stream.metadata.get('sessionid')[0];
 
     const betterCallID = createBetterCallID(callID, user.userid);
-    debug('getFundStream(): grpcCall from callID: %o', betterCallID);
+    debug('get%oStream(): grpcCall from callID: %o', stream.dataType, betterCallID);
 
     grpcClientStreams.forEach((existingStream) => {
       if (

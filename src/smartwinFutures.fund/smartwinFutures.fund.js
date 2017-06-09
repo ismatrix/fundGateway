@@ -27,6 +27,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     let dbFundStore = {};
     let dbEquityStore = {};
     let dbTotalStore = {};
+    let dbProductStore = [];
 
     let allPeriodsDrawdownReportStore = {};
 
@@ -60,12 +61,14 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           dbFundStore,
           dbEquityStore,
           dbTotalStore,
+          dbProductStore,
           equities,
           intraDayNetValues,
         ] = await Promise.all([
           crud.fund.get(fundid),
           crud.equity.get(fundid, tradingdayStore),
           crud.equity.getTotal(fundid, tradingdayStore),
+          crud.product.getList(),
           crud.equity.getList({ fundid }),
           crud.netvalue.get(fundid, tradingdayStore),
         ]);
@@ -212,6 +215,13 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
             logError('placeOrder(): %o', error);
             throw new Error(`Failed to get ${order.ordertype}`);
           }
+        }
+
+        if (order.exchangeid === '') {
+          const product = dbProductStore.find(
+            p => p.productid === order.instrumentid.slice(0, -4));
+          order.exchangeid = product.exchangeid;
+          debug('exchangeid %o', order.exchangeid);
         }
 
         const directionMap = { buy: 'short', sell: 'long' };

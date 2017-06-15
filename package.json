@@ -31,7 +31,7 @@
     "bluebird": "^3.5.0",
     "commander": "^2.9.0",
     "debug": "^2.6.8",
-    "grpc": "^1.3.0",
+    "grpc": "^1.3.8",
     "lodash": "^4.17.4",
     "redis": "^2.7.1",
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.24",

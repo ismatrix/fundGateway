@@ -270,15 +270,18 @@ async function getPastPositions(call, callback) {
     debug('getPastPositions(): grpcCall from callID: %o', betterCallID);
 
     const fundid = call.request.fundid;
-    const startDate = call.request.startDate.split('-').join();
-    const endDate = call.request.endDate.split('-').join();
+    const startDate = call.request.startDate.split('-').join('');
+    const endDate = call.request.endDate.split('-').join('');
 
     const pastPositions = await crud.position.getList({
       fundid,
       tradingday: { $gte: startDate, $lte: endDate },
     });
 
-    const positions = pastPositions.reduce((accu, curr) => accu.concat(curr.positions), []);
+    const positions = pastPositions.reduce((accu, curr) => {
+      curr.positions.forEach((pos) => { pos.tradingday = curr.tradingday; });
+      return accu.concat(curr.positions);
+    }, []);
 
     callback(null, { positions });
   } catch (error) {

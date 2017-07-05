@@ -219,7 +219,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         if (order.exchangeid === '') {
           const product = dbProductStore.find(
-            p => p.productid === order.instrumentid.slice(0, -4));
+            p => p.productid === order.instrumentid.replace(/[0-9]/g, ''));
           logError('product %o', product);
           order.exchangeid = product.exchangeid;
           debug('exchangeid %o', order.exchangeid);

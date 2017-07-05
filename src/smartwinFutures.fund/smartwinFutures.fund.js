@@ -183,7 +183,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
     const placeOrder = async (order) => {
       try {
-        debug('order: %o', order);
+        logError('order: %o', order);
         if (!['limitPrice', '1'].includes(order.ordertype)) {
           try {
             const subscriptions = [{
@@ -220,6 +220,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         if (order.exchangeid === '') {
           const product = dbProductStore.find(
             p => p.productid === order.instrumentid.slice(0, -4));
+          logError('product %o', product);
           order.exchangeid = product.exchangeid;
           debug('exchangeid %o', order.exchangeid);
         }

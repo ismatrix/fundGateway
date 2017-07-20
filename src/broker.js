@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import createIceBroker from 'sw-broker-ice';
 
+// 创建链接
 const logError = createDebug('app:broker:error');
 logError.log = console.error.bind(console);
 

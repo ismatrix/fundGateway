@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/app",
     "test": "mocha $(find test -name '*test.js') --compilers js:babel-register",
-    "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files"
+    "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files && for i in `ls node_modules/ | grep sw`; do cd node_modules/$i && npm run compile; cd ../../; done"
   },
   "repository": {
     "type": "git",
@@ -34,12 +34,13 @@
     "grpc": "^1.4.1",
     "lodash": "^4.17.4",
     "redis": "^2.7.1",
-    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.27",
-    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.5",
-    "sw-fund-smartwin-futures-calculations": "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.31",
-    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.35",
+    "sw-common": "git+ssh://git@code.invesmart.net:8800/npm/sw-common.git#v1.0.1",
+    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.29",
+    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.6",
+    "sw-fund-smartwin-futures-calculations": "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.32",
+    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.36",
     "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.6",
-    "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.17",
+    "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.19",
     "through2": "^2.0.3"
   }
 }

@@ -1,35 +1,32 @@
-import createDebug from 'debug';
 import can from 'sw-can';
 import funds from './funds';
+import logger from 'sw-common';
 
-const debug = createDebug('app:fundGatewayAdmin.grpc');
-const logError = createDebug('app:fundGatewayAdmin.grpc:error');
-logError.log = console.error.bind(console);
 
 async function getFundsConfigs(call, callback) {
   try {
-    debug('getFundsConfigs()');
+    logger.info('getFundsConfigs()');
     await can.grpc(call, 'get', 'fundGateway/configs');
 
     const fundsConfigs = funds.getFundsConfigs();
-    debug('fundsConfigs %o', fundsConfigs);
+    logger.info('fundsConfigs %j', fundsConfigs);
     callback(null, { fundsConfigs });
   } catch (error) {
-    logError('getFundsConfigs(): %o', error);
+    logger.error('getFundsConfigs(): %j', error);
     callback(error);
   }
 }
 
 async function addFund(call, callback) {
   try {
-    debug('addFund()');
+    logger.info('addFund()');
     await can.grpc(call, 'add', 'fundGateway/fund');
 
     const fundConfig = call.request;
     await funds.addAndGetFund(fundConfig);
     callback(null, {});
   } catch (error) {
-    logError('addFund(): %o', error);
+    logger.error('addFund(): %j', error);
     callback(error);
   }
 }

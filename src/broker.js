@@ -1,9 +1,6 @@
-import createDebug from 'debug';
 import createIceBroker from 'sw-broker-ice';
-
+import logger from 'sw-common';
 // 创建链接
-const logError = createDebug('app:broker:error');
-logError.log = console.error.bind(console);
 
 export default function createBroker(config) {
   try {
@@ -22,7 +19,7 @@ export default function createBroker(config) {
 
     return broker;
   } catch (error) {
-    logError('createBroker(): %o', error);
+    logger.error('createBroker(): %j', error);
     throw error;
   }
 }

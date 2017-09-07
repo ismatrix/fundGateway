@@ -355,7 +355,8 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         throw error;
       }
     };
-
+    
+    //这里通过实时行情计算持仓的东西
     const throttledCalcLivePositions = throttle(calcLivePositions, POSITIONS_CACHE_TIME);
     const getLivePositions = () => throttledCalcLivePositions();
 

@@ -13,7 +13,7 @@ const fund = createGrpcClient({
   serviceName: 'smartwinFuturesFund',
   fundid: '081679',
   server: {
-    // ip: 'funds.invesmart.net',
+    // ip: 'funds.quantowin.com',
     ip: 'localhost',
     port: '50051',
   },

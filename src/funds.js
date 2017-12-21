@@ -1,12 +1,9 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import createBroker from './broker';
 import marketDatas from './marketDatas';
 import createSmartwinFuturesFund from './smartwinFutures.fund/smartwinFutures.fund';
 
 // 管理funds (fund是一个broker的封装)
-const logError = createDebug('app:funds:error');
-logError.log = console.error.bind(console);
-
 const fundsArr = [];
 
 const matchFund = newConfig => elem => (
@@ -29,14 +26,14 @@ async function addAndGetFund(config) {
         newFund = createSmartwinFuturesFund(config, broker, marketData);
         break;
       default:
-        throw new Error('No fund interface for this serviceName: %o', config.serviceName);
+        throw new Error('No fund interface for this serviceName: %j', config.serviceName);
     }
 
     fundsArr.push(newFund);
 
     return newFund;
   } catch (error) {
-    logError('addAndGetFund(): %o', error);
+    logger.error('addAndGetFund(): %j', error);
     throw error;
   }
 }
@@ -47,13 +44,13 @@ function getFund(config) {
       serviceName,
       fundid,
     } = config;
-    // debug('getFund(%o)', { serviceName, fundid });
+    // debug('getFund(%j)', { serviceName, fundid });
     const existingFund = fundsArr.find(matchFund(config));
     if (existingFund !== undefined) return existingFund;
 
     throw new Error(`fund ${fundid}@${serviceName} not found`);
   } catch (error) {
-    logError('getFund(): %o', error);
+    logger.error('getFund(): %j', error);
     throw error;
   }
 }
@@ -62,7 +59,7 @@ function getFunds() {
   try {
     return fundsArr;
   } catch (error) {
-    logError('getFunds(): %o', error);
+    logger.error('getFunds(): %j', error);
     throw error;
   }
 }
@@ -75,7 +72,7 @@ function getFundsPositions() {
       .reduce((acc, cur) => acc.concat(cur), []);
     return allPositions;
   } catch (error) {
-    logError('get(): %o', error);
+    logger.error('get(): %j', error);
     throw error;
   }
 }
@@ -88,7 +85,7 @@ function getFundsConfigs() {
 
     return fundsConfigs;
   } catch (error) {
-    logError('getFundsConfigs(): %o', error);
+    logger.error('getFundsConfigs(): %j', error);
     throw error;
   }
 }

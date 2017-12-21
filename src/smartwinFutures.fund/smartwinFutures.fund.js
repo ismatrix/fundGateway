@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import { throttle } from 'lodash';
 import calculations from 'sw-fund-smartwin-futures-calculations';
 import crud from 'sw-mongodb-crud';
@@ -9,13 +9,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     fundid,
   } = config;
 
-  const debug = createDebug(`app:smartwinFutures.fund:${fundid}`);
-  const logError = createDebug(`app:smartwinFutures.fund:${fundid}:error`);
-  logError.log = console.error.bind(console);
   const POSITIONS_CACHE_TIME = 5000;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  debug('config %o', config);
+  logger.debug('config %j', config);
 
   try {
     let ordersStore = [];
@@ -33,7 +30,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
     const init = async () => {
       try {
-        logError('init()');
+        logger.error('init()');
         broker.connect();
 
         [
@@ -49,11 +46,11 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           broker.queryPositions(),
           broker.getTradingday(),
         ]);
-        debug('init() ordersStore %o', ordersStore);
-        debug('init() tradesStore %o', tradesStore);
-        logError('init() accountStore %o', accountStore);
-        debug('init() positionsStore %o', positionsStore);
-        logError('init() tradingdayStore %o', tradingdayStore);
+        logger.debug('init() ordersStore %j', ordersStore);
+        logger.debug('init() tradesStore %j', tradesStore);
+        logger.error('init() accountStore %j', accountStore);
+        logger.debug('init() positionsStore %j', positionsStore);
+        logger.error('init() tradingdayStore %j', tradingdayStore);
 
         let equities = [];
         let intraDayNetValues = {};
@@ -85,27 +82,27 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
               ({ open: e[1], high: e[1], low: e[1], last: e[1] })),
           );
           allPeriodsDrawdownReportStore.today = todayDrawdownReport.history;
-          debug('init() todayDrawdownReport %o', todayDrawdownReport);
+          logger.debug('init() todayDrawdownReport %j', todayDrawdownReport);
         }
 
-        debug('init() dbFundStore %o', dbFundStore);
-        debug('init() dbEquityStore %o', dbEquityStore);
-        debug('init() dbTotalStore %o', dbTotalStore);
-        debug('init() allPeriodsDrawdownReportStore %o', allPeriodsDrawdownReportStore);
+        logger.debug('init() dbFundStore %j', dbFundStore);
+        logger.debug('init() dbEquityStore %j', dbEquityStore);
+        logger.debug('init() dbTotalStore %j', dbTotalStore);
+        logger.debug('init() allPeriodsDrawdownReportStore %j', allPeriodsDrawdownReportStore);
       } catch (error) {
-        logError('init() %o', error);
+        logger.error('init() %j', error);
         throw error;
       }
     };
 
     const initOnNewTradingday = async () => {
       try {
-        debug('initOnNewTradingday()');
+        logger.debug('initOnNewTradingday()');
         allPeriodsDrawdownReportStore.today.peak = -1;
         allPeriodsDrawdownReportStore.today.maxDrawdown = 0;
         allPeriodsDrawdownReportStore.today.currentDrawdown = 0;
       } catch (error) {
-        logError('initOnNewTradingday() %o', error);
+        logger.error('initOnNewTradingday() %j', error);
         throw error;
       }
     };
@@ -113,12 +110,12 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     broker
       .on('order', async (data) => {
         try {
-          logError('broker.on(order) %o', data);
+          logger.error('broker.on(order) %j', data);
           ordersStore.push(data);
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'order');
           await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
         } catch (error) {
-          logError('broker.on(order) %o', error);
+          logger.error('broker.on(order) %j', error);
         }
       })
       .on('trade', async (data) => {
@@ -127,7 +124,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'trade');
           await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
         } catch (error) {
-          logError('broker.on(trade) %o', error);
+          logger.error('broker.on(trade) %j', error);
         }
       })
       .on('account', async (data) => {
@@ -136,7 +133,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'account');
           await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
         } catch (error) {
-          logError('broker.on(account) %o', error);
+          logger.error('broker.on(account) %j', error);
         }
       })
       .on('positions', async (data) => {
@@ -148,13 +145,13 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
             JSON.stringify({ positions: data }),
           );
         } catch (error) {
-          logError('broker.on(positions) %o', error);
+          logger.error('broker.on(positions) %j', error);
         }
       })
       .on('tradingday', async (data) => {
         try {
           const beforeInitTradingday = tradingdayStore;
-          logError('broker.on(tradingday): broker:tradingday %o, beforeInitTradingday %o', fundid, data.tradingday, beforeInitTradingday);
+          logger.error('broker.on(tradingday): broker:tradingday %j, beforeInitTradingday %j', fundid, data.tradingday, beforeInitTradingday);
 
           await init();
 
@@ -167,23 +164,23 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
             await initOnNewTradingday();
           }
         } catch (error) {
-          logError('broker.on(tradingday) %o', error);
+          logger.error('broker.on(tradingday) %j', error);
         }
       })
       .on('connect:success', async () => {
         try {
-          logError('broker:connect:success, call init()');
+          logger.error('broker:connect:success, call init()');
           await init();
         } catch (error) {
-          logError('broker.on(connect:success) %o', error);
+          logger.error('broker.on(connect:success) %j', error);
         }
       })
-      .on('error', error => logError('broker.on(error) %o', error))
+      .on('error', error => logger.error('broker.on(error) %j', error))
       ;
 
     const placeOrder = async (order) => {
       try {
-        logError('order: %o', order);
+        logger.error('order: %j', order);
         if (!['limitPrice', '1'].includes(order.ordertype)) {
           try {
             const subscriptions = [{
@@ -194,7 +191,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
             const lastMDsResponse = await marketData.getLastMarketDepths({ subscriptions });
             const lastMD = lastMDsResponse.marketDepths[0];
-            debug('placeOrder getLastMarketDepths: %o', lastMD);
+            logger.debug('placeOrder getLastMarketDepths: %j', lastMD);
 
             if (['marketPrice', '0'].includes(order.ordertype)) {
               order.price = order.direction === 'buy' ? lastMD.askPrice1 : lastMD.bidPrice1;
@@ -212,7 +209,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
             order.ordertype = '1';
           } catch (error) {
-            logError('placeOrder(): %o', error);
+            logger.error('placeOrder(): %j', error);
             throw new Error(`Failed to get ${order.ordertype}`);
           }
         }
@@ -220,9 +217,9 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         if (order.exchangeid === '') {
           const product = dbProductStore.find(
             p => p.productid === order.instrumentid.replace(/[0-9]/g, ''));
-          logError('product %o', product);
+          logger.error('product %j', product);
           order.exchangeid = product.exchangeid;
-          debug('exchangeid %o', order.exchangeid);
+          logger.debug('exchangeid %j', order.exchangeid);
         }
 
         const directionMap = { buy: 'short', sell: 'long' };
@@ -238,7 +235,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
           preholdposition: 0,
           todayholdposition: 0,
         });
-        debug('positionToClose: %o', positionToClose);
+        logger.debug('positionToClose: %j', positionToClose);
 
         if (order.offsetflag === 'close') {
           const totalVolume = positionToClose.preholdposition + positionToClose.todayholdposition;
@@ -289,7 +286,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return placeOrderResponse;
       } catch (error) {
-        logError('placeOrder(): %o', error);
+        logger.error('placeOrder(): %j', error);
         throw error;
       }
     };
@@ -321,7 +318,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         if (subscriptions.length === 0) return positions;
 
         const symbols = positions.map(position => position.instrumentid);
-        debug('query mdGateway for positions symbols: %o', symbols);
+        // logger.debug('query mdGateway for positions symbols: %j', symbols);
 
         const [mdStore, instrumentsRes] = await Promise.all([
           marketData.getLastMarketDepths({ subscriptions }),
@@ -340,8 +337,10 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         });
         const marketDepths = mdStore.marketDepths;
 
-        debug('marketDephts: %o', marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
-        debug('instruments: %o', instrumentsRes.instruments.map(({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
+        // logger.debug('marketDephts: %j',
+          // marketDepths.map(({ symbol, dataType }) => ({ symbol, dataType })));
+        // logger.debug('instruments: %j', instrumentsRes.instruments.map(
+          // ({ instrumentid, volumemultiple }) => ({ instrumentid, volumemultiple })));
 
         const livePositions = calculations.positionsToLivePositions(
           positions,
@@ -354,7 +353,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositions;
       } catch (error) {
-        logError('calcLivePositions(): %o', error);
+        logger.error('calcLivePositions(): %j', error);
         throw error;
       }
     };
@@ -373,7 +372,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveAccount;
       } catch (error) {
-        logError('getLiveAccount(): %o', error);
+        logger.error('getLiveAccount(): %j', error);
         throw error;
       }
     };
@@ -391,7 +390,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveEquity;
       } catch (error) {
-        logError('getLiveEquity(): %o', error);
+        logger.error('getLiveEquity(): %j', error);
         throw error;
       }
     };
@@ -407,7 +406,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveNetValueAndEquityReport;
       } catch (error) {
-        logError('getNetValueAndEquityReport(): %o', error);
+        logger.error('getNetValueAndEquityReport(): %j', error);
         throw error;
       }
     };
@@ -425,7 +424,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositionsLevelReport;
       } catch (error) {
-        logError('getPositionsLevelReport(): %o', error);
+        logger.error('getPositionsLevelReport(): %j', error);
         throw error;
       }
     };
@@ -441,7 +440,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return livePositionsLeverageReport;
       } catch (error) {
-        logError('getPositionsLeverageReport(): %o', error);
+        logger.error('getPositionsLeverageReport(): %j', error);
         throw error;
       }
     };
@@ -459,7 +458,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return allPeriodsDrawdownReport;
       } catch (error) {
-        logError('getAllPeriodsDrawdownReport(): %o', error);
+        logger.error('getAllPeriodsDrawdownReport(): %j', error);
         throw error;
       }
     };
@@ -486,7 +485,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
         return liveCombinedReport;
       } catch (error) {
-        logError('getCombinedReport(): %o', error);
+        logger.error('getCombinedReport(): %j', error);
         throw error;
       }
     };
@@ -512,7 +511,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     const fund = Object.assign(Object.create(broker), fundBase);
     return fund;
   } catch (error) {
-    logError('createSmartwinFuturesFund(): %o', error);
+    logger.error('createSmartwinFuturesFund(): %j', error);
     throw error;
   }
 }

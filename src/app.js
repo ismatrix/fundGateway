@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import fs from 'fs';
 import path from 'path';
 import grpc from 'grpc';
@@ -18,13 +18,6 @@ program
   .parse(process.argv);
 
 const grpcUrl = `${config.grpcConfig.ip}:${config.grpcConfig.port}`;
-const debug = createDebug(`app:main:${grpcUrl}`);
-const logError = createDebug(`app:main:${grpcUrl}`);
-logError.log = console.error.bind(console);
-process
- .on('uncaughtException', error => logError('process.on(uncaughtException): %o', error))
- .on('warning', warning => logError('process.on(warning): %o', warning))
- ;
 
 async function init(fundConfigs) {
   try {
@@ -32,14 +25,13 @@ async function init(fundConfigs) {
       fundConfigs.map(fundConfig => funds.addAndGetFund(fundConfig)),
     ));
   } catch (error) {
-    logError('init(): %o', error);
+    logger.error('init(): %j', error);
   }
 }
 
 async function main() {
   try {
-    debug('app.js main');
-    debug('config %o', config);
+    logger.debug('config %j', config);
     const dbInstance = await mongodb.getDB(config.mongodbURL);
     crud.setDB(dbInstance);
 
@@ -54,7 +46,7 @@ async function main() {
       fundConfigs = config.fundConfigs;
     } else {
       const dbFunds = await crud.fund.getList({ state: 'online' }, {});
-      debug('dbFunds %o', dbFunds.map(f => f.fundid));
+      logger.debug('dbFunds %j', dbFunds.map(f => f.fundid));
       fundConfigs = dbFunds.map(dbFund => ({
         fundid: dbFund.fundid,
         serviceName: 'smartwinFuturesFund',
@@ -68,7 +60,7 @@ async function main() {
         marketData: config.marketDataConfig,
       }));
     }
-    debug('fundConfigs %o', fundConfigs.map(f => f.fundid));
+    logger.debug('fundConfigs %j', fundConfigs.map(f => f.fundid));
 
     await init(fundConfigs);
 
@@ -107,7 +99,7 @@ async function main() {
     server.bind(`${config.grpcConfig.ip}:60051`, grpc.ServerCredentials.createInsecure());
     server.start();
   } catch (error) {
-    logError('main(): %o', error);
+    logger.error('main(): %j', error);
   }
 }
 main();

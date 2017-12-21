@@ -1,11 +1,7 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import createRedis from 'redis';
 import bluebird from 'bluebird';
 import config from './config';
-
-const debug = createDebug('app:redis');
-const logError = createDebug('app:redis:error');
-logError.log = console.error.bind(console);
 
 bluebird.promisifyAll(createRedis.RedisClient.prototype);
 bluebird.promisifyAll(createRedis.Multi.prototype);
@@ -107,7 +103,7 @@ function getFullKeyParts(fullKey, ...subKeyNames) {
       throw new Error(`cannot find the subkey ${subKeyName}`);
     });
   } catch (error) {
-    logError('getFullKeyParts(): %o', error);
+    logger.error('getFullKeyParts(): %j', error);
     throw error;
   }
 }
@@ -118,7 +114,7 @@ function getKeyParts(keyDef, key, ...partsNames) {
     const fullKey = joinFullKey(joinNamespace(keyDef), key);
     return getFullKeyParts(fullKey, ...partsNames);
   } catch (error) {
-    logError('getKeyParts(): %o', error);
+    logger.error('getKeyParts(): %j', error);
     throw error;
   }
 }
@@ -139,4 +135,4 @@ const redisTools = {
 const redisBase = createRedis.createClient({ port: config.redisConfig.port });
 export const redis = Object.assign(redisBase, redisTools, ns);
 export const redisSub = Object.assign(redis.duplicate(), redisTools, ns);
-debug('redis.ns %o', ns);
+logger.debug('redis.ns %j', ns);

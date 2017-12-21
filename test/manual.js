@@ -1,9 +1,8 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import fs from 'fs';
 import path from 'path';
 import createGrpcClient from 'sw-grpc-client';
 
-const debug = createDebug('manual');
 const jwtoken = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0';
 
 const sslCaCrtPath = path.join(__dirname, '../crt/rootCA.pem');
@@ -23,11 +22,11 @@ const fund = createGrpcClient({
 
 // const streams = fund.getStreams('tradingday', 'order', 'positions', 'account', 'trade');
 // streams
-//   .on('tradingday', tradingday => debug('tradingday %o', tradingday))
-//   .on('order', order => debug('order %o', order))
-//   .on('positions', positions => debug('positions %o', positions))
-//   .on('account', account => debug('account %o', account))
-//   .on('trade', trade => debug('trade %o', trade))
+//   .on('tradingday', tradingday => logger.debug('tradingday %j', tradingday))
+//   .on('order', order => logger.debug('order %j', order))
+//   .on('positions', positions => logger.debug('positions %j', positions))
+//   .on('account', account => logger.debug('account %j', account))
+//   .on('trade', trade => logger.debug('trade %j', trade))
 //   ;
 
 async function main() {
@@ -43,12 +42,12 @@ async function main() {
   //   userid: '',
   //   signalname: 'test',
   // });
-  // debug('placeOrderResponse: %o', placeOrderResponse);
+  // logger.debug('placeOrderResponse: %j', placeOrderResponse);
 
   const td = await fund.getTradingday();
-  debug('td %o', td);
+  logger.debug('td %j', td);
 
   const livePositions = await fund.getLivePositions();
-  debug('livePositions %o', livePositions);
+  logger.debug('livePositions %j', livePositions);
 }
 main();

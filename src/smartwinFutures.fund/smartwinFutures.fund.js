@@ -30,7 +30,6 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
     const init = async () => {
       try {
-        logger.error('init()');
         broker.connect();
 
         [
@@ -48,9 +47,9 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         ]);
         logger.debug('init() ordersStore %j', ordersStore);
         logger.debug('init() tradesStore %j', tradesStore);
-        logger.error('init() accountStore %j', accountStore);
+        logger.debug('init() accountStore %j', accountStore);
         logger.debug('init() positionsStore %j', positionsStore);
-        logger.error('init() tradingdayStore %j', tradingdayStore);
+        logger.debug('init() tradingdayStore %j', tradingdayStore);
 
         let equities = [];
         let intraDayNetValues = {};
@@ -110,7 +109,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
     broker
       .on('order', async (data) => {
         try {
-          logger.error('broker.on(order) %j', data);
+          logger.debug('broker.on(order) %j', data);
           ordersStore.push(data);
           const subID = redis.joinSubKeys(config.broker.name, fundid, 'order');
           await redis.publishAsync(redis.join(redis.SUBID_BROKERDATA, subID), JSON.stringify(data));
@@ -151,7 +150,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       .on('tradingday', async (data) => {
         try {
           const beforeInitTradingday = tradingdayStore;
-          logger.error('broker.on(tradingday): broker:tradingday %j, beforeInitTradingday %j', fundid, data.tradingday, beforeInitTradingday);
+          logger.debug('broker.on(tradingday): broker:tradingday %j, beforeInitTradingday %j', fundid, data.tradingday, beforeInitTradingday);
 
           await init();
 
@@ -169,7 +168,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
       })
       .on('connect:success', async () => {
         try {
-          logger.error('broker:connect:success, call init()');
+          // logger.error('broker:connect:success, call init()');
           await init();
         } catch (error) {
           logger.error('broker.on(connect:success) %j', error);
@@ -180,7 +179,7 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
 
     const placeOrder = async (order) => {
       try {
-        logger.error('order: %j', order);
+        logger.info('order: %j', order);
         if (!['limitPrice', '1'].includes(order.ordertype)) {
           try {
             const subscriptions = [{
@@ -217,9 +216,9 @@ export default function createSmartwinFuturesFund(config, broker, marketData) {
         if (order.exchangeid === '') {
           const product = dbProductStore.find(
             p => p.productid === order.instrumentid.replace(/[0-9]/g, ''));
-          logger.error('product %j', product);
+          // logger.debug('product %j', product);
           order.exchangeid = product.exchangeid;
-          logger.debug('exchangeid %j', order.exchangeid);
+          // logger.debug('exchangeid %j', order.exchangeid);
         }
 
         const directionMap = { buy: 'short', sell: 'long' };

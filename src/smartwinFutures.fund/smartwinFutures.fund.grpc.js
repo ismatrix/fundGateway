@@ -502,10 +502,10 @@ async function getTradingday(call, callback) {
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
 
-    logger.error('broker listeners for tradingday %j', fund.listeners('tradingday').map(elem => elem.toString()));
-    logger.error('broker listeners for order %j', fund.listeners('order').map(elem => elem.toString()));
-    logger.error('broker listenersCount for tradingday %j', fund.listenerCount('tradingday'));
-    logger.error('broker listenersCount for order %j', fund.listenerCount('order'));
+    logger.debug('broker listeners for tradingday %j', fund.listeners('tradingday').map(elem => elem.toString()));
+    logger.debug('broker listeners for order %j', fund.listeners('order').map(elem => elem.toString()));
+    logger.debug('broker listenersCount for tradingday %j', fund.listenerCount('tradingday'));
+    logger.debug('broker listenersCount for order %j', fund.listenerCount('order'));
     const tradingday = await fund.getTradingday();
 
     callback(null, { tradingday });

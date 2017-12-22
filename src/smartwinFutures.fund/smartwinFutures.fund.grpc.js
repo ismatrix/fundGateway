@@ -535,7 +535,7 @@ async function getFundStream(stream) {
     stream
       .on('cancelled', async () => {
         try {
-          logger.error('stream.on(cancelled): callID: %j', betterCallID);
+          logger.debug('stream.on(cancelled): callID: %j', betterCallID);
           grpcClientStreams.delete(stream);
           await removeSessionIDFromAllSubIDsByDataType(stream.sessionID, stream.dataType);
         } catch (error) {

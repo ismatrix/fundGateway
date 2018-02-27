@@ -4,6 +4,8 @@ import calculations from 'sw-fund-smartwin-futures-calculations';
 import crud from 'sw-mongodb-crud';
 import { redis } from '../redis';
 
+logger.error.log = console.error.bind(console);
+
 export default function createSmartwinFuturesFund(config, broker, marketData) {
   const {
     fundid,

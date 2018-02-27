@@ -3,6 +3,7 @@ import createBroker from './broker';
 import marketDatas from './marketDatas';
 import createSmartwinFuturesFund from './smartwinFutures.fund/smartwinFutures.fund';
 
+logger.error.log = console.error.bind(console);
 // 管理funds (fund是一个broker的封装)
 const fundsArr = [];
 

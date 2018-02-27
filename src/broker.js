@@ -1,8 +1,8 @@
 import logger from 'sw-common';
 import createIceBroker from 'sw-broker-ice';
 
+logger.error.log = console.error.bind(console);
 // 创建链接
-
 export default function createBroker(config) {
   try {
     const {

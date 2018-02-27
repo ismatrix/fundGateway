@@ -4,6 +4,8 @@ import can from 'sw-can';
 import crud from 'sw-mongodb-crud';
 import { redis, redisSub } from '../redis';
 
+logger.error.log = console.error.bind(console);
+
 const grpcClientStreams = new Set();
 let serviceName;
 let funds;
@@ -105,9 +107,9 @@ redisSub.on('message', async (room, message) => {
 async function getOrders(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getOrders(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getOrders(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -125,9 +127,9 @@ async function getOrders(call, callback) {
 async function getTrades(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getTrades(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getTrades(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -145,9 +147,9 @@ async function getTrades(call, callback) {
 async function getAccount(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getAccount(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getAccount(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -165,9 +167,9 @@ async function getAccount(call, callback) {
 async function getPositions(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getPositions(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getPositions(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -185,9 +187,9 @@ async function getPositions(call, callback) {
 async function getPastOrders(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getPastOrders(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getPastOrders(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const startDate = call.request.startDate.split('-').join();
@@ -210,9 +212,9 @@ async function getPastOrders(call, callback) {
 async function getPastTrades(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getPastTrades(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getPastTrades(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const startDate = call.request.startDate.split('-').join();
@@ -236,9 +238,9 @@ async function getPastTrades(call, callback) {
 async function getPastAccounts(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getPastAccounts(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getPastAccounts(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const startDate = call.request.startDate.split('-').join();
@@ -261,9 +263,9 @@ async function getPastAccounts(call, callback) {
 async function getPastPositions(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getPastPositions(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getPastPositions(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const startDate = call.request.startDate.split('-').join('');
@@ -289,9 +291,9 @@ async function getPastPositions(call, callback) {
 async function getLiveAccount(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getLiveAccount(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getLiveAccount(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -309,9 +311,9 @@ async function getLiveAccount(call, callback) {
 async function getLivePositions(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getLivePositions(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getLivePositions(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -331,9 +333,9 @@ async function getLivePositions(call, callback) {
 async function getNetValueAndEquityReport(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getNetValueAndEquityReport(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getNetValueAndEquityReport(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -351,9 +353,9 @@ async function getNetValueAndEquityReport(call, callback) {
 async function getNetValueAndEquityReports(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getNetValueAndEquityReports(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getNetValueAndEquityReports(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
 
@@ -370,9 +372,9 @@ async function getNetValueAndEquityReports(call, callback) {
 async function getPositionsLevelReport(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getPositionsLevelReport(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getPositionsLevelReport(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -390,9 +392,9 @@ async function getPositionsLevelReport(call, callback) {
 async function getPositionsLeverageReport(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getPositionsLeverageReport(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getPositionsLeverageReport(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -410,9 +412,9 @@ async function getPositionsLeverageReport(call, callback) {
 async function getAllPeriodsDrawdownReport(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getAllPeriodsDrawdownReport(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getAllPeriodsDrawdownReport(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -429,9 +431,9 @@ async function getAllPeriodsDrawdownReport(call, callback) {
 async function getCombinedReport(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getCombinedReport(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getCombinedReport(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });
@@ -495,9 +497,9 @@ async function cancelOrder(call, callback) {
 async function getTradingday(call, callback) {
   const callID = createCallID(call);
   try {
-    // const user = await can.grpc(call, 'get', 'fundid:all/basics');
-    // const betterCallID = createBetterCallID(callID, user.userid);
-    // logger.debug('getTradingday(): grpcCall from callID: %j', betterCallID);
+    const user = await can.grpc(call, 'get', 'fundid:all/basics');
+    const betterCallID = createBetterCallID(callID, user.userid);
+    logger.debug('getTradingday(): grpcCall from callID: %j', betterCallID);
 
     const fundid = call.request.fundid;
     const fund = funds.getFund({ serviceName, fundid });

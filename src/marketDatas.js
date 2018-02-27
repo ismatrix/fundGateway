@@ -4,6 +4,8 @@ import path from 'path';
 import Promise from 'bluebird';
 import createGrpcClient from 'sw-grpc-client';
 
+logger.error.log = console.error.bind(console);
+
 const fs = Promise.promisifyAll(fsCb);
 
 const marketDataClients = [];

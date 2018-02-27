@@ -3,6 +3,8 @@ import createRedis from 'redis';
 import bluebird from 'bluebird';
 import config from './config';
 
+logger.error.log = console.error.bind(console);
+
 bluebird.promisifyAll(createRedis.RedisClient.prototype);
 bluebird.promisifyAll(createRedis.Multi.prototype);
 

@@ -2,6 +2,8 @@ import logger from 'sw-common';
 import can from 'sw-can';
 import funds from './funds';
 
+logger.error.log = console.error.bind(console);
+
 async function getFundsConfigs(call, callback) {
   try {
     logger.debug('getFundsConfigs()');

@@ -11,11 +11,11 @@ import fundGatewayGrpc from './fundGateway.grpc';
 import funds from './funds';
 import config from './config';
 
-// program
-//   .version('1.0.2')
-//   .option('-c, --credentials-name [value]', 'the name of the server ssl credentials .crt/.key')
-//   .option('-f, --fund-configs-source [value]', 'config.js|mongodb')
-//   .parse(process.argv);
+program
+  .version('1.0.2')
+  .option('-c, --credentials-name [value]', 'the name of the server ssl credentials .crt/.key')
+  .option('-f, --fund-configs-source [value]', 'config.js|mongodb')
+  .parse(process.argv);
 
 const grpcUrl = `${config.grpcConfig.ip}:${config.grpcConfig.port}`;
 
@@ -66,7 +66,7 @@ async function main() {
         marketData: config.marketDataConfig,
       }));
     }
-    // logger.debug('fundConfigs %j', fundConfigs.map(f => f.fundid));
+    logger.debug('fundConfigs %j', fundConfigs.map(f => f.fundid));
 
     await init(fundConfigs);
 

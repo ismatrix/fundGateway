@@ -66,7 +66,7 @@ async function main() {
         marketData: config.marketDataConfig,
       }));
     }
-    logger.debug('fundConfigs %j', fundConfigs.map(f => f.fundid));
+    // logger.debug('fundConfigs %j', fundConfigs.map(f => f.fundid));
 
     await init(fundConfigs);
 

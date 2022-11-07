@@ -8,7 +8,7 @@ This is the gateway to a fund account, providing API to place order, check capit
     <img src ="https://img.shields.io/github/license/vnpy/vnpy.svg?color=orange"/>
 </p>
 
-商品期货交易服务，上游通过 [zeroice](https://zeroc.com/) 接入 [china-future-exchange-ctp](https://github.com/ismatrix/china-future-exchange-ctp)， 通过[gRPC]对外提供账户及交易接口
+商品期货交易服务，上游通过 [zeroice](https://zeroc.com/) 接入 [china-future-exchange-ctp](https://github.com/ismatrix/china-future-exchange-ctp)， 通过[gRPC](https://grpc.io/)对外提供账户及交易接口
 
 ## Install
 ```
@@ -17,6 +17,8 @@ npm install
 ```
 
 ## Prod
+* 配置文件 ./src/config.js
+
 ```
 NODE_ENV=production DEBUG_FD=1 DEBUG=*,-babel,-sw-fund-smartwin-futures-calculations:* DEBUG_COLORS=true pm2 start /opt/fundGateway/src/index.js --log-date-format="MM-DD HH:mm:ss" --name fundGateway -- --fund-configs-source mongodb --credentials-name funds.quantowin.com
 ```

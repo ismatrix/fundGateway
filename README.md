@@ -1,5 +1,14 @@
-# Fund gateway
+# fundGateway
 This is the gateway to a fund account, providing API to place order, check capital, and positions.
+<p align="center">
+    <img src ="https://img.shields.io/badge/version-3.0.0-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/platform-windows|linux|macos-yellow.svg"/>
+    <img src ="https://img.shields.io/badge/nodejs-6.0+-blue.svg" />
+    <img src ="https://img.shields.io/github/workflow/status/vnpy/vnpy/Python%20application/master"/>
+    <img src ="https://img.shields.io/github/license/vnpy/vnpy.svg?color=orange"/>
+</p>
+
+商品期货交易服务，上游通过 [zeroice](https://zeroc.com/) 接入 [china-future-exchange-ctp](https://github.com/ismatrix/china-future-exchange-ctp)， 通过[gRPC]对外提供账户及交易接口
 
 ## Install
 ```
